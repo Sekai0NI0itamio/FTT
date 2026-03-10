@@ -1,10 +1,10 @@
 [
   {
-    "file": "assignment.png",
-    "status": "success",
-    "size_bytes": 596078,
-    "processing_time_sec": 487.84921622276306,
-    "transcript_path": "output/files/assignment.png/transcript.txt",
-    "error": null
+    "file": "osmosis-worksheet---mini-experiments-1 (2).pdf",
+    "status": "error",
+    "size_bytes": 170832,
+    "processing_time_sec": 1.2269287109375,
+    "transcript_path": "output/files/osmosis-worksheet---mini-experiments-1_2_.pdf/transcript.txt",
+    "error": "Unable to get page count. Is poppler installed and in PATH? | Unable to get page count. Is poppler installed and in PATH? | Unable to get page count. Is poppler installed and in PATH?"
   }
 ]

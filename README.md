@@ -27,6 +27,7 @@ The default backend expects local GGUF vision model files. Either:
 
 The current `ftt.yml` is configured for Qwen2-VL-2B (GGUF + mmproj) to work with `llama-mtmd-cli`.
 Charts are additionally parsed with DePlot (`google/deplot`) when enabled.
+Text extraction from images uses Tesseract OCR by default.
 
 ## Workflow
 

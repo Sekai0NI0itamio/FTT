@@ -39,7 +39,7 @@ class DeplotExtractor:
             with self._no_grad():
                 output = self._model.generate(**inputs, max_new_tokens=self.max_tokens)
             text = self._processor.decode(output[0], skip_special_tokens=True)
-            return text.strip()
+            return text.replace(\"<0x0A>\", \"\\n\").strip()
 
     @staticmethod
     def _no_grad():

@@ -20,6 +20,7 @@ def test_process_image_success(tmp_path: Path) -> None:
     config = load_config(tmp_path / "missing.yml")
     config["logging"]["keep_visuals"] = False
     config["deplot"]["enabled"] = False
+    config["ocr"]["enabled"] = False
 
     with ThreadPoolExecutor(max_workers=1) as pool:
         result = process_file(
@@ -42,6 +43,7 @@ def test_process_unsupported_file(tmp_path: Path) -> None:
     path.write_text("x", encoding="utf-8")
     config = load_config(tmp_path / "missing.yml")
     config["deplot"]["enabled"] = False
+    config["ocr"]["enabled"] = False
 
     with ThreadPoolExecutor(max_workers=1) as pool:
         result = process_file(

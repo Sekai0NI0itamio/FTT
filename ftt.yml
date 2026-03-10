@@ -49,6 +49,9 @@ limits:
 logging:
   level: info
   keep_visuals: true
+ocr:
+  enabled: true
+  lang: eng
 deplot:
   enabled: true
   model_name: google/deplot

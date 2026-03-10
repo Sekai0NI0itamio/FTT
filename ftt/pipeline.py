@@ -11,6 +11,7 @@ from ftt.extractors.base import ExtractedContent, ImageRef
 from ftt.chart_utils import build_python_script
 from ftt.deplot import DeplotExtractor
 from ftt.image_utils import normalize_image
+from ftt.ocr import extract_text as ocr_extract
 from ftt.logging_utils import FileLogger
 from ftt.utils import safe_name
 
@@ -157,6 +158,8 @@ def process_file(
         enable_description = bool(config["processing"]["enable_description"])
         enable_deplot = bool(config["processing"]["enable_deplot"])
         deplot_enabled = enable_deplot and bool(config["deplot"]["enabled"]) and deplot_extractor is not None
+        ocr_enabled = bool(config["ocr"]["enabled"])
+        ocr_lang = config["ocr"]["lang"]
 
         visual_outputs: List[str] = []
         for index, image_ref in enumerate(content.images[:max_images], start=1):
@@ -164,9 +167,12 @@ def process_file(
             normalized = normalize_image(image_ref.path, visuals_dir, config["visual"]["max_dim"])
             tasks = {}
             if enable_text:
-                tasks["text"] = vision_pool.submit(
-                    _retry_transcribe, vision_backend, normalized, text_prompt, max_tokens, retries
-                )
+                if ocr_enabled:
+                    tasks["text"] = vision_pool.submit(ocr_extract, normalized, ocr_lang)
+                else:
+                    tasks["text"] = vision_pool.submit(
+                        _retry_transcribe, vision_backend, normalized, text_prompt, max_tokens, retries
+                    )
             if enable_description:
                 tasks["description"] = vision_pool.submit(
                     _retry_transcribe, vision_backend, normalized, description_prompt, max_tokens, retries
@@ -183,7 +189,8 @@ def process_file(
                     results[name] = f"ERROR: {exc}"
             sections = [f"[Visual {index} - {image_ref.label}]"]
             if enable_text:
-                sections.append("Text (Vision):\n" + results.get("text", ""))
+                label = "Text (OCR)" if ocr_enabled else "Text (Vision)"
+                sections.append(f\"{label}:\\n\" + results.get(\"text\", \"\"))
             if enable_description:
                 sections.append("Description (Vision):\n" + results.get("description", ""))
             if "deplot" in results:

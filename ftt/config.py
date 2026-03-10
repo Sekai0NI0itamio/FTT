@@ -88,6 +88,10 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "level": "info",
         "keep_visuals": True,
     },
+    "ocr": {
+        "enabled": True,
+        "lang": "eng",
+    },
     "deplot": {
         "enabled": True,
         "model_name": "google/deplot",
@@ -133,6 +137,8 @@ _OVERRIDE_SPECS: Iterable[Tuple[str, Tuple[str, ...], str]] = [
     ("FTT_LIMITS_MAX_IMAGES_PER_FILE", ("limits", "max_images_per_file"), "int"),
     ("FTT_LOG_LEVEL", ("logging", "level"), "str"),
     ("FTT_KEEP_VISUALS", ("logging", "keep_visuals"), "bool"),
+    ("FTT_OCR_ENABLED", ("ocr", "enabled"), "bool"),
+    ("FTT_OCR_LANG", ("ocr", "lang"), "str"),
     ("FTT_DEPLOT_ENABLED", ("deplot", "enabled"), "bool"),
     ("FTT_DEPLOT_MODEL", ("deplot", "model_name"), "str"),
     ("FTT_DEPLOT_MAX_TOKENS", ("deplot", "max_tokens"), "int"),

@@ -62,6 +62,7 @@ Primary configuration lives in `ftt.yml`. Common parameters:
 - `vision.text_prompt` and `vision.description_prompt`
 - `deplot.enabled`, `deplot.model_name`, `deplot.prompt`
 - `processing.enable_text`, `processing.enable_description`, `processing.enable_deplot`
+- `ocr.enabled`, `ocr.lang`
 
 ## Chart Extraction (DePlot)
 When `deplot.enabled=true`, each visual is sent to DePlot to extract chart data. The output is stored in the transcript as a chart table and a small Python script snippet for quick parsing.

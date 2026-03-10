@@ -19,6 +19,7 @@ def test_process_image_success(tmp_path: Path) -> None:
 
     config = load_config(tmp_path / "missing.yml")
     config["logging"]["keep_visuals"] = False
+    config["deplot"]["enabled"] = False
 
     with ThreadPoolExecutor(max_workers=1) as pool:
         result = process_file(
@@ -27,6 +28,8 @@ def test_process_image_success(tmp_path: Path) -> None:
             DummyBackend(),
             vision_pool=pool,
             output_root=tmp_path / "out",
+            deplot_pool=pool,
+            deplot_extractor=None,
         )
 
     assert result.status == "success"
@@ -38,6 +41,7 @@ def test_process_unsupported_file(tmp_path: Path) -> None:
     path = tmp_path / "file.xyz"
     path.write_text("x", encoding="utf-8")
     config = load_config(tmp_path / "missing.yml")
+    config["deplot"]["enabled"] = False
 
     with ThreadPoolExecutor(max_workers=1) as pool:
         result = process_file(
@@ -46,6 +50,8 @@ def test_process_unsupported_file(tmp_path: Path) -> None:
             DummyBackend(),
             vision_pool=pool,
             output_root=tmp_path / "out",
+            deplot_pool=pool,
+            deplot_extractor=None,
         )
 
     assert result.status == "error"

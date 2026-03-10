@@ -26,6 +26,7 @@ The default backend expects local GGUF vision model files. Either:
 - Provide `vision.model_url` and `vision.mmproj_url` in `ftt.yml` or as workflow inputs.
 
 The current `ftt.yml` is configured for Qwen2-VL-2B (GGUF + mmproj) to work with `llama-mtmd-cli`.
+Charts are additionally parsed with DePlot (`google/deplot`) when enabled.
 
 ## Documentation
 

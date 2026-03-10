@@ -33,6 +33,14 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "lora_path": "",
         "llama_cli_path": "vendor/llama.cpp/build/bin/llama-mtmd-cli",
         "chat_template": "vicuna",
+        "text_prompt": (
+            "Extract all visible text exactly as it appears. "
+            "Return only the text."
+        ),
+        "description_prompt": (
+            "Describe the image in detail. "
+            "Mention objects, layout, and any visible text context."
+        ),
         "max_tokens": 512,
         "retries": 2,
         "download": True,
@@ -64,6 +72,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "concurrency": {
         "file_workers": 2,
         "vision_workers": 1,
+        "deplot_workers": 1,
     },
     "limits": {
         "max_file_mb": 100,
@@ -73,6 +82,16 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     "logging": {
         "level": "info",
         "keep_visuals": True,
+    },
+    "deplot": {
+        "enabled": True,
+        "model_name": "google/deplot",
+        "max_tokens": 512,
+        "prompt": (
+            "Generate the underlying data table of the chart. "
+            "If the image is not a chart, output NO_CHART."
+        ),
+        "cache_dir": "~/.cache/huggingface",
     },
 }
 
@@ -86,6 +105,8 @@ _OVERRIDE_SPECS: Iterable[Tuple[str, Tuple[str, ...], str]] = [
     ("FTT_VISION_LORA_PATH", ("vision", "lora_path"), "path"),
     ("FTT_VISION_LLAMA_CLI_PATH", ("vision", "llama_cli_path"), "path"),
     ("FTT_VISION_CHAT_TEMPLATE", ("vision", "chat_template"), "str"),
+    ("FTT_VISION_TEXT_PROMPT", ("vision", "text_prompt"), "str"),
+    ("FTT_VISION_DESCRIPTION_PROMPT", ("vision", "description_prompt"), "str"),
     ("FTT_VISION_MAX_TOKENS", ("vision", "max_tokens"), "int"),
     ("FTT_VISION_RETRIES", ("vision", "retries"), "int"),
     ("FTT_VISION_DOWNLOAD", ("vision", "download"), "bool"),
@@ -98,11 +119,17 @@ _OVERRIDE_SPECS: Iterable[Tuple[str, Tuple[str, ...], str]] = [
     ("FTT_RENDER_OFFICE", ("render", "office"), "str"),
     ("FTT_FILE_WORKERS", ("concurrency", "file_workers"), "int"),
     ("FTT_VISION_WORKERS", ("concurrency", "vision_workers"), "int"),
+    ("FTT_DEPLOT_WORKERS", ("concurrency", "deplot_workers"), "int"),
     ("FTT_LIMITS_MAX_FILE_MB", ("limits", "max_file_mb"), "int"),
     ("FTT_LIMITS_MAX_PAGES_PER_FILE", ("limits", "max_pages_per_file"), "int"),
     ("FTT_LIMITS_MAX_IMAGES_PER_FILE", ("limits", "max_images_per_file"), "int"),
     ("FTT_LOG_LEVEL", ("logging", "level"), "str"),
     ("FTT_KEEP_VISUALS", ("logging", "keep_visuals"), "bool"),
+    ("FTT_DEPLOT_ENABLED", ("deplot", "enabled"), "bool"),
+    ("FTT_DEPLOT_MODEL", ("deplot", "model_name"), "str"),
+    ("FTT_DEPLOT_MAX_TOKENS", ("deplot", "max_tokens"), "int"),
+    ("FTT_DEPLOT_PROMPT", ("deplot", "prompt"), "str"),
+    ("FTT_DEPLOT_CACHE_DIR", ("deplot", "cache_dir"), "path"),
 ]
 
 
@@ -144,5 +171,6 @@ def load_config(config_path: Path, env: Dict[str, str] | None = None) -> Dict[st
     if config["vision"].get("lora_path"):
         config["vision"]["lora_path"] = _expand_path(config["vision"]["lora_path"])
     config["vision"]["llama_cli_path"] = _expand_path(config["vision"]["llama_cli_path"])
+    config["deplot"]["cache_dir"] = _expand_path(config["deplot"]["cache_dir"])
 
     return config

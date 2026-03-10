@@ -19,6 +19,10 @@ on:
         description: "Vision worker concurrency"
         required: false
         default: "1"
+      deplot_workers:
+        description: "DePlot worker concurrency"
+        required: false
+        default: "1"
       chat_template:
         description: "Chat template for llama.cpp (e.g. vicuna)"
         required: false
@@ -76,6 +80,12 @@ jobs:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
+      - name: Cache Hugging Face models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-${{ hashFiles('requirements.txt') }}
+
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
@@ -106,6 +116,7 @@ jobs:
           FTT_VISION_BACKEND: ${{ inputs.vision_backend }}
           FTT_FILE_WORKERS: ${{ inputs.file_workers }}
           FTT_VISION_WORKERS: ${{ inputs.vision_workers }}
+          FTT_DEPLOT_WORKERS: ${{ inputs.deplot_workers }}
           FTT_RENDER_MAX_PAGES: ${{ inputs.render_max_pages }}
           FTT_KEEP_VISUALS: ${{ inputs.keep_visuals }}
           FTT_VISION_MODEL_URL: ${{ inputs.model_url }}

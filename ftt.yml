@@ -9,6 +9,8 @@ vision:
   lora_path: ""
   llama_cli_path: vendor/llama.cpp/build/bin/llama-mtmd-cli
   chat_template: ""
+  text_prompt: "Extract all visible text exactly as it appears. Return only the text."
+  description_prompt: "Describe the image in detail. Mention objects, layout, and any visible text context."
   max_tokens: 512
   retries: 2
   download: true
@@ -35,6 +37,7 @@ render:
 concurrency:
   file_workers: 2
   vision_workers: 1
+  deplot_workers: 1
 limits:
   max_file_mb: 100
   max_pages_per_file: 200
@@ -42,3 +45,9 @@ limits:
 logging:
   level: info
   keep_visuals: true
+deplot:
+  enabled: true
+  model_name: google/deplot
+  max_tokens: 512
+  prompt: "Generate the underlying data table of the chart. If the image is not a chart, output NO_CHART."
+  cache_dir: ~/.cache/huggingface

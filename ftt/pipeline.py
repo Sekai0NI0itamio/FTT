@@ -8,6 +8,8 @@ from typing import Dict, List, Optional
 from ftt.discovery import detect_file_type
 from ftt.extractors import EXTRACTOR_MAP
 from ftt.extractors.base import ExtractedContent, ImageRef
+from ftt.chart_utils import build_python_script
+from ftt.deplot import DeplotExtractor
 from ftt.image_utils import normalize_image
 from ftt.logging_utils import FileLogger
 from ftt.utils import safe_name
@@ -114,6 +116,8 @@ def process_file(
     vision_backend,
     vision_pool,
     output_root: Path,
+    deplot_pool,
+    deplot_extractor: DeplotExtractor | None,
 ) -> FileResult:
     start_time = time.time()
     file_type = detect_file_type(path)
@@ -136,19 +140,46 @@ def process_file(
         logger.info(f"Processing {path.name} as {file_type}")
         content = _call_extractor(file_type, path, config, visuals_dir, work_dir, logger)
 
-        prompt = config["vision"]["prompt_template"]
+        text_prompt = config["vision"].get("text_prompt") or config["vision"]["prompt_template"]
+        description_prompt = config["vision"].get("description_prompt") or config["vision"]["prompt_template"]
         max_tokens = config["vision"]["max_tokens"]
         retries = config["vision"].get("retries", 2)
         max_images = config["limits"]["max_images_per_file"]
         keep_visuals = config["logging"]["keep_visuals"]
+        deplot_enabled = bool(config["deplot"]["enabled"]) and deplot_extractor is not None
 
         visual_outputs: List[str] = []
         for index, image_ref in enumerate(content.images[:max_images], start=1):
             logger.info(f"Transcribing visual {index}/{min(len(content.images), max_images)}")
             normalized = normalize_image(image_ref.path, visuals_dir, config["visual"]["max_dim"])
-            future = vision_pool.submit(_retry_transcribe, vision_backend, normalized, prompt, max_tokens, retries)
-            result_text = future.result()
-            visual_outputs.append(f"[Visual {index} - {image_ref.label}]\n{result_text}")
+            tasks = {}
+            tasks["text"] = vision_pool.submit(
+                _retry_transcribe, vision_backend, normalized, text_prompt, max_tokens, retries
+            )
+            tasks["description"] = vision_pool.submit(
+                _retry_transcribe, vision_backend, normalized, description_prompt, max_tokens, retries
+            )
+            if deplot_enabled and deplot_pool is not None:
+                tasks["deplot"] = deplot_pool.submit(deplot_extractor.extract, normalized)
+
+            results = {}
+            for name, future in tasks.items():
+                try:
+                    results[name] = future.result()
+                except Exception as exc:  # noqa: BLE001
+                    logger.error(f"{name} extraction failed: {exc}")
+                    results[name] = f"ERROR: {exc}"
+            sections = [f"[Visual {index} - {image_ref.label}]"]
+            sections.append("Text (Vision):\n" + results.get("text", ""))
+            sections.append("Description (Vision):\n" + results.get("description", ""))
+            if "deplot" in results:
+                deplot_text = results["deplot"].strip()
+                if deplot_text and deplot_text.upper() != "NO_CHART":
+                    sections.append("Chart Data (DePlot):\n" + deplot_text)
+                    sections.append("Chart Python Script:\n" + build_python_script(deplot_text))
+                else:
+                    sections.append("Chart Data (DePlot): NO_CHART")
+            visual_outputs.append("\n".join(sections))
 
         if len(content.images) > max_images:
             logger.warning("Max images per file reached; remaining images skipped")

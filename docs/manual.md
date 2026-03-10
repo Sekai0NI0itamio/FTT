@@ -9,7 +9,8 @@ FTT (File To Text) runs entirely on GitHub Actions. Users commit files into `inc
 3. Each file is processed:
    - Text extraction from PDFs, DOCX, PPTX, XLSX.
    - Visual extraction (embedded images and/or page rendering).
-   - Vision LLM transcription for images and charts.
+   - Vision LLM transcription for image text + description.
+   - DePlot chart-to-table extraction for charts (when enabled).
 4. Outputs are written to `output/` and uploaded as an artifact even if some files fail.
 
 ## Folder Structure
@@ -42,8 +43,14 @@ Primary configuration lives in `ftt.yml`. Common parameters:
 - `render.max_pages`: limit pages rendered per file
 - `render.office`: `auto|true|false` for LibreOffice conversions (`auto` enables for PPTX/XLSX by default)
 - `concurrency.file_workers` and `concurrency.vision_workers`
+- `concurrency.deplot_workers`
 - `vision.backend`: `local_llama_cpp` by default
 - `vision.chat_template`: default `vicuna` for LLaVA v1.5 models
+- `vision.text_prompt` and `vision.description_prompt`
+- `deplot.enabled`, `deplot.model_name`, `deplot.prompt`
+
+## Chart Extraction (DePlot)
+When `deplot.enabled=true`, each visual is sent to DePlot to extract chart data. The output is stored in the transcript as a chart table and a small Python script snippet for quick parsing.
 
 Workflow inputs can override common parameters. Environment variables begin with `FTT_` (see `ftt/config.py`).
 

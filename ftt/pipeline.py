@@ -134,7 +134,7 @@ def process_file(
     if not meta_path.exists():
         import json
 
-        meta_path.write_text(json.dumps({\"file\": path.name}), encoding=\"utf-8\")
+        meta_path.write_text(json.dumps({"file": path.name}), encoding="utf-8")
 
     transcript_path = file_dir / "transcript.txt"
 

@@ -11,7 +11,7 @@ from ftt.extractors.base import ExtractedContent, ImageRef
 from ftt.chart_utils import build_python_script
 from ftt.deplot import DeplotExtractor
 from ftt.image_utils import normalize_image
-from ftt.ocr import extract_text as ocr_extract
+from ftt.ocr import extract_text as ocr_extract, is_tesseract_available
 from ftt.logging_utils import FileLogger
 from ftt.utils import safe_name
 
@@ -158,7 +158,10 @@ def process_file(
         enable_description = bool(config["processing"]["enable_description"])
         enable_deplot = bool(config["processing"]["enable_deplot"])
         deplot_enabled = enable_deplot and bool(config["deplot"]["enabled"]) and deplot_extractor is not None
-        ocr_enabled = bool(config["ocr"]["enabled"])
+        ocr_requested = bool(config["ocr"]["enabled"])
+        ocr_enabled = ocr_requested and is_tesseract_available()
+        if ocr_requested and not ocr_enabled:
+            logger.warning("Tesseract not found; falling back to vision-based text extraction.")
         ocr_lang = config["ocr"]["lang"]
 
         visual_outputs: List[str] = []

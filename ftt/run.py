@@ -7,6 +7,7 @@ from pathlib import Path
 from ftt.config import load_config
 from ftt.discovery import discover_files
 from ftt.merger import write_combined_transcripts
+from ftt.deplot import DeplotExtractor
 from ftt.pipeline import process_file
 from ftt.summary import write_summary_json, write_summary_md
 from ftt.vision import build_backend
@@ -42,12 +43,25 @@ def main() -> int:
 
     vision_workers = max(1, int(config["concurrency"]["vision_workers"]))
     file_workers = max(1, int(config["concurrency"]["file_workers"]))
+    deplot_workers = max(1, int(config["concurrency"].get("deplot_workers", 1)))
     vision_pool = ThreadPoolExecutor(max_workers=vision_workers)
+    deplot_pool = ThreadPoolExecutor(max_workers=deplot_workers)
+
+    deplot_extractor = None
+    if config["deplot"]["enabled"]:
+        deplot_extractor = DeplotExtractor(
+            model_name=config["deplot"]["model_name"],
+            max_tokens=config["deplot"]["max_tokens"],
+            prompt=config["deplot"]["prompt"],
+            cache_dir=config["deplot"]["cache_dir"],
+        )
 
     results = []
     with ThreadPoolExecutor(max_workers=file_workers) as executor:
         futures = {
-            executor.submit(process_file, path, config, vision_backend, vision_pool, output_dir): path
+            executor.submit(
+                process_file, path, config, vision_backend, vision_pool, output_dir, deplot_pool, deplot_extractor
+            ): path
             for path in files
         }
         for future in as_completed(futures):
@@ -55,6 +69,7 @@ def main() -> int:
             results.append(result)
 
     vision_pool.shutdown(wait=True)
+    deplot_pool.shutdown(wait=True)
 
     result_dicts = [result.__dict__ for result in results]
     write_summary_json(result_dicts, output_dir / "summary.json")

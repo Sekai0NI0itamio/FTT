@@ -21,7 +21,11 @@ See `ftt.yml` for all options. Common overrides can be set as workflow inputs or
 
 ## Model Files
 
-The default backend expects local LLaVA model files. Either:\n- Pre-populate `~/.cache/ftt/models` on the runner, or\n- Provide `vision.model_url` and `vision.mmproj_url` in `ftt.yml` or as workflow inputs.
+The default backend expects local GGUF vision model files. Either:
+- Pre-populate `~/.cache/ftt/models` on the runner, or
+- Provide `vision.model_url` and `vision.mmproj_url` in `ftt.yml` or as workflow inputs.
+
+The current `ftt.yml` is configured for Qwen2-VL-2B (GGUF + mmproj) to work with `llama-mtmd-cli`.
 
 ## Documentation
 

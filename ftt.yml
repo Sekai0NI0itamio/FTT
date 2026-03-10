@@ -4,16 +4,16 @@ outputs:
   dir: output
 vision:
   backend: local_llama_cpp
-  model_path: ~/.cache/ftt/models/llava-7b-q4.gguf
-  mmproj_path: ~/.cache/ftt/models/llava-7b-mmproj-q4.gguf
+  model_path: ~/.cache/ftt/models/qwen2-vl-2b-instruct-q4_k_m.gguf
+  mmproj_path: ~/.cache/ftt/models/mmproj-qwen2-vl-2b-instruct-q8_0.gguf
   lora_path: ""
   llama_cli_path: vendor/llama.cpp/build/bin/llama-mtmd-cli
-  chat_template: vicuna
+  chat_template: ""
   max_tokens: 512
   retries: 2
   download: true
-  model_url: "https://huggingface.co/mozilla-ai/llava-v1.5-7b-llamafile/resolve/main/llava-v1.5-7b-Q4_K.gguf"
-  mmproj_url: "https://huggingface.co/mozilla-ai/llava-v1.5-7b-llamafile/resolve/main/llava-v1.5-7b-mmproj-Q4_0.gguf"
+  model_url: "https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/main/Qwen2-VL-2B-Instruct-Q4_K_M.gguf"
+  mmproj_url: "https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/main/mmproj-Qwen2-VL-2B-Instruct-Q8_0.gguf"
   prompt_template: |
     You are a document transcription assistant.
     Tasks:

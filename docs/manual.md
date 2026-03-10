@@ -54,6 +54,7 @@ To switch:
 - For API providers, implement the stub modules in `ftt/vision/` and add secrets in GitHub.
 
 For the local backend, either pre-cache the model files or set `vision.model_url` and `vision.mmproj_url` so the workflow downloads them.
+Recommended GGUF vision models that work with `llama-mtmd-cli` include Qwen2-VL and Gemma 3 from `ggml-org` on Hugging Face.
 
 ## Troubleshooting
 - **LibreOffice conversion fails**: ensure `libreoffice` is installed in the workflow runner.

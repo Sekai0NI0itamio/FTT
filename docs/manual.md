@@ -31,6 +31,7 @@ FTT (File To Text) runs entirely on GitHub Actions. Users commit files into `inc
 1. Go to the **Actions** tab.
 2. Select **FTT Process Files**.
 3. Click **Run workflow** and optionally override inputs.
+4. Use `force_setup=true` to re-install dependencies and rebuild caches when needed (default skips when cached).
 
 ## Local CLI
 Run all tasks:

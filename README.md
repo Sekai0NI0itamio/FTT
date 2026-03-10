@@ -32,6 +32,7 @@ Text extraction from images uses Tesseract OCR by default.
 ## Workflow
 
 The workflow runs in three visible phases: **Setup**, **Concurrent Processing** (text/description/deplot in parallel), and **Bundling**.
+By default it reuses cached dependencies and models when available; set the workflow input `force_setup=true` to re-install and rebuild.
 
 ## Documentation
 

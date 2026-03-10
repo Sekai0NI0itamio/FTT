@@ -190,7 +190,7 @@ def process_file(
             sections = [f"[Visual {index} - {image_ref.label}]"]
             if enable_text:
                 label = "Text (OCR)" if ocr_enabled else "Text (Vision)"
-                sections.append(f\"{label}:\\n\" + results.get(\"text\", \"\"))
+                sections.append(f"{label}:\n" + results.get("text", ""))
             if enable_description:
                 sections.append("Description (Vision):\n" + results.get("description", ""))
             if "deplot" in results:

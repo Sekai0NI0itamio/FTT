@@ -65,5 +65,8 @@ class LocalLlamaCppBackend(VisionBackend):
 
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
-            raise RuntimeError(result.stderr.strip() or "llava-cli failed")
+            stderr = result.stderr.strip()
+            stdout = result.stdout.strip()
+            detail = stderr or stdout or "llava-cli failed"
+            raise RuntimeError(detail)
         return result.stdout.strip()

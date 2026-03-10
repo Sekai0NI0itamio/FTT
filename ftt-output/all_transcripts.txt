@@ -1,0 +1,26 @@
+File Name: assignment.png
+File Content:
+Visuals:
+[Visual 1 - image]
+Text (Vision):
+<|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>(10,10),(990,987)<|box_end|><|box_start|>
+
+Visuals:
+[Visual 1 - image]
+Description (Vision):
+The image is a scientific diagram titled "Data-based questions: Membrane permeability." It features a graph with six substances, each represented by a different color. The graph shows the free energy level of these substances at different distances from the center of a phospholipid bilayer. The substances are progesterone, diazepam, theophylline, 2-PAM, promazine, and 2-PAM. The x-axis represents the distance from the bilayer center, ranging from 0 to 4 nanometers (nm), and the y-axis represents the free energy level in kilojoules per kilogram (kJ/mol). The substances are labeled with their respective names and colors. The graph shows that progesterone has the highest free energy level, while 2-PAM has the lowest. The graph also includes a key at the bottom with the names of the substances and their respective colors. The diagram is sourced from the Journal of Physics Chemistry B, 2017, 121, 20, 5228-5237, April 28, 2017. The image also includes a question at the bottom asking to compare and contrast the energy levels of MMB4 and 2-PAM, promazine and progesterone, and to deduce which of the six substances is most hydrophobic or most hydrophilic. The question also asks to predict the permeability category for progesterone. The diagram is a scientific illustration with a focus on membrane permeability and the properties of different substances. The layout is straightforward, with the graph and key clearly visible. The text is in a standard font and color, making it easy to read. The diagram is a useful tool for understanding the properties of different substances and their interactions with membranes. The key at the bottom provides a quick reference for the substances and their respective colors. The question at the bottom is a good way to engage the viewer and encourage them to think critically about the properties of the substances. The diagram is a useful tool for understanding the properties of different substances and their interactions with membranes. The key at the bottom provides a quick reference for the substances and their respective colors. The question at the bottom is a good way to engage the viewer and encourage them to think critically about the properties of the substances. The diagram is a useful tool for understanding the properties of different substances and their interactions with membranes. The key at the bottom provides a quick reference for the substances and their respective colors
+
+Visuals:
+[Visual 1 - image]
+Chart Data (DePlot):
+TITLE | Data-based questions: Membrane permeability<0x0A>Year | MMB4 | dizzepam | theophyline | 2-PAM | promozine | progesterone<0x0A>1. | 100 | 0.00 | 25.74 | 0.00 | 0.00<0x0A>2. | 1.00 | 0.00 | 22.98 | 0.00 | 2.22<0x0A>3. | 4.00 | 0.00 | 28.11 | 0.00 | 0.00<0x0A>4. | 4.00 | 0.00 | 22.69 | 0.00 | 0.00<0x0A>5. | 4.00 | 0.00 | 26.51 | 0.00 | 0.00<0x0A>6. | 4.00 | 0.00 | 20.83 | 0.00 | 0.00
+Chart Python Script:
+# Auto-generated from DePlot output
+import io
+import pandas as pd
+
+table = '''TITLE | Data-based questions: Membrane permeability<0x0A>Year | MMB4 | dizzepam | theophyline | 2-PAM | promozine | progesterone<0x0A>1. | 100 | 0.00 | 25.74 | 0.00 | 0.00<0x0A>2. | 1.00 | 0.00 | 22.98 | 0.00 | 2.22<0x0A>3. | 4.00 | 0.00 | 28.11 | 0.00 | 0.00<0x0A>4. | 4.00 | 0.00 | 22.69 | 0.00 | 0.00<0x0A>5. | 4.00 | 0.00 | 26.51 | 0.00 | 0.00<0x0A>6. | 4.00 | 0.00 | 20.83 | 0.00 | 0.00'''
+# DePlot outputs a pipe-delimited table. Adjust delimiter if needed.
+df = pd.read_csv(io.StringIO(table), sep='|', engine='python')
+df.columns = [c.strip() for c in df.columns]
+print(df)

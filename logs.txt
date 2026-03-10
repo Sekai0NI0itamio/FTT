@@ -1,0 +1,1576 @@
+
+FTT Process Files #3
+All jobs
+Run details
+process
+succeeded 11 minutes ago in 6m 35s
+Search logs
+0s
+1s
+1s
+41s
+Run sudo apt-get update
+Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+Get:6 https://packages.microsoft.com/repos/azure-cli noble InRelease [3564 B]
+Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:8 https://packages.microsoft.com/repos/azure-cli noble/main amd64 Packages [2072 B]
+Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [11.4 kB]
+Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [100 kB]
+Get:11 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [79.1 kB]
+Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1806 kB]
+Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [332 kB]
+Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [177 kB]
+Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 c-n-f Metadata [16.7 kB]
+Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1564 kB]
+Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [318 kB]
+Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [386 kB]
+Get:19 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 c-n-f Metadata [32.9 kB]
+Get:20 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [2748 kB]
+Get:21 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [632 kB]
+Get:22 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
+Get:23 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 c-n-f Metadata [556 B]
+Get:24 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+Get:25 http://azure.archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7300 B]
+Get:26 http://azure.archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [10.5 kB]
+Get:27 http://azure.archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [216 B]
+Get:28 http://azure.archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]
+Get:29 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1504 kB]
+Get:30 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [241 kB]
+Get:31 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Components [21.5 kB]
+Get:32 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 c-n-f Metadata [10.1 kB]
+Get:33 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [976 kB]
+Get:34 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [218 kB]
+Get:35 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Components [74.2 kB]
+Get:36 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 c-n-f Metadata [20.6 kB]
+Get:37 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [2599 kB]
+Get:38 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [600 kB]
+Get:39 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+Get:40 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 c-n-f Metadata [544 B]
+Get:41 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [212 B]
+Fetched 14.9 MB in 2s (7062 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  firebird3.0-server-core firebird3.0-utils fonts-crosextra-caladea
+  fonts-crosextra-carlito fonts-liberation-sans-narrow fonts-linuxlibertine
+  fonts-noto-core fonts-noto-extra fonts-noto-mono fonts-noto-ui-core
+  fonts-opensymbol fonts-sil-gentium fonts-sil-gentium-basic gstreamer1.0-gl
+  gstreamer1.0-gtk3 gstreamer1.0-plugins-base libabsl20220623t64 libabw-0.1-1
+  libboost-iostreams1.83.0 libboost-locale1.83.0 libboost-thread1.83.0
+  libbsh-java libcdparanoia0 libcdr-0.1-1 libclucene-contribs1t64
+  libclucene-core1t64 libcolamd3 libe-book-0.1-1 libegl-mesa0 libegl1
+  libel-api-java libeot0 libepubgen-0.1-1 libetonyek-0.1-1 libexttextcat-2.0-0
+  libexttextcat-data libfreehand-0.1-1 libgpgmepp6t64 libgraphene-1.0-0
+  libgstreamer-gl1.0-0 libgstreamer-plugins-base1.0-0 libharfbuzz-icu0
+  libhsqldb1.8.0-java libhyphen0 libib-util libjsp-api-java liblangtag-common
+  liblangtag1 liblibreoffice-java libmhash2 libmspub-0.1-1 libmwaw-0.3-3
+  libmythes-1.2-0 libodfgen-0.1-1 libopus0 liborc-0.4-0t64 liborcus-0.18-0
+  liborcus-parser-0.18-0 libpagemaker-0.0-0 libpaper-utils libpaper1
+  libpoppler134 libraptor2-0 librasqal3t64 librdf0t64 libreoffice-base
+  libreoffice-base-core libreoffice-base-drivers libreoffice-calc
+  libreoffice-common libreoffice-core libreoffice-draw libreoffice-gnome
+  libreoffice-gtk3 libreoffice-impress libreoffice-java-common
+  libreoffice-math libreoffice-nlpsolver libreoffice-report-builder
+  libreoffice-report-builder-bin libreoffice-script-provider-bsh
+  libreoffice-script-provider-js libreoffice-script-provider-python
+  libreoffice-sdbc-firebird libreoffice-sdbc-hsqldb libreoffice-sdbc-mysql
+  libreoffice-sdbc-postgresql libreoffice-style-colibre
+  libreoffice-style-elementary libreoffice-style-yaru
+  libreoffice-uiconfig-base libreoffice-uiconfig-calc
+  libreoffice-uiconfig-common libreoffice-uiconfig-draw
+  libreoffice-uiconfig-impress libreoffice-uiconfig-math
+  libreoffice-uiconfig-report-builder libreoffice-uiconfig-writer
+  libreoffice-wiki-publisher libreoffice-writer librevenge-0.0-0
+  libservlet-api-java libservlet3.1-java libsuitesparseconfig7 libtheora0
+  libuno-cppu3t64 libuno-cppuhelpergcc3-3t64 libuno-purpenvhelpergcc3-3t64
+  libuno-sal3t64 libuno-salhelpergcc3-3t64 libunoloader-java libvisio-0.1-1
+  libvisual-0.4-0 libvorbisenc2 libwebsocket-api-java libwpd-0.10-10
+  libwpg-0.3-3 libwps-0.4-4 libxmlsec1t64-nss lp-solve poppler-data
+  python3-uno uno-libs-private ure ure-java
+Suggested packages:
+  firebird3.0-server firebird3.0-doc gvfs libvisual-0.4-plugins
+  java-virtual-machine libhsqldb1.8.0-java-gcj opus-tools raptor2-utils
+  rasqal-utils librdf-storage-mysql librdf-storage-postgresql
+  librdf-storage-sqlite librdf-storage-virtuoso redland-utils cups-bsd
+  ghostscript gpa hyphen-hyphenation-patterns imagemagick
+  | graphicsmagick-imagemagick-compat libreoffice-grammarcheck
+  libreoffice-help libreoffice-l10n libreoffice-librelogo myspell-dictionary
+  mythes-thesaurus openclipart-libreoffice pstoedit unixodbc
+  gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-plugins-bad
+  gstreamer1.0-libav libsane1 libofficebean-java python3-access2base
+  libjtds-java libsqliteodbc | tdsodbc | odbc-mdbtools ocl-icd-libopencl1
+  | mesa-opencl-icd | beignet-opencl-icd python3-scriptforge
+  libreoffice-evolution seahorse libreofficekit-data bluez
+  libreoffice-help-common postgresql mediawiki fonts-japanese-mincho
+  | fonts-ipafont-mincho fonts-japanese-gothic | fonts-ipafont-gothic
+  fonts-arphic-ukai fonts-arphic-uming fonts-nanum
+The following NEW packages will be installed:
+  firebird3.0-server-core firebird3.0-utils fonts-crosextra-caladea
+  fonts-crosextra-carlito fonts-liberation-sans-narrow fonts-linuxlibertine
+  fonts-noto-core fonts-noto-extra fonts-noto-mono fonts-noto-ui-core
+  fonts-opensymbol fonts-sil-gentium fonts-sil-gentium-basic gstreamer1.0-gl
+  gstreamer1.0-gtk3 gstreamer1.0-plugins-base libabsl20220623t64 libabw-0.1-1
+  libboost-iostreams1.83.0 libboost-locale1.83.0 libboost-thread1.83.0
+  libbsh-java libcdparanoia0 libcdr-0.1-1 libclucene-contribs1t64
+  libclucene-core1t64 libcolamd3 libe-book-0.1-1 libegl-mesa0 libegl1
+  libel-api-java libeot0 libepubgen-0.1-1 libetonyek-0.1-1 libexttextcat-2.0-0
+  libexttextcat-data libfreehand-0.1-1 libgpgmepp6t64 libgraphene-1.0-0
+  libgstreamer-gl1.0-0 libgstreamer-plugins-base1.0-0 libharfbuzz-icu0
+  libhsqldb1.8.0-java libhyphen0 libib-util libjsp-api-java liblangtag-common
+  liblangtag1 liblibreoffice-java libmhash2 libmspub-0.1-1 libmwaw-0.3-3
+  libmythes-1.2-0 libodfgen-0.1-1 libopus0 liborc-0.4-0t64 liborcus-0.18-0
+  liborcus-parser-0.18-0 libpagemaker-0.0-0 libpaper-utils libpaper1
+  libpoppler134 libraptor2-0 librasqal3t64 librdf0t64 libreoffice
+  libreoffice-base libreoffice-base-core libreoffice-base-drivers
+  libreoffice-calc libreoffice-common libreoffice-core libreoffice-draw
+  libreoffice-gnome libreoffice-gtk3 libreoffice-impress
+  libreoffice-java-common libreoffice-math libreoffice-nlpsolver
+  libreoffice-report-builder libreoffice-report-builder-bin
+  libreoffice-script-provider-bsh libreoffice-script-provider-js
+  libreoffice-script-provider-python libreoffice-sdbc-firebird
+  libreoffice-sdbc-hsqldb libreoffice-sdbc-mysql libreoffice-sdbc-postgresql
+  libreoffice-style-colibre libreoffice-style-elementary
+  libreoffice-style-yaru libreoffice-uiconfig-base libreoffice-uiconfig-calc
+  libreoffice-uiconfig-common libreoffice-uiconfig-draw
+  libreoffice-uiconfig-impress libreoffice-uiconfig-math
+  libreoffice-uiconfig-report-builder libreoffice-uiconfig-writer
+  libreoffice-wiki-publisher libreoffice-writer librevenge-0.0-0
+  libservlet-api-java libservlet3.1-java libsuitesparseconfig7 libtheora0
+  libuno-cppu3t64 libuno-cppuhelpergcc3-3t64 libuno-purpenvhelpergcc3-3t64
+  libuno-sal3t64 libuno-salhelpergcc3-3t64 libunoloader-java libvisio-0.1-1
+  libvisual-0.4-0 libvorbisenc2 libwebsocket-api-java libwpd-0.10-10
+  libwpg-0.3-3 libwps-0.4-4 libxmlsec1t64-nss lp-solve poppler-data
+  poppler-utils python3-uno uno-libs-private ure ure-java
+0 upgraded, 127 newly installed, 0 to remove and 45 not upgraded.
+Need to get 251 MB of archives.
+After this operation, 920 MB of additional disk space will be used.
+Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+Get:2 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 poppler-data all 0.4.12-1 [2060 kB]
+Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-style-colibre all 4:24.2.7-0ubuntu0.24.04.4 [7277 kB]
+Get:4 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-uiconfig-common all 4:24.2.7-0ubuntu0.24.04.4 [343 kB]
+Get:5 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libuno-sal3t64 amd64 4:24.2.7-0ubuntu0.24.04.4 [236 kB]
+Get:6 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libuno-salhelpergcc3-3t64 amd64 4:24.2.7-0ubuntu0.24.04.4 [19.3 kB]
+Get:7 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libuno-cppu3t64 amd64 4:24.2.7-0ubuntu0.24.04.4 [91.1 kB]
+Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 uno-libs-private amd64 4:24.2.7-0ubuntu0.24.04.4 [229 kB]
+Get:9 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 liblangtag-common all 0.6.7-1build2 [210 kB]
+Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 liblangtag1 amd64 0.6.7-1build2 [52.2 kB]
+Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libuno-cppuhelpergcc3-3t64 amd64 4:24.2.7-0ubuntu0.24.04.4 [363 kB]
+Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libuno-purpenvhelpergcc3-3t64 amd64 4:24.2.7-0ubuntu0.24.04.4 [17.4 kB]
+Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 ure amd64 4:24.2.7-0ubuntu0.24.04.4 [1426 kB]
+Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-common all 4:24.2.7-0ubuntu0.24.04.4 [20.3 MB]
+Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 fonts-opensymbol all 4:102.12+LibO24.2.7-0ubuntu0.24.04.4 [138 kB]
+Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libabsl20220623t64 amd64 20220623.1-3.1ubuntu3.2 [423 kB]
+Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libboost-thread1.83.0 amd64 1.83.0-2.1ubuntu3.2 [276 kB]
+Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libboost-locale1.83.0 amd64 1.83.0-2.1ubuntu3.2 [413 kB]
+Get:19 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libclucene-core1t64 amd64 2.3.3.4+dfsg-1.2ubuntu2 [565 kB]
+Get:20 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libclucene-contribs1t64 amd64 2.3.3.4+dfsg-1.2ubuntu2 [93.5 kB]
+Get:21 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libeot0 amd64 0.01-5build3 [28.1 kB]
+Get:22 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libexttextcat-data all 3.4.7-1build1 [193 kB]
+Get:23 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libexttextcat-2.0-0 amd64 3.4.7-1build1 [13.3 kB]
+Get:24 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgpgmepp6t64 amd64 1.18.0-4.1ubuntu4 [119 kB]
+Get:25 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 liborc-0.4-0t64 amd64 1:0.4.38-1ubuntu0.1 [207 kB]
+Get:26 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgstreamer-plugins-base1.0-0 amd64 1.24.2-1ubuntu0.3 [862 kB]
+Get:27 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libharfbuzz-icu0 amd64 8.3.0-2build2 [13.3 kB]
+Get:28 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libhyphen0 amd64 2.8.8-7build3 [26.5 kB]
+Get:29 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libmythes-1.2-0 amd64 2:1.2.5-1build1 [8580 B]
+Get:30 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libboost-iostreams1.83.0 amd64 1.83.0-2.1ubuntu3.2 [260 kB]
+Get:31 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 liborcus-parser-0.18-0 amd64 0.19.2-3build3 [113 kB]
+Get:32 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 liborcus-0.18-0 amd64 0.19.2-3build3 [435 kB]
+Get:33 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libpoppler134 amd64 24.02.0-1ubuntu9.8 [1118 kB]
+Get:34 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libraptor2-0 amd64 2.0.16-3ubuntu0.1 [165 kB]
+Get:35 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libmhash2 amd64 0.9.9.9-9build3 [94.2 kB]
+Get:36 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 librasqal3t64 amd64 0.9.33-2.1build1 [188 kB]
+Get:37 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 librdf0t64 amd64 1.0.17-3.1ubuntu3 [102 kB]
+Get:38 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 librevenge-0.0-0 amd64 0.0.5-3build1 [211 kB]
+Get:39 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libxmlsec1t64-nss amd64 1.2.39-5build2 [63.0 kB]
+Get:40 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-core amd64 4:24.2.7-0ubuntu0.24.04.4 [43.0 MB]
+Get:41 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 python3-uno amd64 4:24.2.7-0ubuntu0.24.04.4 [148 kB]
+Get:42 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libib-util amd64 3.0.11.33703.ds4-2ubuntu2 [3270 B]
+Get:43 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 firebird3.0-server-core amd64 3.0.11.33703.ds4-2ubuntu2 [2731 kB]
+Get:44 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 firebird3.0-utils amd64 3.0.11.33703.ds4-2ubuntu2 [968 kB]
+Get:45 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-crosextra-caladea all 20200211-2 [127 kB]
+Get:46 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-crosextra-carlito all 20230309-2 [811 kB]
+Get:47 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-liberation-sans-narrow all 1:1.07.6-4 [197 kB]
+Get:48 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-linuxlibertine all 5.3.0-6 [1627 kB]
+Get:49 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-noto-mono all 20201225-2 [435 kB]
+Get:50 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-noto-core all 20201225-2 [13.3 MB]
+Get:51 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-noto-extra all 20201225-2 [78.5 MB]
+Get:52 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-noto-ui-core all 20201225-2 [1552 kB]
+Get:53 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-sil-gentium all 20081126:1.03-4 [245 kB]
+Get:54 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-sil-gentium-basic all 1.102-1.1 [384 kB]
+Get:55 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libgraphene-1.0-0 amd64 1.10.8-3build2 [46.2 kB]
+Get:56 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libegl-mesa0 amd64 25.2.8-0ubuntu0.24.04.1 [117 kB]
+Get:57 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libegl1 amd64 1.7.0-1build1 [28.7 kB]
+Get:58 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgstreamer-gl1.0-0 amd64 1.24.2-1ubuntu0.3 [214 kB]
+Get:59 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 gstreamer1.0-gl amd64 1.24.2-1ubuntu0.3 [116 kB]
+Get:60 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 gstreamer1.0-gtk3 amd64 1.24.2-1ubuntu1.2 [35.6 kB]
+Get:61 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libcdparanoia0 amd64 3.10.2+debian-14build3 [48.5 kB]
+Get:62 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libopus0 amd64 1.4-1build1 [208 kB]
+Get:63 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libtheora0 amd64 1.1.1+dfsg.1-16.1build3 [211 kB]
+Get:64 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libvisual-0.4-0 amd64 0.4.2-2build1 [115 kB]
+Get:65 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libvorbisenc2 amd64 1.3.7-1build3 [80.8 kB]
+Get:66 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 gstreamer1.0-plugins-base amd64 1.24.2-1ubuntu0.3 [721 kB]
+Get:67 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libabw-0.1-1 amd64 0.1.3-1build4 [101 kB]
+Get:68 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libbsh-java all 2.0b4-20 [289 kB]
+Get:69 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libcdr-0.1-1 amd64 0.1.7-1build2 [389 kB]
+Get:70 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libsuitesparseconfig7 amd64 1:7.6.1+dfsg-1build1 [12.9 kB]
+Get:71 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libcolamd3 amd64 1:7.6.1+dfsg-1build1 [19.4 kB]
+Get:72 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libe-book-0.1-1 amd64 0.1.3-2build6 [149 kB]
+Get:73 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libel-api-java all 3.0.0-3 [64.9 kB]
+Get:74 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libepubgen-0.1-1 amd64 0.1.1-1ubuntu6 [122 kB]
+Get:75 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libetonyek-0.1-1 amd64 0.1.10-5build1 [637 kB]
+Get:76 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libfreehand-0.1-1 amd64 0.1.2-3build3 [269 kB]
+Get:77 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libservlet-api-java all 4.0.1-2 [81.0 kB]
+Get:78 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libjsp-api-java all 2.3.4-3 [53.7 kB]
+Get:79 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libwebsocket-api-java all 1.1-2 [40.1 kB]
+Get:80 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libservlet3.1-java all 1:4.0.1-2 [9276 B]
+Get:81 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libhsqldb1.8.0-java all 1.8.0.10+dfsg-12 [776 kB]
+Get:82 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libunoloader-java all 4:24.2.7-0ubuntu0.24.04.4 [49.5 kB]
+Get:83 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 ure-java amd64 4:24.2.7-0ubuntu0.24.04.4 [174 kB]
+Get:84 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 liblibreoffice-java all 4:24.2.7-0ubuntu0.24.04.4 [1617 kB]
+Get:85 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libmspub-0.1-1 amd64 0.1.4-3build7 [145 kB]
+Get:86 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libmwaw-0.3-3 amd64 0.3.22-1build1 [2455 kB]
+Get:87 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libodfgen-0.1-1 amd64 0.1.8-2build3 [246 kB]
+Get:88 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libpagemaker-0.0-0 amd64 0.0.4-1build4 [56.3 kB]
+Get:89 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libpaper1 amd64 1.1.29build1 [13.4 kB]
+Get:90 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libpaper-utils amd64 1.1.29build1 [8650 B]
+Get:91 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-base-core amd64 4:24.2.7-0ubuntu0.24.04.4 [984 kB]
+Get:92 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-base-drivers amd64 4:24.2.7-0ubuntu0.24.04.4 [598 kB]
+Get:93 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-uiconfig-base all 4:24.2.7-0ubuntu0.24.04.4 [84.0 kB]
+Get:94 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-base amd64 4:24.2.7-0ubuntu0.24.04.4 [1690 kB]
+Get:95 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-uiconfig-calc all 4:24.2.7-0ubuntu0.24.04.4 [192 kB]
+Get:96 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 lp-solve amd64 5.5.2.5-2ubuntu0.1 [314 kB]
+Get:97 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libwps-0.4-4 amd64 0.4.14-2build1 [819 kB]
+Get:98 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-calc amd64 4:24.2.7-0ubuntu0.24.04.4 [8793 kB]
+Get:99 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-uiconfig-draw all 4:24.2.7-0ubuntu0.24.04.4 [112 kB]
+Get:100 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-uiconfig-impress all 4:24.2.7-0ubuntu0.24.04.4 [165 kB]
+Get:101 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libvisio-0.1-1 amd64 0.1.7-1build9 [237 kB]
+Get:102 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libwpd-0.10-10 amd64 0.10.3-2build2 [206 kB]
+Get:103 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libwpg-0.3-3 amd64 0.3.4-3build1 [51.8 kB]
+Get:104 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-draw amd64 4:24.2.7-0ubuntu0.24.04.4 [3621 kB]
+Get:105 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-impress amd64 4:24.2.7-0ubuntu0.24.04.4 [903 kB]
+Get:106 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-uiconfig-math all 4:24.2.7-0ubuntu0.24.04.4 [59.8 kB]
+Get:107 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-math amd64 4:24.2.7-0ubuntu0.24.04.4 [578 kB]
+Get:108 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-report-builder-bin amd64 4:24.2.7-0ubuntu0.24.04.4 [991 kB]
+Get:109 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-uiconfig-writer all 4:24.2.7-0ubuntu0.24.04.4 [264 kB]
+Get:110 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-writer amd64 4:24.2.7-0ubuntu0.24.04.4 [11.0 MB]
+Get:111 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice amd64 4:24.2.7-0ubuntu0.24.04.4 [14.9 kB]
+Get:112 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-gnome amd64 4:24.2.7-0ubuntu0.24.04.4 [73.9 kB]
+Get:113 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-gtk3 amd64 4:24.2.7-0ubuntu0.24.04.4 [516 kB]
+Get:114 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-java-common all 4:24.2.7-0ubuntu0.24.04.4 [631 kB]
+Get:115 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-uiconfig-report-builder all 4:24.2.7-0ubuntu0.24.04.4 [54.3 kB]
+Get:116 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-report-builder all 4:24.2.7-0ubuntu0.24.04.4 [2127 kB]
+Get:117 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-script-provider-bsh all 4:24.2.7-0ubuntu0.24.04.4 [41.4 kB]
+Get:118 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-script-provider-js all 4:24.2.7-0ubuntu0.24.04.4 [652 kB]
+Get:119 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-script-provider-python all 4:24.2.7-0ubuntu0.24.04.4 [18.3 kB]
+Get:120 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-sdbc-firebird amd64 4:24.2.7-0ubuntu0.24.04.4 [169 kB]
+Get:121 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-sdbc-hsqldb amd64 4:24.2.7-0ubuntu0.24.04.4 [134 kB]
+Get:122 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-sdbc-mysql amd64 4:24.2.7-0ubuntu0.24.04.4 [169 kB]
+Get:123 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-sdbc-postgresql amd64 4:24.2.7-0ubuntu0.24.04.4 [280 kB]
+Get:124 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-style-elementary all 4:24.2.7-0ubuntu0.24.04.4 [8186 kB]
+Get:125 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-style-yaru all 4:24.2.7-0ubuntu0.24.04.4 [10.9 MB]
+Get:126 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libreoffice-wiki-publisher all 4:1.2.0+LibO24.2.7-0ubuntu0.24.04.4 [1499 kB]
+Get:127 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 poppler-utils amd64 24.02.0-1ubuntu9.8 [212 kB]
+Get:128 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libreoffice-nlpsolver all 4:0.9+LibO24.2.7-0ubuntu0.24.04.4 [744 kB]
+Preconfiguring packages ...
+Fetched 251 MB in 8s (31.8 MB/s)
+Selecting previously unselected package poppler-data.
+(Reading database ... 
+(Reading database ... 5%
+(Reading database ... 10%
+(Reading database ... 15%
+(Reading database ... 20%
+(Reading database ... 25%
+(Reading database ... 30%
+(Reading database ... 35%
+(Reading database ... 40%
+(Reading database ... 45%
+(Reading database ... 50%
+(Reading database ... 55%
+(Reading database ... 60%
+(Reading database ... 65%
+(Reading database ... 70%
+(Reading database ... 75%
+(Reading database ... 80%
+(Reading database ... 85%
+(Reading database ... 90%
+(Reading database ... 95%
+(Reading database ... 100%
+(Reading database ... 219118 files and directories currently installed.)
+Preparing to unpack .../000-poppler-data_0.4.12-1_all.deb ...
+Unpacking poppler-data (0.4.12-1) ...
+Selecting previously unselected package libreoffice-style-colibre.
+Preparing to unpack .../001-libreoffice-style-colibre_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-style-colibre (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-uiconfig-common.
+Preparing to unpack .../002-libreoffice-uiconfig-common_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-uiconfig-common (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libuno-sal3t64.
+Preparing to unpack .../003-libuno-sal3t64_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libuno-sal3t64 (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libuno-salhelpergcc3-3t64.
+Preparing to unpack .../004-libuno-salhelpergcc3-3t64_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libuno-salhelpergcc3-3t64 (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libuno-cppu3t64.
+Preparing to unpack .../005-libuno-cppu3t64_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libuno-cppu3t64 (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package uno-libs-private.
+Preparing to unpack .../006-uno-libs-private_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking uno-libs-private (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package liblangtag-common.
+Preparing to unpack .../007-liblangtag-common_0.6.7-1build2_all.deb ...
+Unpacking liblangtag-common (0.6.7-1build2) ...
+Selecting previously unselected package liblangtag1:amd64.
+Preparing to unpack .../008-liblangtag1_0.6.7-1build2_amd64.deb ...
+Unpacking liblangtag1:amd64 (0.6.7-1build2) ...
+Selecting previously unselected package libuno-cppuhelpergcc3-3t64.
+Preparing to unpack .../009-libuno-cppuhelpergcc3-3t64_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libuno-cppuhelpergcc3-3t64 (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libuno-purpenvhelpergcc3-3t64.
+Preparing to unpack .../010-libuno-purpenvhelpergcc3-3t64_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libuno-purpenvhelpergcc3-3t64 (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package ure.
+Preparing to unpack .../011-ure_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking ure (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-common.
+Preparing to unpack .../012-libreoffice-common_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-common (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package fonts-opensymbol.
+Preparing to unpack .../013-fonts-opensymbol_4%3a102.12+LibO24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking fonts-opensymbol (4:102.12+LibO24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libabsl20220623t64:amd64.
+Preparing to unpack .../014-libabsl20220623t64_20220623.1-3.1ubuntu3.2_amd64.deb ...
+Unpacking libabsl20220623t64:amd64 (20220623.1-3.1ubuntu3.2) ...
+Selecting previously unselected package libboost-thread1.83.0:amd64.
+Preparing to unpack .../015-libboost-thread1.83.0_1.83.0-2.1ubuntu3.2_amd64.deb ...
+Unpacking libboost-thread1.83.0:amd64 (1.83.0-2.1ubuntu3.2) ...
+Selecting previously unselected package libboost-locale1.83.0:amd64.
+Preparing to unpack .../016-libboost-locale1.83.0_1.83.0-2.1ubuntu3.2_amd64.deb ...
+Unpacking libboost-locale1.83.0:amd64 (1.83.0-2.1ubuntu3.2) ...
+Selecting previously unselected package libclucene-core1t64:amd64.
+Preparing to unpack .../017-libclucene-core1t64_2.3.3.4+dfsg-1.2ubuntu2_amd64.deb ...
+Unpacking libclucene-core1t64:amd64 (2.3.3.4+dfsg-1.2ubuntu2) ...
+Selecting previously unselected package libclucene-contribs1t64:amd64.
+Preparing to unpack .../018-libclucene-contribs1t64_2.3.3.4+dfsg-1.2ubuntu2_amd64.deb ...
+Unpacking libclucene-contribs1t64:amd64 (2.3.3.4+dfsg-1.2ubuntu2) ...
+Selecting previously unselected package libeot0:amd64.
+Preparing to unpack .../019-libeot0_0.01-5build3_amd64.deb ...
+Unpacking libeot0:amd64 (0.01-5build3) ...
+Selecting previously unselected package libexttextcat-data.
+Preparing to unpack .../020-libexttextcat-data_3.4.7-1build1_all.deb ...
+Unpacking libexttextcat-data (3.4.7-1build1) ...
+Selecting previously unselected package libexttextcat-2.0-0:amd64.
+Preparing to unpack .../021-libexttextcat-2.0-0_3.4.7-1build1_amd64.deb ...
+Unpacking libexttextcat-2.0-0:amd64 (3.4.7-1build1) ...
+Selecting previously unselected package libgpgmepp6t64:amd64.
+Preparing to unpack .../022-libgpgmepp6t64_1.18.0-4.1ubuntu4_amd64.deb ...
+Unpacking libgpgmepp6t64:amd64 (1.18.0-4.1ubuntu4) ...
+Selecting previously unselected package liborc-0.4-0t64:amd64.
+Preparing to unpack .../023-liborc-0.4-0t64_1%3a0.4.38-1ubuntu0.1_amd64.deb ...
+Unpacking liborc-0.4-0t64:amd64 (1:0.4.38-1ubuntu0.1) ...
+Selecting previously unselected package libgstreamer-plugins-base1.0-0:amd64.
+Preparing to unpack .../024-libgstreamer-plugins-base1.0-0_1.24.2-1ubuntu0.3_amd64.deb ...
+Unpacking libgstreamer-plugins-base1.0-0:amd64 (1.24.2-1ubuntu0.3) ...
+Selecting previously unselected package libharfbuzz-icu0:amd64.
+Preparing to unpack .../025-libharfbuzz-icu0_8.3.0-2build2_amd64.deb ...
+Unpacking libharfbuzz-icu0:amd64 (8.3.0-2build2) ...
+Selecting previously unselected package libhyphen0:amd64.
+Preparing to unpack .../026-libhyphen0_2.8.8-7build3_amd64.deb ...
+Unpacking libhyphen0:amd64 (2.8.8-7build3) ...
+Selecting previously unselected package libmythes-1.2-0:amd64.
+Preparing to unpack .../027-libmythes-1.2-0_2%3a1.2.5-1build1_amd64.deb ...
+Unpacking libmythes-1.2-0:amd64 (2:1.2.5-1build1) ...
+Selecting previously unselected package libboost-iostreams1.83.0:amd64.
+Preparing to unpack .../028-libboost-iostreams1.83.0_1.83.0-2.1ubuntu3.2_amd64.deb ...
+Unpacking libboost-iostreams1.83.0:amd64 (1.83.0-2.1ubuntu3.2) ...
+Selecting previously unselected package liborcus-parser-0.18-0:amd64.
+Preparing to unpack .../029-liborcus-parser-0.18-0_0.19.2-3build3_amd64.deb ...
+Unpacking liborcus-parser-0.18-0:amd64 (0.19.2-3build3) ...
+Selecting previously unselected package liborcus-0.18-0:amd64.
+Preparing to unpack .../030-liborcus-0.18-0_0.19.2-3build3_amd64.deb ...
+Unpacking liborcus-0.18-0:amd64 (0.19.2-3build3) ...
+Selecting previously unselected package libpoppler134:amd64.
+Preparing to unpack .../031-libpoppler134_24.02.0-1ubuntu9.8_amd64.deb ...
+Unpacking libpoppler134:amd64 (24.02.0-1ubuntu9.8) ...
+Selecting previously unselected package libraptor2-0:amd64.
+Preparing to unpack .../032-libraptor2-0_2.0.16-3ubuntu0.1_amd64.deb ...
+Unpacking libraptor2-0:amd64 (2.0.16-3ubuntu0.1) ...
+Selecting previously unselected package libmhash2:amd64.
+Preparing to unpack .../033-libmhash2_0.9.9.9-9build3_amd64.deb ...
+Unpacking libmhash2:amd64 (0.9.9.9-9build3) ...
+Selecting previously unselected package librasqal3t64:amd64.
+Preparing to unpack .../034-librasqal3t64_0.9.33-2.1build1_amd64.deb ...
+Unpacking librasqal3t64:amd64 (0.9.33-2.1build1) ...
+Selecting previously unselected package librdf0t64:amd64.
+Preparing to unpack .../035-librdf0t64_1.0.17-3.1ubuntu3_amd64.deb ...
+Unpacking librdf0t64:amd64 (1.0.17-3.1ubuntu3) ...
+Selecting previously unselected package librevenge-0.0-0:amd64.
+Preparing to unpack .../036-librevenge-0.0-0_0.0.5-3build1_amd64.deb ...
+Unpacking librevenge-0.0-0:amd64 (0.0.5-3build1) ...
+Selecting previously unselected package libxmlsec1t64-nss:amd64.
+Preparing to unpack .../037-libxmlsec1t64-nss_1.2.39-5build2_amd64.deb ...
+Unpacking libxmlsec1t64-nss:amd64 (1.2.39-5build2) ...
+Selecting previously unselected package libreoffice-core.
+Preparing to unpack .../038-libreoffice-core_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-core (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package python3-uno.
+Preparing to unpack .../039-python3-uno_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking python3-uno (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libib-util:amd64.
+Preparing to unpack .../040-libib-util_3.0.11.33703.ds4-2ubuntu2_amd64.deb ...
+Unpacking libib-util:amd64 (3.0.11.33703.ds4-2ubuntu2) ...
+Selecting previously unselected package firebird3.0-server-core:amd64.
+Preparing to unpack .../041-firebird3.0-server-core_3.0.11.33703.ds4-2ubuntu2_amd64.deb ...
+Unpacking firebird3.0-server-core:amd64 (3.0.11.33703.ds4-2ubuntu2) ...
+Selecting previously unselected package firebird3.0-utils.
+Preparing to unpack .../042-firebird3.0-utils_3.0.11.33703.ds4-2ubuntu2_amd64.deb ...
+Unpacking firebird3.0-utils (3.0.11.33703.ds4-2ubuntu2) ...
+Selecting previously unselected package fonts-crosextra-caladea.
+Preparing to unpack .../043-fonts-crosextra-caladea_20200211-2_all.deb ...
+Unpacking fonts-crosextra-caladea (20200211-2) ...
+Selecting previously unselected package fonts-crosextra-carlito.
+Preparing to unpack .../044-fonts-crosextra-carlito_20230309-2_all.deb ...
+Unpacking fonts-crosextra-carlito (20230309-2) ...
+Selecting previously unselected package fonts-liberation-sans-narrow.
+Preparing to unpack .../045-fonts-liberation-sans-narrow_1%3a1.07.6-4_all.deb ...
+Unpacking fonts-liberation-sans-narrow (1:1.07.6-4) ...
+Selecting previously unselected package fonts-linuxlibertine.
+Preparing to unpack .../046-fonts-linuxlibertine_5.3.0-6_all.deb ...
+Unpacking fonts-linuxlibertine (5.3.0-6) ...
+Selecting previously unselected package fonts-noto-mono.
+Preparing to unpack .../047-fonts-noto-mono_20201225-2_all.deb ...
+Unpacking fonts-noto-mono (20201225-2) ...
+Selecting previously unselected package fonts-noto-core.
+Preparing to unpack .../048-fonts-noto-core_20201225-2_all.deb ...
+Unpacking fonts-noto-core (20201225-2) ...
+Selecting previously unselected package fonts-noto-extra.
+Preparing to unpack .../049-fonts-noto-extra_20201225-2_all.deb ...
+Unpacking fonts-noto-extra (20201225-2) ...
+Selecting previously unselected package fonts-noto-ui-core.
+Preparing to unpack .../050-fonts-noto-ui-core_20201225-2_all.deb ...
+Unpacking fonts-noto-ui-core (20201225-2) ...
+Selecting previously unselected package fonts-sil-gentium.
+Preparing to unpack .../051-fonts-sil-gentium_20081126%3a1.03-4_all.deb ...
+Unpacking fonts-sil-gentium (20081126:1.03-4) ...
+Selecting previously unselected package fonts-sil-gentium-basic.
+Preparing to unpack .../052-fonts-sil-gentium-basic_1.102-1.1_all.deb ...
+Unpacking fonts-sil-gentium-basic (1.102-1.1) ...
+Selecting previously unselected package libgraphene-1.0-0:amd64.
+Preparing to unpack .../053-libgraphene-1.0-0_1.10.8-3build2_amd64.deb ...
+Unpacking libgraphene-1.0-0:amd64 (1.10.8-3build2) ...
+Selecting previously unselected package libegl-mesa0:amd64.
+Preparing to unpack .../054-libegl-mesa0_25.2.8-0ubuntu0.24.04.1_amd64.deb ...
+Unpacking libegl-mesa0:amd64 (25.2.8-0ubuntu0.24.04.1) ...
+Selecting previously unselected package libegl1:amd64.
+Preparing to unpack .../055-libegl1_1.7.0-1build1_amd64.deb ...
+Unpacking libegl1:amd64 (1.7.0-1build1) ...
+Selecting previously unselected package libgstreamer-gl1.0-0:amd64.
+Preparing to unpack .../056-libgstreamer-gl1.0-0_1.24.2-1ubuntu0.3_amd64.deb ...
+Unpacking libgstreamer-gl1.0-0:amd64 (1.24.2-1ubuntu0.3) ...
+Selecting previously unselected package gstreamer1.0-gl:amd64.
+Preparing to unpack .../057-gstreamer1.0-gl_1.24.2-1ubuntu0.3_amd64.deb ...
+Unpacking gstreamer1.0-gl:amd64 (1.24.2-1ubuntu0.3) ...
+Selecting previously unselected package gstreamer1.0-gtk3:amd64.
+Preparing to unpack .../058-gstreamer1.0-gtk3_1.24.2-1ubuntu1.2_amd64.deb ...
+Unpacking gstreamer1.0-gtk3:amd64 (1.24.2-1ubuntu1.2) ...
+Selecting previously unselected package libcdparanoia0:amd64.
+Preparing to unpack .../059-libcdparanoia0_3.10.2+debian-14build3_amd64.deb ...
+Unpacking libcdparanoia0:amd64 (3.10.2+debian-14build3) ...
+Selecting previously unselected package libopus0:amd64.
+Preparing to unpack .../060-libopus0_1.4-1build1_amd64.deb ...
+Unpacking libopus0:amd64 (1.4-1build1) ...
+Selecting previously unselected package libtheora0:amd64.
+Preparing to unpack .../061-libtheora0_1.1.1+dfsg.1-16.1build3_amd64.deb ...
+Unpacking libtheora0:amd64 (1.1.1+dfsg.1-16.1build3) ...
+Selecting previously unselected package libvisual-0.4-0:amd64.
+Preparing to unpack .../062-libvisual-0.4-0_0.4.2-2build1_amd64.deb ...
+Unpacking libvisual-0.4-0:amd64 (0.4.2-2build1) ...
+Selecting previously unselected package libvorbisenc2:amd64.
+Preparing to unpack .../063-libvorbisenc2_1.3.7-1build3_amd64.deb ...
+Unpacking libvorbisenc2:amd64 (1.3.7-1build3) ...
+Selecting previously unselected package gstreamer1.0-plugins-base:amd64.
+Preparing to unpack .../064-gstreamer1.0-plugins-base_1.24.2-1ubuntu0.3_amd64.deb ...
+Unpacking gstreamer1.0-plugins-base:amd64 (1.24.2-1ubuntu0.3) ...
+Selecting previously unselected package libabw-0.1-1:amd64.
+Preparing to unpack .../065-libabw-0.1-1_0.1.3-1build4_amd64.deb ...
+Unpacking libabw-0.1-1:amd64 (0.1.3-1build4) ...
+Selecting previously unselected package libbsh-java.
+Preparing to unpack .../066-libbsh-java_2.0b4-20_all.deb ...
+Unpacking libbsh-java (2.0b4-20) ...
+Selecting previously unselected package libcdr-0.1-1:amd64.
+Preparing to unpack .../067-libcdr-0.1-1_0.1.7-1build2_amd64.deb ...
+Unpacking libcdr-0.1-1:amd64 (0.1.7-1build2) ...
+Selecting previously unselected package libsuitesparseconfig7:amd64.
+Preparing to unpack .../068-libsuitesparseconfig7_1%3a7.6.1+dfsg-1build1_amd64.deb ...
+Unpacking libsuitesparseconfig7:amd64 (1:7.6.1+dfsg-1build1) ...
+Selecting previously unselected package libcolamd3:amd64.
+Preparing to unpack .../069-libcolamd3_1%3a7.6.1+dfsg-1build1_amd64.deb ...
+Unpacking libcolamd3:amd64 (1:7.6.1+dfsg-1build1) ...
+Selecting previously unselected package libe-book-0.1-1:amd64.
+Preparing to unpack .../070-libe-book-0.1-1_0.1.3-2build6_amd64.deb ...
+Unpacking libe-book-0.1-1:amd64 (0.1.3-2build6) ...
+Selecting previously unselected package libel-api-java.
+Preparing to unpack .../071-libel-api-java_3.0.0-3_all.deb ...
+Unpacking libel-api-java (3.0.0-3) ...
+Selecting previously unselected package libepubgen-0.1-1:amd64.
+Preparing to unpack .../072-libepubgen-0.1-1_0.1.1-1ubuntu6_amd64.deb ...
+Unpacking libepubgen-0.1-1:amd64 (0.1.1-1ubuntu6) ...
+Selecting previously unselected package libetonyek-0.1-1:amd64.
+Preparing to unpack .../073-libetonyek-0.1-1_0.1.10-5build1_amd64.deb ...
+Unpacking libetonyek-0.1-1:amd64 (0.1.10-5build1) ...
+Selecting previously unselected package libfreehand-0.1-1.
+Preparing to unpack .../074-libfreehand-0.1-1_0.1.2-3build3_amd64.deb ...
+Unpacking libfreehand-0.1-1 (0.1.2-3build3) ...
+Selecting previously unselected package libservlet-api-java.
+Preparing to unpack .../075-libservlet-api-java_4.0.1-2_all.deb ...
+Unpacking libservlet-api-java (4.0.1-2) ...
+Selecting previously unselected package libjsp-api-java.
+Preparing to unpack .../076-libjsp-api-java_2.3.4-3_all.deb ...
+Unpacking libjsp-api-java (2.3.4-3) ...
+Selecting previously unselected package libwebsocket-api-java.
+Preparing to unpack .../077-libwebsocket-api-java_1.1-2_all.deb ...
+Unpacking libwebsocket-api-java (1.1-2) ...
+Selecting previously unselected package libservlet3.1-java.
+Preparing to unpack .../078-libservlet3.1-java_1%3a4.0.1-2_all.deb ...
+Unpacking libservlet3.1-java (1:4.0.1-2) ...
+Selecting previously unselected package libhsqldb1.8.0-java.
+Preparing to unpack .../079-libhsqldb1.8.0-java_1.8.0.10+dfsg-12_all.deb ...
+Unpacking libhsqldb1.8.0-java (1.8.0.10+dfsg-12) ...
+Selecting previously unselected package libunoloader-java.
+Preparing to unpack .../080-libunoloader-java_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libunoloader-java (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package ure-java.
+Preparing to unpack .../081-ure-java_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking ure-java (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package liblibreoffice-java.
+Preparing to unpack .../082-liblibreoffice-java_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking liblibreoffice-java (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libmspub-0.1-1:amd64.
+Preparing to unpack .../083-libmspub-0.1-1_0.1.4-3build7_amd64.deb ...
+Unpacking libmspub-0.1-1:amd64 (0.1.4-3build7) ...
+Selecting previously unselected package libmwaw-0.3-3:amd64.
+Preparing to unpack .../084-libmwaw-0.3-3_0.3.22-1build1_amd64.deb ...
+Unpacking libmwaw-0.3-3:amd64 (0.3.22-1build1) ...
+Selecting previously unselected package libodfgen-0.1-1:amd64.
+Preparing to unpack .../085-libodfgen-0.1-1_0.1.8-2build3_amd64.deb ...
+Unpacking libodfgen-0.1-1:amd64 (0.1.8-2build3) ...
+Selecting previously unselected package libpagemaker-0.0-0:amd64.
+Preparing to unpack .../086-libpagemaker-0.0-0_0.0.4-1build4_amd64.deb ...
+Unpacking libpagemaker-0.0-0:amd64 (0.0.4-1build4) ...
+Selecting previously unselected package libpaper1:amd64.
+Preparing to unpack .../087-libpaper1_1.1.29build1_amd64.deb ...
+Unpacking libpaper1:amd64 (1.1.29build1) ...
+Selecting previously unselected package libpaper-utils.
+Preparing to unpack .../088-libpaper-utils_1.1.29build1_amd64.deb ...
+Unpacking libpaper-utils (1.1.29build1) ...
+Selecting previously unselected package libreoffice-base-core.
+Preparing to unpack .../089-libreoffice-base-core_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-base-core (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-base-drivers.
+Preparing to unpack .../090-libreoffice-base-drivers_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-base-drivers (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-uiconfig-base.
+Preparing to unpack .../091-libreoffice-uiconfig-base_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-uiconfig-base (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-base.
+Preparing to unpack .../092-libreoffice-base_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+No diversion 'diversion of /usr/lib/libreoffice/share/basic/dialog.xlc to /usr/lib/libreoffice/share/basic/dialog.xlc.noaccess by libreoffice-base', none removed.
+No diversion 'diversion of /usr/lib/libreoffice/share/basic/script.xlc to /usr/lib/libreoffice/share/basic/script.xlc.noaccess by libreoffice-base', none removed.
+Unpacking libreoffice-base (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-uiconfig-calc.
+Preparing to unpack .../093-libreoffice-uiconfig-calc_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-uiconfig-calc (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package lp-solve.
+Preparing to unpack .../094-lp-solve_5.5.2.5-2ubuntu0.1_amd64.deb ...
+Unpacking lp-solve (5.5.2.5-2ubuntu0.1) ...
+Selecting previously unselected package libwps-0.4-4:amd64.
+Preparing to unpack .../095-libwps-0.4-4_0.4.14-2build1_amd64.deb ...
+Unpacking libwps-0.4-4:amd64 (0.4.14-2build1) ...
+Selecting previously unselected package libreoffice-calc.
+Preparing to unpack .../096-libreoffice-calc_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-calc (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-uiconfig-draw.
+Preparing to unpack .../097-libreoffice-uiconfig-draw_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-uiconfig-draw (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-uiconfig-impress.
+Preparing to unpack .../098-libreoffice-uiconfig-impress_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-uiconfig-impress (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libvisio-0.1-1:amd64.
+Preparing to unpack .../099-libvisio-0.1-1_0.1.7-1build9_amd64.deb ...
+Unpacking libvisio-0.1-1:amd64 (0.1.7-1build9) ...
+Selecting previously unselected package libwpd-0.10-10:amd64.
+Preparing to unpack .../100-libwpd-0.10-10_0.10.3-2build2_amd64.deb ...
+Unpacking libwpd-0.10-10:amd64 (0.10.3-2build2) ...
+Selecting previously unselected package libwpg-0.3-3:amd64.
+Preparing to unpack .../101-libwpg-0.3-3_0.3.4-3build1_amd64.deb ...
+Unpacking libwpg-0.3-3:amd64 (0.3.4-3build1) ...
+Selecting previously unselected package libreoffice-draw.
+Preparing to unpack .../102-libreoffice-draw_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-draw (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-impress.
+Preparing to unpack .../103-libreoffice-impress_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-impress (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-uiconfig-math.
+Preparing to unpack .../104-libreoffice-uiconfig-math_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-uiconfig-math (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-math.
+Preparing to unpack .../105-libreoffice-math_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-math (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-report-builder-bin.
+Preparing to unpack .../106-libreoffice-report-builder-bin_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-report-builder-bin (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-uiconfig-writer.
+Preparing to unpack .../107-libreoffice-uiconfig-writer_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-uiconfig-writer (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-writer.
+Preparing to unpack .../108-libreoffice-writer_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-writer (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice.
+Preparing to unpack .../109-libreoffice_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-gnome.
+Preparing to unpack .../110-libreoffice-gnome_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-gnome (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-gtk3.
+Preparing to unpack .../111-libreoffice-gtk3_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-gtk3 (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-java-common.
+Preparing to unpack .../112-libreoffice-java-common_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-java-common (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-uiconfig-report-builder.
+Preparing to unpack .../113-libreoffice-uiconfig-report-builder_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-uiconfig-report-builder (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-report-builder.
+Preparing to unpack .../114-libreoffice-report-builder_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-report-builder (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-script-provider-bsh.
+Preparing to unpack .../115-libreoffice-script-provider-bsh_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-script-provider-bsh (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-script-provider-js.
+Preparing to unpack .../116-libreoffice-script-provider-js_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-script-provider-js (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-script-provider-python.
+Preparing to unpack .../117-libreoffice-script-provider-python_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-script-provider-python (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-sdbc-firebird.
+Preparing to unpack .../118-libreoffice-sdbc-firebird_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-sdbc-firebird (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-sdbc-hsqldb.
+Preparing to unpack .../119-libreoffice-sdbc-hsqldb_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-sdbc-hsqldb (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-sdbc-mysql.
+Preparing to unpack .../120-libreoffice-sdbc-mysql_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-sdbc-mysql (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-sdbc-postgresql.
+Preparing to unpack .../121-libreoffice-sdbc-postgresql_4%3a24.2.7-0ubuntu0.24.04.4_amd64.deb ...
+Unpacking libreoffice-sdbc-postgresql (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-style-elementary.
+Preparing to unpack .../122-libreoffice-style-elementary_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-style-elementary (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-style-yaru.
+Preparing to unpack .../123-libreoffice-style-yaru_4%3a24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-style-yaru (4:24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package libreoffice-wiki-publisher.
+Preparing to unpack .../124-libreoffice-wiki-publisher_4%3a1.2.0+LibO24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-wiki-publisher (4:1.2.0+LibO24.2.7-0ubuntu0.24.04.4) ...
+Selecting previously unselected package poppler-utils.
+Preparing to unpack .../125-poppler-utils_24.02.0-1ubuntu9.8_amd64.deb ...
+Unpacking poppler-utils (24.02.0-1ubuntu9.8) ...
+Selecting previously unselected package libreoffice-nlpsolver.
+Preparing to unpack .../126-libreoffice-nlpsolver_4%3a0.9+LibO24.2.7-0ubuntu0.24.04.4_all.deb ...
+Unpacking libreoffice-nlpsolver (4:0.9+LibO24.2.7-0ubuntu0.24.04.4) ...
+Setting up libcdparanoia0:amd64 (3.10.2+debian-14build3) ...
+Setting up libgpgmepp6t64:amd64 (1.18.0-4.1ubuntu4) ...
+Setting up fonts-sil-gentium-basic (1.102-1.1) ...
+Setting up libpaper1:amd64 (1.1.29build1) ...
+Creating config file /etc/papersize with new version
+Setting up liborcus-parser-0.18-0:amd64 (0.19.2-3build3) ...
+Setting up libharfbuzz-icu0:amd64 (8.3.0-2build2) ...
+Setting up libuno-sal3t64 (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up fonts-noto-mono (20201225-2) ...
+Setting up libhyphen0:amd64 (2.8.8-7build3) ...
+Setting up libclucene-core1t64:amd64 (2.3.3.4+dfsg-1.2ubuntu2) ...
+Setting up libpoppler134:amd64 (24.02.0-1ubuntu9.8) ...
+Setting up libvisual-0.4-0:amd64 (0.4.2-2build1) ...
+Setting up libreoffice-uiconfig-writer (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up fonts-noto-extra (20201225-2) ...
+Setting up libraptor2-0:amd64 (2.0.16-3ubuntu0.1) ...
+Setting up libclucene-contribs1t64:amd64 (2.3.3.4+dfsg-1.2ubuntu2) ...
+Setting up libboost-thread1.83.0:amd64 (1.83.0-2.1ubuntu3.2) ...
+Setting up libel-api-java (3.0.0-3) ...
+Setting up libeot0:amd64 (0.01-5build3) ...
+Setting up libpaper-utils (1.1.29build1) ...
+Setting up libreoffice-uiconfig-calc (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up librevenge-0.0-0:amd64 (0.0.5-3build1) ...
+Setting up poppler-data (0.4.12-1) ...
+Setting up liborc-0.4-0t64:amd64 (1:0.4.38-1ubuntu0.1) ...
+Setting up fonts-crosextra-carlito (20230309-2) ...
+Setting up libxmlsec1t64-nss:amd64 (1.2.39-5build2) ...
+Setting up fonts-sil-gentium (20081126:1.03-4) ...
+Setting up libreoffice-uiconfig-impress (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-style-colibre (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libegl-mesa0:amd64 (25.2.8-0ubuntu0.24.04.1) ...
+Setting up firebird3.0-utils (3.0.11.33703.ds4-2ubuntu2) ...
+Setting up libboost-iostreams1.83.0:amd64 (1.83.0-2.1ubuntu3.2) ...
+Setting up libwebsocket-api-java (1.1-2) ...
+Setting up libopus0:amd64 (1.4-1build1) ...
+Setting up libreoffice-uiconfig-common (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libfreehand-0.1-1 (0.1.2-3build3) ...
+Setting up liborcus-0.18-0:amd64 (0.19.2-3build3) ...
+Setting up fonts-linuxlibertine (5.3.0-6) ...
+Setting up libbsh-java (2.0b4-20) ...
+Setting up libjsp-api-java (2.3.4-3) ...
+Setting up libmhash2:amd64 (0.9.9.9-9build3) ...
+Setting up libmythes-1.2-0:amd64 (2:1.2.5-1build1) ...
+Setting up libreoffice-uiconfig-base (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libexttextcat-data (3.4.7-1build1) ...
+Setting up libtheora0:amd64 (1.1.1+dfsg.1-16.1build3) ...
+Setting up libabw-0.1-1:amd64 (0.1.3-1build4) ...
+Setting up libservlet-api-java (4.0.1-2) ...
+Setting up libegl1:amd64 (1.7.0-1build1) ...
+Setting up libepubgen-0.1-1:amd64 (0.1.1-1ubuntu6) ...
+Setting up fonts-crosextra-caladea (20200211-2) ...
+Setting up libreoffice-style-yaru (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libsuitesparseconfig7:amd64 (1:7.6.1+dfsg-1build1) ...
+Setting up libabsl20220623t64:amd64 (20220623.1-3.1ubuntu3.2) ...
+Setting up poppler-utils (24.02.0-1ubuntu9.8) ...
+Setting up liblangtag-common (0.6.7-1build2) ...
+Setting up libib-util:amd64 (3.0.11.33703.ds4-2ubuntu2) ...
+Setting up libuno-salhelpergcc3-3t64 (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libunoloader-java (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up fonts-liberation-sans-narrow (1:1.07.6-4) ...
+Setting up fonts-noto-ui-core (20201225-2) ...
+Setting up libreoffice-uiconfig-report-builder (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libwpd-0.10-10:amd64 (0.10.3-2build2) ...
+Setting up libreoffice-uiconfig-draw (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up fonts-noto-core (20201225-2) ...
+Setting up fonts-opensymbol (4:102.12+LibO24.2.7-0ubuntu0.24.04.4) ...
+Setting up libgraphene-1.0-0:amd64 (1.10.8-3build2) ...
+Setting up libservlet3.1-java (1:4.0.1-2) ...
+Setting up libvorbisenc2:amd64 (1.3.7-1build3) ...
+Setting up libodfgen-0.1-1:amd64 (0.1.8-2build3) ...
+Setting up libvisio-0.1-1:amd64 (0.1.7-1build9) ...
+Setting up libreoffice-uiconfig-math (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-style-elementary (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libwps-0.4-4:amd64 (0.4.14-2build1) ...
+Setting up libexttextcat-2.0-0:amd64 (3.4.7-1build1) ...
+Setting up libmspub-0.1-1:amd64 (0.1.4-3build7) ...
+Setting up libcolamd3:amd64 (1:7.6.1+dfsg-1build1) ...
+Setting up firebird3.0-server-core:amd64 (3.0.11.33703.ds4-2ubuntu2) ...
+Setting up lp-solve (5.5.2.5-2ubuntu0.1) ...
+Setting up libboost-locale1.83.0:amd64 (1.83.0-2.1ubuntu3.2) ...
+Setting up libgstreamer-plugins-base1.0-0:amd64 (1.24.2-1ubuntu0.3) ...
+Setting up libpagemaker-0.0-0:amd64 (0.0.4-1build4) ...
+Setting up libmwaw-0.3-3:amd64 (0.3.22-1build1) ...
+Setting up librasqal3t64:amd64 (0.9.33-2.1build1) ...
+Setting up libcdr-0.1-1:amd64 (0.1.7-1build2) ...
+Setting up librdf0t64:amd64 (1.0.17-3.1ubuntu3) ...
+Setting up liblangtag1:amd64 (0.6.7-1build2) ...
+Setting up libgstreamer-gl1.0-0:amd64 (1.24.2-1ubuntu0.3) ...
+Setting up gstreamer1.0-plugins-base:amd64 (1.24.2-1ubuntu0.3) ...
+Setting up libhsqldb1.8.0-java (1.8.0.10+dfsg-12) ...
+Setting up libwpg-0.3-3:amd64 (0.3.4-3build1) ...
+Setting up libuno-cppu3t64 (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libuno-purpenvhelpergcc3-3t64 (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up gstreamer1.0-gl:amd64 (1.24.2-1ubuntu0.3) ...
+Setting up uno-libs-private (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libetonyek-0.1-1:amd64 (0.1.10-5build1) ...
+Setting up gstreamer1.0-gtk3:amd64 (1.24.2-1ubuntu1.2) ...
+Setting up libe-book-0.1-1:amd64 (0.1.3-2build6) ...
+Setting up libuno-cppuhelpergcc3-3t64 (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up ure (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-common (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/main.xcd with new version
+Creating config file /etc/libreoffice/registry/pdfimport.xcd with new version
+Creating config file /etc/libreoffice/registry/xsltfilter.xcd with new version
+Creating config file /etc/libreoffice/registry/lingucomponent.xcd with new version
+Creating config file /etc/libreoffice/registry/Langpack-en-US.xcd with new version
+Creating config file /etc/libreoffice/registry/res/fcfg_langpack_en-US.xcd with new version
+Setting up ure-java (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-core (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-math (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/math.xcd with new version
+Setting up libreoffice-gtk3 (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-sdbc-postgresql (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/postgresql.xcd with new version
+Setting up liblibreoffice-java (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-draw (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/draw.xcd with new version
+Creating config file /etc/libreoffice/registry/graphicfilter.xcd with new version
+Setting up libreoffice-java-common (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-base-drivers (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-wiki-publisher (4:1.2.0+LibO24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-sdbc-firebird (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/firebird_sdbc.xcd with new version
+Setting up libreoffice-sdbc-mysql (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/mysqlc.xcd with new version
+Setting up libreoffice-gnome (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/gnome.xcd with new version
+Setting up libreoffice-impress (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/impress.xcd with new version
+Creating config file /etc/libreoffice/registry/ogltrans.xcd with new version
+Setting up libreoffice-base-core (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up python3-uno (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-script-provider-bsh (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-script-provider-js (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-calc (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/calc.xcd with new version
+Setting up libreoffice-base (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/base.xcd with new version
+Setting up libreoffice-sdbc-hsqldb (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-writer (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/writer.xcd with new version
+Setting up libreoffice-script-provider-python (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-nlpsolver (4:0.9+LibO24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-report-builder-bin (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice (4:24.2.7-0ubuntu0.24.04.4) ...
+Setting up libreoffice-report-builder (4:24.2.7-0ubuntu0.24.04.4) ...
+Creating config file /etc/libreoffice/registry/reportbuilder.xcd with new version
+Processing triggers for man-db (2.12.0-4build2) ...
+Not building database; man-db/auto-update is not 'true'.
+Processing triggers for shared-mime-info (2.4-4) ...
+Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
+Processing triggers for hicolor-icon-theme (0.17-2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.7) ...
+Running kernel seems to be up-to-date.
+No services need to be restarted.
+No containers need to be restarted.
+No user sessions are running outdated binaries.
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+33s
+Run actions/cache@v4
+  
+Cache hit for: Linux-ftt-models
+Received 100663296 of 4177892311 (2.4%), 95.9 MBs/sec
+Received 268435456 of 4177892311 (6.4%), 126.4 MBs/sec
+Received 448790528 of 4177892311 (10.7%), 141.3 MBs/sec
+Received 549453824 of 4177892311 (13.2%), 130.1 MBs/sec
+Received 738197504 of 4177892311 (17.7%), 140.0 MBs/sec
+Received 935329792 of 4177892311 (22.4%), 148.0 MBs/sec
+Received 1111490560 of 4177892311 (26.6%), 150.8 MBs/sec
+Received 1291845632 of 4177892311 (30.9%), 153.3 MBs/sec
+Received 1476395008 of 4177892311 (35.3%), 155.8 MBs/sec
+Received 1648361472 of 4177892311 (39.5%), 156.6 MBs/sec
+Received 1870659584 of 4177892311 (44.8%), 161.6 MBs/sec
+Received 2025848832 of 4177892311 (48.5%), 160.5 MBs/sec
+Received 2214592512 of 4177892311 (53.0%), 162.0 MBs/sec
+Received 2411724800 of 4177892311 (57.7%), 163.8 MBs/sec
+Received 2583691264 of 4177892311 (61.8%), 163.8 MBs/sec
+Received 2772434944 of 4177892311 (66.4%), 164.8 MBs/sec
+Received 2952790016 of 4177892311 (70.7%), 165.2 MBs/sec
+Received 3120562176 of 4177892311 (74.7%), 164.9 MBs/sec
+Received 3296722944 of 4177892311 (78.9%), 165.1 MBs/sec
+Received 3472883712 of 4177892311 (83.1%), 165.2 MBs/sec
+Received 3632267264 of 4177892311 (86.9%), 164.6 MBs/sec
+Received 3812622336 of 4177892311 (91.3%), 164.9 MBs/sec
+Received 3984588800 of 4177892311 (95.4%), 164.9 MBs/sec
+Received 4143972352 of 4177892311 (99.2%), 164.3 MBs/sec
+Received 4177892311 of 4177892311 (100.0%), 163.5 MBs/sec
+Cache Size: ~3984 MB (4177892311 B)
+/usr/bin/tar -xf /home/runner/work/_temp/103dcf03-3d33-41da-9ee1-46a8d2d55c2d/cache.tzst -P -C /home/runner/work/FTT/FTT --use-compress-program unzstd
+Cache restored successfully
+Cache restored from key: Linux-ftt-models
+2s
+Run actions/cache@v4
+Cache hit for: Linux-pip-b0f9995e6c935a985ae9a2ed8edbf54db720a010a81a2db5a75e9310ac2c283b
+5s
+Run python -m pip install --upgrade pip
+  
+Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages (26.0.1)
+Collecting PyYAML==6.0.2 (from -r requirements.txt (line 1))
+  Using cached PyYAML-6.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+Collecting pdfplumber==0.11.4 (from -r requirements.txt (line 2))
+  Using cached pdfplumber-0.11.4-py3-none-any.whl.metadata (41 kB)
+Collecting pdf2image==1.17.0 (from -r requirements.txt (line 3))
+  Using cached pdf2image-1.17.0-py3-none-any.whl.metadata (6.2 kB)
+Collecting python-docx==1.1.2 (from -r requirements.txt (line 4))
+  Using cached python_docx-1.1.2-py3-none-any.whl.metadata (2.0 kB)
+Collecting python-pptx==0.6.23 (from -r requirements.txt (line 5))
+  Using cached python_pptx-0.6.23-py3-none-any.whl.metadata (18 kB)
+Collecting openpyxl==3.1.5 (from -r requirements.txt (line 6))
+  Using cached openpyxl-3.1.5-py2.py3-none-any.whl.metadata (2.5 kB)
+Collecting Pillow==10.4.0 (from -r requirements.txt (line 7))
+  Using cached pillow-10.4.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (9.2 kB)
+Collecting pytest==8.3.4 (from -r requirements.txt (line 8))
+  Using cached pytest-8.3.4-py3-none-any.whl.metadata (7.5 kB)
+Collecting pdfminer.six==20231228 (from pdfplumber==0.11.4->-r requirements.txt (line 2))
+  Using cached pdfminer.six-20231228-py3-none-any.whl.metadata (4.2 kB)
+Collecting pypdfium2>=4.18.0 (from pdfplumber==0.11.4->-r requirements.txt (line 2))
+  Using cached pypdfium2-5.6.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (68 kB)
+Collecting lxml>=3.1.0 (from python-docx==1.1.2->-r requirements.txt (line 4))
+  Using cached lxml-6.0.2-cp311-cp311-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (3.6 kB)
+Collecting typing-extensions>=4.9.0 (from python-docx==1.1.2->-r requirements.txt (line 4))
+  Using cached typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting XlsxWriter>=0.5.7 (from python-pptx==0.6.23->-r requirements.txt (line 5))
+  Using cached xlsxwriter-3.2.9-py3-none-any.whl.metadata (2.7 kB)
+Collecting et-xmlfile (from openpyxl==3.1.5->-r requirements.txt (line 6))
+  Using cached et_xmlfile-2.0.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting iniconfig (from pytest==8.3.4->-r requirements.txt (line 8))
+  Using cached iniconfig-2.3.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting packaging (from pytest==8.3.4->-r requirements.txt (line 8))
+  Using cached packaging-26.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting pluggy<2,>=1.5 (from pytest==8.3.4->-r requirements.txt (line 8))
+  Using cached pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting charset-normalizer>=2.0.0 (from pdfminer.six==20231228->pdfplumber==0.11.4->-r requirements.txt (line 2))
+  Using cached charset_normalizer-3.4.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (39 kB)
+Collecting cryptography>=36.0.0 (from pdfminer.six==20231228->pdfplumber==0.11.4->-r requirements.txt (line 2))
+  Using cached cryptography-46.0.5-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (5.7 kB)
+Collecting cffi>=2.0.0 (from cryptography>=36.0.0->pdfminer.six==20231228->pdfplumber==0.11.4->-r requirements.txt (line 2))
+  Using cached cffi-2.0.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.6 kB)
+Collecting pycparser (from cffi>=2.0.0->cryptography>=36.0.0->pdfminer.six==20231228->pdfplumber==0.11.4->-r requirements.txt (line 2))
+  Using cached pycparser-3.0-py3-none-any.whl.metadata (8.2 kB)
+Using cached PyYAML-6.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (762 kB)
+Using cached pdfplumber-0.11.4-py3-none-any.whl (59 kB)
+Using cached pdf2image-1.17.0-py3-none-any.whl (11 kB)
+Using cached python_docx-1.1.2-py3-none-any.whl (244 kB)
+Using cached python_pptx-0.6.23-py3-none-any.whl (471 kB)
+Using cached openpyxl-3.1.5-py2.py3-none-any.whl (250 kB)
+Using cached pillow-10.4.0-cp311-cp311-manylinux_2_28_x86_64.whl (4.5 MB)
+Using cached pytest-8.3.4-py3-none-any.whl (343 kB)
+Using cached pdfminer.six-20231228-py3-none-any.whl (5.6 MB)
+Using cached pluggy-1.6.0-py3-none-any.whl (20 kB)
+Using cached charset_normalizer-3.4.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (193 kB)
+Using cached cryptography-46.0.5-cp311-abi3-manylinux_2_34_x86_64.whl (4.5 MB)
+Using cached cffi-2.0.0-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (215 kB)
+Using cached lxml-6.0.2-cp311-cp311-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (5.2 MB)
+Using cached pypdfium2-5.6.0-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.6 MB)
+Using cached typing_extensions-4.15.0-py3-none-any.whl (44 kB)
+Using cached xlsxwriter-3.2.9-py3-none-any.whl (175 kB)
+Using cached et_xmlfile-2.0.0-py3-none-any.whl (18 kB)
+Using cached iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Using cached packaging-26.0-py3-none-any.whl (74 kB)
+Using cached pycparser-3.0-py3-none-any.whl (48 kB)
+Installing collected packages: XlsxWriter, typing-extensions, PyYAML, pypdfium2, pycparser, pluggy, Pillow, packaging, lxml, iniconfig, et-xmlfile, charset-normalizer, python-pptx, python-docx, pytest, pdf2image, openpyxl, cffi, cryptography, pdfminer.six, pdfplumber
+Successfully installed Pillow-10.4.0 PyYAML-6.0.2 XlsxWriter-3.2.9 cffi-2.0.0 charset-normalizer-3.4.5 cryptography-46.0.5 et-xmlfile-2.0.0 iniconfig-2.3.0 lxml-6.0.2 openpyxl-3.1.5 packaging-26.0 pdf2image-1.17.0 pdfminer.six-20231228 pdfplumber-0.11.4 pluggy-1.6.0 pycparser-3.0 pypdfium2-5.6.0 pytest-8.3.4 python-docx-1.1.2 python-pptx-0.6.23 typing-extensions-4.15.0
+5m 4s
+Run rm -rf vendor/llama.cpp
+Cloning into 'vendor/llama.cpp'...
+-- The C compiler identification is GNU 13.3.0
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMAKE_BUILD_TYPE=Release
+-- Found Git: /usr/bin/git (found version "2.53.0")
+-- The ASM compiler identification is GNU
+-- Found assembler: /usr/bin/cc
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF
+-- CMAKE_SYSTEM_PROCESSOR: x86_64
+-- GGML_SYSTEM_ARCH: x86
+-- Including CPU backend
+-- Found OpenMP_C: -fopenmp (found version "4.5")
+-- Found OpenMP_CXX: -fopenmp (found version "4.5")
+-- Found OpenMP: TRUE (found version "4.5")
+-- x86 detected
+-- Adding CPU backend variant ggml-cpu: -msse4.2;-mf16c;-mfma;-mbmi2;-mavx;-mavx2 GGML_SSE42;GGML_F16C;GGML_FMA;GGML_BMI2;GGML_AVX;GGML_AVX2
+-- ggml version: 0.9.7
+-- ggml commit:  af237f3
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")
+-- Performing Test OPENSSL_VERSION_SUPPORTED
+-- Performing Test OPENSSL_VERSION_SUPPORTED - Success
+-- OpenSSL found: 3.0.13
+-- Generating embedded license file for target: common
+-- Configuring done (5.5s)
+-- Generating done (0.2s)
+-- Build files have been written to: /home/runner/work/FTT/FTT/vendor/llama.cpp/build
+[  0%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml.c.o
+[  0%] Building CXX object vendor/cpp-httplib/CMakeFiles/cpp-httplib.dir/httplib.cpp.o
+[  0%] Building CXX object common/CMakeFiles/build_info.dir/build-info.cpp.o
+[  0%] Building C object examples/gguf-hash/CMakeFiles/sha256.dir/deps/sha256/sha256.c.o
+[  0%] Built target build_info
+[  0%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml.cpp.o
+[  0%] Built target sha256
+[  1%] Building C object examples/gguf-hash/CMakeFiles/xxhash.dir/deps/xxhash/xxhash.c.o
+[  1%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-alloc.c.o
+[  2%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-backend.cpp.o
+[  2%] Built target xxhash
+[  2%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-opt.cpp.o
+[  2%] Building C object examples/gguf-hash/CMakeFiles/sha1.dir/deps/sha1/sha1.c.o
+[  2%] Built target sha1
+[  2%] Building CXX object tools/mtmd/CMakeFiles/llama-llava-cli.dir/deprecation-warning.cpp.o
+[  2%] Linking CXX executable ../../bin/llama-llava-cli
+[  2%] Built target llama-llava-cli
+[  2%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/ggml-threading.cpp.o
+[  2%] Building CXX object tools/mtmd/CMakeFiles/llama-gemma3-cli.dir/deprecation-warning.cpp.o
+[  2%] Linking CXX executable ../../bin/llama-gemma3-cli
+[  2%] Building CXX object tools/mtmd/CMakeFiles/llama-minicpmv-cli.dir/deprecation-warning.cpp.o
+[  2%] Built target llama-gemma3-cli
+[  2%] Building C object ggml/src/CMakeFiles/ggml-base.dir/ggml-quants.c.o
+[  3%] Building CXX object ggml/src/CMakeFiles/ggml-base.dir/gguf.cpp.o
+[  3%] Linking CXX executable ../../bin/llama-minicpmv-cli
+[  3%] Built target llama-minicpmv-cli
+[  3%] Building CXX object tools/mtmd/CMakeFiles/llama-qwen2vl-cli.dir/deprecation-warning.cpp.o
+[  3%] Linking CXX executable ../../bin/llama-qwen2vl-cli
+[  3%] Built target llama-qwen2vl-cli
+[  3%] Linking CXX shared library ../../bin/libggml-base.so
+[  3%] Built target ggml-base
+[  3%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+[  3%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.cpp.o
+[  3%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/repack.cpp.o
+[  4%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/hbm.cpp.o
+[  4%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/quants.c.o
+[  4%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/traits.cpp.o
+[  4%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/amx.cpp.o
+[  5%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/amx/mmq.cpp.o
+[  5%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/binary-ops.cpp.o
+[  5%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/unary-ops.cpp.o
+[  5%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/vec.cpp.o
+[  5%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ops.cpp.o
+[  6%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/llamafile/sgemm.cpp.o
+[  6%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/quants.c.o
+[  6%] Building CXX object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/arch/x86/repack.cpp.o
+[  6%] Linking CXX static library libcpp-httplib.a
+[  6%] Linking CXX shared library ../../bin/libggml-cpu.so
+[  6%] Built target ggml-cpu
+[  6%] Building CXX object ggml/src/CMakeFiles/ggml.dir/ggml-backend-dl.cpp.o
+[  7%] Building CXX object ggml/src/CMakeFiles/ggml.dir/ggml-backend-reg.cpp.o
+[  7%] Linking CXX shared library ../../bin/libggml.so
+[  7%] Built target ggml
+[  7%] Building CXX object examples/gguf-hash/CMakeFiles/llama-gguf-hash.dir/gguf-hash.cpp.o
+[  7%] Building CXX object examples/gguf/CMakeFiles/llama-gguf.dir/gguf.cpp.o
+[  7%] Building CXX object src/CMakeFiles/llama.dir/llama.cpp.o
+[  8%] Linking CXX executable ../../bin/llama-gguf-hash
+[  8%] Built target llama-gguf-hash
+[  8%] Building CXX object src/CMakeFiles/llama.dir/llama-adapter.cpp.o
+[  8%] Linking CXX executable ../../bin/llama-gguf
+[  8%] Built target llama-gguf
+[  8%] Building CXX object src/CMakeFiles/llama.dir/llama-arch.cpp.o
+[  9%] Building CXX object src/CMakeFiles/llama.dir/llama-batch.cpp.o
+[  9%] Building CXX object src/CMakeFiles/llama.dir/llama-chat.cpp.o
+[  9%] Building CXX object src/CMakeFiles/llama.dir/llama-context.cpp.o
+[  9%] Building CXX object src/CMakeFiles/llama.dir/llama-cparams.cpp.o
+[ 10%] Building CXX object src/CMakeFiles/llama.dir/llama-grammar.cpp.o
+[ 10%] Building CXX object src/CMakeFiles/llama.dir/llama-graph.cpp.o
+[ 10%] Building CXX object src/CMakeFiles/llama.dir/llama-hparams.cpp.o
+[ 10%] Building CXX object src/CMakeFiles/llama.dir/llama-impl.cpp.o
+[ 11%] Building CXX object src/CMakeFiles/llama.dir/llama-io.cpp.o
+[ 11%] Building CXX object src/CMakeFiles/llama.dir/llama-kv-cache.cpp.o
+[ 11%] Building CXX object src/CMakeFiles/llama.dir/llama-kv-cache-iswa.cpp.o
+[ 11%] Building CXX object src/CMakeFiles/llama.dir/llama-memory.cpp.o
+[ 11%] Building CXX object src/CMakeFiles/llama.dir/llama-memory-hybrid.cpp.o
+[ 11%] Built target cpp-httplib
+[ 12%] Building CXX object src/CMakeFiles/llama.dir/llama-memory-hybrid-iswa.cpp.o
+[ 12%] Building CXX object src/CMakeFiles/llama.dir/llama-memory-recurrent.cpp.o
+[ 12%] Building CXX object src/CMakeFiles/llama.dir/llama-mmap.cpp.o
+[ 12%] Building CXX object src/CMakeFiles/llama.dir/llama-model-loader.cpp.o
+[ 13%] Building CXX object src/CMakeFiles/llama.dir/llama-model-saver.cpp.o
+[ 13%] Building CXX object src/CMakeFiles/llama.dir/llama-model.cpp.o
+[ 13%] Building CXX object src/CMakeFiles/llama.dir/llama-quant.cpp.o
+[ 13%] Building CXX object src/CMakeFiles/llama.dir/llama-sampler.cpp.o
+[ 13%] Building CXX object src/CMakeFiles/llama.dir/llama-vocab.cpp.o
+[ 14%] Building CXX object src/CMakeFiles/llama.dir/unicode-data.cpp.o
+[ 14%] Building CXX object src/CMakeFiles/llama.dir/unicode.cpp.o
+[ 14%] Building CXX object src/CMakeFiles/llama.dir/models/afmoe.cpp.o
+[ 14%] Building CXX object src/CMakeFiles/llama.dir/models/apertus.cpp.o
+[ 15%] Building CXX object src/CMakeFiles/llama.dir/models/arcee.cpp.o
+[ 15%] Building CXX object src/CMakeFiles/llama.dir/models/arctic.cpp.o
+[ 15%] Building CXX object src/CMakeFiles/llama.dir/models/arwkv7.cpp.o
+[ 15%] Building CXX object src/CMakeFiles/llama.dir/models/baichuan.cpp.o
+[ 15%] Building CXX object src/CMakeFiles/llama.dir/models/bailingmoe.cpp.o
+[ 16%] Building CXX object src/CMakeFiles/llama.dir/models/bailingmoe2.cpp.o
+[ 16%] Building CXX object src/CMakeFiles/llama.dir/models/bert.cpp.o
+[ 16%] Building CXX object src/CMakeFiles/llama.dir/models/bitnet.cpp.o
+[ 16%] Building CXX object src/CMakeFiles/llama.dir/models/bloom.cpp.o
+[ 17%] Building CXX object src/CMakeFiles/llama.dir/models/chameleon.cpp.o
+[ 17%] Building CXX object src/CMakeFiles/llama.dir/models/chatglm.cpp.o
+[ 17%] Building CXX object src/CMakeFiles/llama.dir/models/codeshell.cpp.o
+[ 17%] Building CXX object src/CMakeFiles/llama.dir/models/cogvlm.cpp.o
+[ 17%] Building CXX object src/CMakeFiles/llama.dir/models/cohere2-iswa.cpp.o
+[ 18%] Building CXX object src/CMakeFiles/llama.dir/models/command-r.cpp.o
+[ 18%] Building CXX object src/CMakeFiles/llama.dir/models/dbrx.cpp.o
+[ 18%] Building CXX object src/CMakeFiles/llama.dir/models/deci.cpp.o
+[ 18%] Building CXX object src/CMakeFiles/llama.dir/models/deepseek.cpp.o
+[ 19%] Building CXX object src/CMakeFiles/llama.dir/models/deepseek2.cpp.o
+[ 19%] Building CXX object src/CMakeFiles/llama.dir/models/delta-net-base.cpp.o
+[ 19%] Building CXX object src/CMakeFiles/llama.dir/models/dots1.cpp.o
+[ 19%] Building CXX object src/CMakeFiles/llama.dir/models/dream.cpp.o
+[ 19%] Building CXX object src/CMakeFiles/llama.dir/models/ernie4-5-moe.cpp.o
+[ 20%] Building CXX object src/CMakeFiles/llama.dir/models/ernie4-5.cpp.o
+[ 20%] Building CXX object src/CMakeFiles/llama.dir/models/eurobert.cpp.o
+[ 20%] Building CXX object src/CMakeFiles/llama.dir/models/exaone-moe.cpp.o
+[ 20%] Building CXX object src/CMakeFiles/llama.dir/models/exaone.cpp.o
+[ 21%] Building CXX object src/CMakeFiles/llama.dir/models/exaone4.cpp.o
+[ 21%] Building CXX object src/CMakeFiles/llama.dir/models/falcon-h1.cpp.o
+[ 21%] Building CXX object src/CMakeFiles/llama.dir/models/falcon.cpp.o
+[ 21%] Building CXX object src/CMakeFiles/llama.dir/models/gemma-embedding.cpp.o
+[ 21%] Building CXX object src/CMakeFiles/llama.dir/models/gemma.cpp.o
+[ 22%] Building CXX object src/CMakeFiles/llama.dir/models/gemma2-iswa.cpp.o
+[ 22%] Building CXX object src/CMakeFiles/llama.dir/models/gemma3.cpp.o
+[ 22%] Building CXX object src/CMakeFiles/llama.dir/models/gemma3n-iswa.cpp.o
+[ 22%] Building CXX object src/CMakeFiles/llama.dir/models/glm4-moe.cpp.o
+[ 23%] Building CXX object src/CMakeFiles/llama.dir/models/glm4.cpp.o
+[ 23%] Building CXX object src/CMakeFiles/llama.dir/models/gpt2.cpp.o
+[ 23%] Building CXX object src/CMakeFiles/llama.dir/models/gptneox.cpp.o
+[ 23%] Building CXX object src/CMakeFiles/llama.dir/models/granite-hybrid.cpp.o
+[ 23%] Building CXX object src/CMakeFiles/llama.dir/models/granite.cpp.o
+[ 24%] Building CXX object src/CMakeFiles/llama.dir/models/grok.cpp.o
+[ 24%] Building CXX object src/CMakeFiles/llama.dir/models/grovemoe.cpp.o
+[ 24%] Building CXX object src/CMakeFiles/llama.dir/models/hunyuan-dense.cpp.o
+[ 24%] Building CXX object src/CMakeFiles/llama.dir/models/hunyuan-moe.cpp.o
+[ 25%] Building CXX object src/CMakeFiles/llama.dir/models/internlm2.cpp.o
+[ 25%] Building CXX object src/CMakeFiles/llama.dir/models/jais.cpp.o
+[ 25%] Building CXX object src/CMakeFiles/llama.dir/models/jais2.cpp.o
+[ 25%] Building CXX object src/CMakeFiles/llama.dir/models/jamba.cpp.o
+[ 25%] Building CXX object src/CMakeFiles/llama.dir/models/kimi-linear.cpp.o
+[ 26%] Building CXX object src/CMakeFiles/llama.dir/models/lfm2.cpp.o
+[ 26%] Building CXX object src/CMakeFiles/llama.dir/models/llada-moe.cpp.o
+[ 26%] Building CXX object src/CMakeFiles/llama.dir/models/llada.cpp.o
+[ 26%] Building CXX object src/CMakeFiles/llama.dir/models/llama-iswa.cpp.o
+[ 27%] Building CXX object src/CMakeFiles/llama.dir/models/llama.cpp.o
+[ 27%] Building CXX object src/CMakeFiles/llama.dir/models/maincoder.cpp.o
+[ 27%] Building CXX object src/CMakeFiles/llama.dir/models/mamba-base.cpp.o
+[ 27%] Building CXX object src/CMakeFiles/llama.dir/models/mamba.cpp.o
+[ 28%] Building CXX object src/CMakeFiles/llama.dir/models/mimo2-iswa.cpp.o
+[ 28%] Building CXX object src/CMakeFiles/llama.dir/models/minicpm3.cpp.o
+[ 28%] Building CXX object src/CMakeFiles/llama.dir/models/minimax-m2.cpp.o
+[ 28%] Building CXX object src/CMakeFiles/llama.dir/models/mistral3.cpp.o
+[ 28%] Building CXX object src/CMakeFiles/llama.dir/models/modern-bert.cpp.o
+[ 29%] Building CXX object src/CMakeFiles/llama.dir/models/mpt.cpp.o
+[ 29%] Building CXX object src/CMakeFiles/llama.dir/models/nemotron-h.cpp.o
+[ 29%] Building CXX object src/CMakeFiles/llama.dir/models/nemotron.cpp.o
+[ 29%] Building CXX object src/CMakeFiles/llama.dir/models/neo-bert.cpp.o
+[ 30%] Building CXX object src/CMakeFiles/llama.dir/models/olmo.cpp.o
+[ 30%] Building CXX object src/CMakeFiles/llama.dir/models/olmo2.cpp.o
+[ 30%] Building CXX object src/CMakeFiles/llama.dir/models/olmoe.cpp.o
+[ 30%] Building CXX object src/CMakeFiles/llama.dir/models/openai-moe-iswa.cpp.o
+[ 30%] Building CXX object src/CMakeFiles/llama.dir/models/openelm.cpp.o
+[ 31%] Building CXX object src/CMakeFiles/llama.dir/models/orion.cpp.o
+[ 31%] Building CXX object src/CMakeFiles/llama.dir/models/paddleocr.cpp.o
+[ 31%] Building CXX object src/CMakeFiles/llama.dir/models/pangu-embedded.cpp.o
+[ 31%] Building CXX object src/CMakeFiles/llama.dir/models/phi2.cpp.o
+[ 32%] Building CXX object src/CMakeFiles/llama.dir/models/phi3.cpp.o
+[ 32%] Building CXX object src/CMakeFiles/llama.dir/models/plamo.cpp.o
+[ 32%] Building CXX object src/CMakeFiles/llama.dir/models/plamo2.cpp.o
+[ 32%] Building CXX object src/CMakeFiles/llama.dir/models/plamo3.cpp.o
+[ 32%] Building CXX object src/CMakeFiles/llama.dir/models/plm.cpp.o
+[ 33%] Building CXX object src/CMakeFiles/llama.dir/models/qwen.cpp.o
+[ 33%] Building CXX object src/CMakeFiles/llama.dir/models/qwen2.cpp.o
+[ 33%] Building CXX object src/CMakeFiles/llama.dir/models/qwen2moe.cpp.o
+[ 33%] Building CXX object src/CMakeFiles/llama.dir/models/qwen2vl.cpp.o
+[ 34%] Building CXX object src/CMakeFiles/llama.dir/models/qwen3.cpp.o
+[ 34%] Building CXX object src/CMakeFiles/llama.dir/models/qwen35.cpp.o
+[ 34%] Building CXX object src/CMakeFiles/llama.dir/models/qwen35moe.cpp.o
+[ 34%] Building CXX object src/CMakeFiles/llama.dir/models/qwen3moe.cpp.o
+[ 34%] Building CXX object src/CMakeFiles/llama.dir/models/qwen3next.cpp.o
+[ 35%] Building CXX object src/CMakeFiles/llama.dir/models/qwen3vl-moe.cpp.o
+[ 35%] Building CXX object src/CMakeFiles/llama.dir/models/qwen3vl.cpp.o
+[ 35%] Building CXX object src/CMakeFiles/llama.dir/models/refact.cpp.o
+[ 35%] Building CXX object src/CMakeFiles/llama.dir/models/rnd1.cpp.o
+[ 36%] Building CXX object src/CMakeFiles/llama.dir/models/rwkv6-base.cpp.o
+[ 36%] Building CXX object src/CMakeFiles/llama.dir/models/rwkv6.cpp.o
+[ 36%] Building CXX object src/CMakeFiles/llama.dir/models/rwkv6qwen2.cpp.o
+[ 36%] Building CXX object src/CMakeFiles/llama.dir/models/rwkv7-base.cpp.o
+[ 36%] Building CXX object src/CMakeFiles/llama.dir/models/rwkv7.cpp.o
+[ 37%] Building CXX object src/CMakeFiles/llama.dir/models/seed-oss.cpp.o
+[ 37%] Building CXX object src/CMakeFiles/llama.dir/models/smallthinker.cpp.o
+[ 37%] Building CXX object src/CMakeFiles/llama.dir/models/smollm3.cpp.o
+[ 37%] Building CXX object src/CMakeFiles/llama.dir/models/stablelm.cpp.o
+[ 38%] Building CXX object src/CMakeFiles/llama.dir/models/starcoder.cpp.o
+[ 38%] Building CXX object src/CMakeFiles/llama.dir/models/starcoder2.cpp.o
+[ 38%] Building CXX object src/CMakeFiles/llama.dir/models/step35-iswa.cpp.o
+[ 38%] Building CXX object src/CMakeFiles/llama.dir/models/t5-dec.cpp.o
+[ 38%] Building CXX object src/CMakeFiles/llama.dir/models/t5-enc.cpp.o
+[ 39%] Building CXX object src/CMakeFiles/llama.dir/models/wavtokenizer-dec.cpp.o
+[ 39%] Building CXX object src/CMakeFiles/llama.dir/models/xverse.cpp.o
+[ 39%] Linking CXX shared library ../bin/libllama.so
+[ 39%] Built target llama
+[ 39%] Building C object tests/CMakeFiles/test-c.dir/test-c.c.o
+[ 39%] Building CXX object examples/simple/CMakeFiles/llama-simple.dir/simple.cpp.o
+[ 39%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/mtmd.cpp.o
+[ 39%] Building CXX object common/CMakeFiles/common.dir/arg.cpp.o
+[ 40%] Linking C executable ../bin/test-c
+[ 40%] Built target test-c
+[ 40%] Building CXX object common/CMakeFiles/common.dir/chat-auto-parser-generator.cpp.o
+[ 40%] Linking CXX executable ../../bin/llama-simple
+[ 40%] Built target llama-simple
+[ 40%] Building CXX object common/CMakeFiles/common.dir/chat-auto-parser-helpers.cpp.o
+[ 40%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/mtmd-audio.cpp.o
+[ 41%] Building CXX object examples/simple-chat/CMakeFiles/llama-simple-chat.dir/simple-chat.cpp.o
+[ 41%] Linking CXX executable ../../bin/llama-simple-chat
+[ 41%] Built target llama-simple-chat
+[ 42%] Building CXX object common/CMakeFiles/common.dir/chat-diff-analyzer.cpp.o
+[ 42%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/mtmd-helper.cpp.o
+[ 42%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/clip.cpp.o
+[ 42%] Building CXX object common/CMakeFiles/common.dir/chat-peg-parser.cpp.o
+[ 43%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/cogvlm.cpp.o
+[ 43%] Building CXX object common/CMakeFiles/common.dir/chat.cpp.o
+[ 43%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/conformer.cpp.o
+[ 43%] Building CXX object common/CMakeFiles/common.dir/common.cpp.o
+[ 43%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/glm4v.cpp.o
+[ 44%] Building CXX object common/CMakeFiles/common.dir/console.cpp.o
+[ 44%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/internvl.cpp.o
+[ 45%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/kimivl.cpp.o
+[ 45%] Building CXX object common/CMakeFiles/common.dir/debug.cpp.o
+[ 45%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/kimik25.cpp.o
+[ 45%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/nemotron-v2-vl.cpp.o
+[ 45%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/llama4.cpp.o
+[ 45%] Building CXX object common/CMakeFiles/common.dir/download.cpp.o
+[ 45%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/llava.cpp.o
+[ 46%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/minicpmv.cpp.o
+[ 46%] Building CXX object common/CMakeFiles/common.dir/json-partial.cpp.o
+[ 46%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/paddleocr.cpp.o
+[ 46%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/pixtral.cpp.o
+[ 46%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/qwen2vl.cpp.o
+[ 47%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/qwen3vl.cpp.o
+[ 47%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/siglip.cpp.o
+[ 47%] Building CXX object common/CMakeFiles/common.dir/json-schema-to-grammar.cpp.o
+[ 47%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/whisper-enc.cpp.o
+[ 47%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/mobilenetv5.cpp.o
+[ 47%] Building CXX object tools/mtmd/CMakeFiles/mtmd.dir/models/youtuvl.cpp.o
+[ 48%] Linking CXX shared library ../../bin/libmtmd.so
+[ 48%] Built target mtmd
+[ 49%] Building CXX object common/CMakeFiles/common.dir/llguidance.cpp.o
+[ 49%] Building CXX object common/CMakeFiles/common.dir/log.cpp.o
+[ 49%] Building CXX object common/CMakeFiles/common.dir/ngram-cache.cpp.o
+[ 49%] Building CXX object common/CMakeFiles/common.dir/ngram-map.cpp.o
+[ 50%] Building CXX object common/CMakeFiles/common.dir/ngram-mod.cpp.o
+[ 50%] Building CXX object common/CMakeFiles/common.dir/peg-parser.cpp.o
+[ 50%] Building CXX object common/CMakeFiles/common.dir/preset.cpp.o
+[ 50%] Building CXX object common/CMakeFiles/common.dir/regex-partial.cpp.o
+[ 50%] Building CXX object common/CMakeFiles/common.dir/sampling.cpp.o
+[ 51%] Building CXX object common/CMakeFiles/common.dir/speculative.cpp.o
+[ 51%] Building CXX object common/CMakeFiles/common.dir/unicode.cpp.o
+[ 51%] Building CXX object common/CMakeFiles/common.dir/jinja/lexer.cpp.o
+[ 51%] Building CXX object common/CMakeFiles/common.dir/jinja/parser.cpp.o
+[ 52%] Building CXX object common/CMakeFiles/common.dir/jinja/runtime.cpp.o
+[ 52%] Building CXX object common/CMakeFiles/common.dir/jinja/value.cpp.o
+[ 52%] Building CXX object common/CMakeFiles/common.dir/jinja/string.cpp.o
+[ 52%] Building CXX object common/CMakeFiles/common.dir/jinja/caps.cpp.o
+[ 52%] Building CXX object common/CMakeFiles/common.dir/__/license.cpp.o
+[ 53%] Linking CXX static library libcommon.a
+[ 53%] Built target common
+[ 53%] Building CXX object tests/CMakeFiles/test-tokenizer-0.dir/test-tokenizer-0.cpp.o
+[ 53%] Building CXX object tests/CMakeFiles/test-sampling.dir/test-sampling.cpp.o
+[ 53%] Building CXX object tests/CMakeFiles/test-grammar-parser.dir/test-grammar-parser.cpp.o
+[ 53%] Building CXX object tests/CMakeFiles/test-grammar-integration.dir/test-grammar-integration.cpp.o
+[ 53%] Building CXX object tests/CMakeFiles/test-sampling.dir/get-model.cpp.o
+[ 54%] Linking CXX executable ../bin/test-sampling
+[ 54%] Building CXX object tests/CMakeFiles/test-grammar-parser.dir/get-model.cpp.o
+[ 54%] Built target test-sampling
+[ 55%] Building CXX object tests/CMakeFiles/test-grammar-integration.dir/get-model.cpp.o
+[ 56%] Linking CXX executable ../bin/test-grammar-parser
+[ 56%] Building CXX object tests/CMakeFiles/test-llama-grammar.dir/test-llama-grammar.cpp.o
+[ 56%] Built target test-grammar-parser
+[ 57%] Building CXX object tests/CMakeFiles/test-llama-grammar.dir/get-model.cpp.o
+[ 57%] Building CXX object tests/CMakeFiles/test-chat.dir/test-chat.cpp.o
+[ 57%] Linking CXX executable ../bin/test-tokenizer-0
+[ 57%] Built target test-tokenizer-0
+[ 57%] Building CXX object tests/CMakeFiles/test-chat.dir/get-model.cpp.o
+[ 57%] Building CXX object tests/CMakeFiles/test-json-schema-to-grammar.dir/test-json-schema-to-grammar.cpp.o
+[ 57%] Linking CXX executable ../bin/test-llama-grammar
+[ 57%] Built target test-llama-grammar
+[ 57%] Building CXX object tests/CMakeFiles/test-json-schema-to-grammar.dir/get-model.cpp.o
+[ 57%] Building CXX object tests/CMakeFiles/test-quantize-stats.dir/test-quantize-stats.cpp.o
+[ 57%] Linking CXX executable ../bin/test-grammar-integration
+[ 57%] Built target test-grammar-integration
+[ 57%] Building CXX object tests/CMakeFiles/test-gbnf-validator.dir/test-gbnf-validator.cpp.o
+[ 57%] Linking CXX executable ../bin/test-gbnf-validator
+[ 57%] Built target test-gbnf-validator
+[ 58%] Building CXX object tests/CMakeFiles/test-tokenizer-1-bpe.dir/test-tokenizer-1-bpe.cpp.o
+[ 58%] Linking CXX executable ../bin/test-tokenizer-1-bpe
+[ 58%] Built target test-tokenizer-1-bpe
+[ 58%] Building CXX object tests/CMakeFiles/test-tokenizer-1-spm.dir/test-tokenizer-1-spm.cpp.o
+[ 59%] Linking CXX executable ../bin/test-quantize-stats
+[ 59%] Built target test-quantize-stats
+[ 59%] Building CXX object tests/CMakeFiles/test-llama-archs.dir/test-llama-archs.cpp.o
+[ 59%] Linking CXX executable ../bin/test-tokenizer-1-spm
+[ 59%] Built target test-tokenizer-1-spm
+[ 59%] Building CXX object tests/CMakeFiles/test-llama-archs.dir/get-model.cpp.o
+[ 59%] Building CXX object tests/CMakeFiles/test-chat-peg-parser.dir/test-chat-peg-parser.cpp.o
+[ 59%] Linking CXX executable ../bin/test-llama-archs
+[ 59%] Built target test-llama-archs
+[ 59%] Building CXX object tests/CMakeFiles/test-chat-peg-parser.dir/peg-parser/simple-tokenize.cpp.o
+[ 59%] Building CXX object tests/CMakeFiles/test-jinja.dir/test-jinja.cpp.o
+[ 60%] Linking CXX executable ../bin/test-json-schema-to-grammar
+[ 60%] Built target test-json-schema-to-grammar
+[ 60%] Building CXX object tests/CMakeFiles/test-jinja.dir/get-model.cpp.o
+[ 61%] Building CXX object tests/CMakeFiles/test-chat-peg-parser.dir/get-model.cpp.o
+[ 62%] Building CXX object tests/CMakeFiles/test-chat-auto-parser.dir/test-chat-auto-parser.cpp.o
+[ 62%] Linking CXX executable ../bin/test-chat
+[ 62%] Built target test-chat
+[ 62%] Building CXX object tests/CMakeFiles/test-chat-auto-parser.dir/get-model.cpp.o
+[ 62%] Building CXX object tests/CMakeFiles/test-chat-template.dir/test-chat-template.cpp.o
+[ 62%] Linking CXX executable ../bin/test-chat-peg-parser
+[ 62%] Building CXX object tests/CMakeFiles/test-chat-template.dir/get-model.cpp.o
+[ 63%] Linking CXX executable ../bin/test-chat-template
+[ 63%] Built target test-chat-peg-parser
+[ 63%] Building CXX object tests/CMakeFiles/test-json-partial.dir/test-json-partial.cpp.o
+[ 63%] Built target test-chat-template
+[ 63%] Building CXX object tests/CMakeFiles/test-log.dir/test-log.cpp.o
+[ 63%] Building CXX object tests/CMakeFiles/test-log.dir/get-model.cpp.o
+[ 64%] Linking CXX executable ../bin/test-log
+[ 64%] Built target test-log
+[ 65%] Building CXX object tests/CMakeFiles/test-json-partial.dir/get-model.cpp.o
+[ 65%] Building CXX object tests/CMakeFiles/test-peg-parser.dir/test-peg-parser.cpp.o
+[ 65%] Linking CXX executable ../bin/test-chat-auto-parser
+[ 65%] Built target test-chat-auto-parser
+[ 65%] Building CXX object tests/CMakeFiles/test-peg-parser.dir/peg-parser/simple-tokenize.cpp.o
+[ 65%] Building CXX object tests/CMakeFiles/test-regex-partial.dir/test-regex-partial.cpp.o
+[ 65%] Linking CXX executable ../bin/test-jinja
+[ 65%] Built target test-jinja
+[ 65%] Building CXX object tests/CMakeFiles/test-peg-parser.dir/peg-parser/test-basic.cpp.o
+[ 65%] Linking CXX executable ../bin/test-json-partial
+[ 65%] Built target test-json-partial
+[ 65%] Building CXX object tests/CMakeFiles/test-peg-parser.dir/peg-parser/test-gbnf-generation.cpp.o
+[ 65%] Building CXX object tests/CMakeFiles/test-regex-partial.dir/get-model.cpp.o
+[ 65%] Linking CXX executable ../bin/test-regex-partial
+[ 65%] Built target test-regex-partial
+[ 66%] Building CXX object tests/CMakeFiles/test-peg-parser.dir/peg-parser/test-json-parser.cpp.o
+[ 66%] Building CXX object tests/CMakeFiles/test-thread-safety.dir/test-thread-safety.cpp.o
+[ 67%] Building CXX object tests/CMakeFiles/test-thread-safety.dir/get-model.cpp.o
+[ 67%] Linking CXX executable ../bin/test-thread-safety
+[ 67%] Building CXX object tests/CMakeFiles/test-arg-parser.dir/test-arg-parser.cpp.o
+[ 67%] Built target test-thread-safety
+[ 67%] Building CXX object tests/CMakeFiles/test-peg-parser.dir/peg-parser/test-json-serialization.cpp.o
+[ 67%] Building CXX object tests/CMakeFiles/test-arg-parser.dir/get-model.cpp.o
+[ 67%] Building CXX object tests/CMakeFiles/test-opt.dir/test-opt.cpp.o
+[ 68%] Linking CXX executable ../bin/test-arg-parser
+[ 68%] Built target test-arg-parser
+[ 68%] Building CXX object tests/CMakeFiles/test-peg-parser.dir/peg-parser/test-python-dict-parser.cpp.o
+[ 68%] Building CXX object tests/CMakeFiles/test-opt.dir/get-model.cpp.o
+[ 68%] Building CXX object tests/CMakeFiles/test-gguf.dir/test-gguf.cpp.o
+[ 69%] Linking CXX executable ../bin/test-opt
+[ 69%] Built target test-opt
+[ 69%] Building CXX object tests/CMakeFiles/test-peg-parser.dir/peg-parser/test-unicode.cpp.o
+[ 69%] Building CXX object tests/CMakeFiles/test-gguf.dir/get-model.cpp.o
+[ 70%] Linking CXX executable ../bin/test-gguf
+[ 70%] Built target test-gguf
+[ 71%] Building CXX object tests/CMakeFiles/test-peg-parser.dir/get-model.cpp.o
+[ 71%] Building CXX object tests/CMakeFiles/test-backend-ops.dir/test-backend-ops.cpp.o
+[ 71%] Building CXX object tests/CMakeFiles/test-model-load-cancel.dir/test-model-load-cancel.cpp.o
+[ 71%] Building CXX object tests/CMakeFiles/test-model-load-cancel.dir/get-model.cpp.o
+[ 71%] Linking CXX executable ../bin/test-model-load-cancel
+[ 71%] Built target test-model-load-cancel
+[ 72%] Building CXX object tests/CMakeFiles/test-backend-ops.dir/get-model.cpp.o
+[ 72%] Building CXX object tests/CMakeFiles/test-autorelease.dir/test-autorelease.cpp.o
+[ 72%] Building CXX object tests/CMakeFiles/test-autorelease.dir/get-model.cpp.o
+[ 72%] Linking CXX executable ../bin/test-autorelease
+[ 72%] Built target test-autorelease
+[ 72%] Building CXX object tests/CMakeFiles/test-backend-sampler.dir/test-backend-sampler.cpp.o
+[ 72%] Building CXX object tests/CMakeFiles/test-state-restore-fragmented.dir/test-state-restore-fragmented.cpp.o
+[ 72%] Linking CXX executable ../bin/test-peg-parser
+[ 72%] Built target test-peg-parser
+[ 72%] Building CXX object tests/CMakeFiles/test-backend-sampler.dir/get-model.cpp.o
+[ 72%] Building CXX object tests/CMakeFiles/test-state-restore-fragmented.dir/get-model.cpp.o
+[ 72%] Building CXX object tests/CMakeFiles/test-barrier.dir/test-barrier.cpp.o
+[ 72%] Linking CXX executable ../bin/test-state-restore-fragmented
+[ 72%] Built target test-state-restore-fragmented
+[ 72%] Building CXX object tests/CMakeFiles/test-barrier.dir/get-model.cpp.o
+[ 72%] Building CXX object tests/CMakeFiles/test-quantize-fns.dir/test-quantize-fns.cpp.o
+[ 72%] Linking CXX executable ../bin/test-barrier
+[ 72%] Built target test-barrier
+[ 72%] Building CXX object tests/CMakeFiles/test-quantize-fns.dir/get-model.cpp.o
+[ 73%] Building CXX object tests/CMakeFiles/test-quantize-perf.dir/test-quantize-perf.cpp.o
+[ 73%] Linking CXX executable ../bin/test-quantize-fns
+[ 73%] Built target test-quantize-fns
+[ 73%] Building CXX object tests/CMakeFiles/test-quantize-perf.dir/get-model.cpp.o
+[ 73%] Building CXX object tests/CMakeFiles/test-rope.dir/test-rope.cpp.o
+[ 74%] Linking CXX executable ../bin/test-backend-sampler
+[ 74%] Built target test-backend-sampler
+[ 75%] Building CXX object tests/CMakeFiles/test-rope.dir/get-model.cpp.o
+[ 75%] Building C object tests/CMakeFiles/test-mtmd-c-api.dir/test-mtmd-c-api.c.o
+[ 76%] Building CXX object tests/CMakeFiles/test-mtmd-c-api.dir/get-model.cpp.o
+[ 76%] Linking CXX executable ../bin/test-rope
+[ 76%] Linking CXX executable ../bin/test-mtmd-c-api
+[ 76%] Built target test-rope
+[ 77%] Building CXX object tests/CMakeFiles/gguf-model-data.dir/gguf-model-data.cpp.o
+[ 77%] Built target test-mtmd-c-api
+[ 77%] Building CXX object tests/CMakeFiles/test-alloc.dir/test-alloc.cpp.o
+[ 77%] Linking CXX executable ../bin/test-quantize-perf
+[ 77%] Built target test-quantize-perf
+[ 78%] Building CXX object tests/CMakeFiles/test-alloc.dir/get-model.cpp.o
+[ 78%] Building CXX object examples/batched/CMakeFiles/llama-batched.dir/batched.cpp.o
+[ 78%] Linking CXX executable ../bin/test-alloc
+[ 78%] Built target test-alloc
+[ 78%] Building CXX object examples/debug/CMakeFiles/llama-debug.dir/debug.cpp.o
+[ 79%] Linking CXX executable ../../bin/llama-batched
+[ 79%] Built target llama-batched
+[ 79%] Building CXX object examples/embedding/CMakeFiles/llama-embedding.dir/embedding.cpp.o
+[ 79%] Linking CXX executable ../../bin/llama-embedding
+[ 79%] Built target llama-embedding
+[ 79%] Building CXX object examples/eval-callback/CMakeFiles/llama-eval-callback.dir/eval-callback.cpp.o
+[ 79%] Linking CXX static library libgguf-model-data.a
+[ 80%] Linking CXX executable ../../bin/llama-debug
+[ 80%] Built target gguf-model-data
+[ 80%] Building CXX object examples/idle/CMakeFiles/llama-idle.dir/idle.cpp.o
+[ 80%] Built target llama-debug
+[ 81%] Building CXX object examples/lookahead/CMakeFiles/llama-lookahead.dir/lookahead.cpp.o
+[ 82%] Linking CXX executable ../../bin/llama-eval-callback
+[ 82%] Built target llama-eval-callback
+[ 82%] Building CXX object examples/lookup/CMakeFiles/llama-lookup.dir/lookup.cpp.o
+[ 83%] Linking CXX executable ../../bin/llama-idle
+[ 83%] Built target llama-idle
+[ 84%] Building CXX object examples/lookup/CMakeFiles/llama-lookup-create.dir/lookup-create.cpp.o
+[ 84%] Linking CXX executable ../../bin/llama-lookahead
+[ 84%] Linking CXX executable ../../bin/llama-lookup
+[ 84%] Built target llama-lookahead
+[ 84%] Building CXX object examples/lookup/CMakeFiles/llama-lookup-merge.dir/lookup-merge.cpp.o
+[ 84%] Built target llama-lookup
+[ 84%] Building CXX object examples/lookup/CMakeFiles/llama-lookup-stats.dir/lookup-stats.cpp.o
+[ 84%] Linking CXX executable ../../bin/llama-lookup-merge
+[ 84%] Built target llama-lookup-merge
+[ 84%] Building CXX object examples/parallel/CMakeFiles/llama-parallel.dir/parallel.cpp.o
+[ 84%] Linking CXX executable ../../bin/llama-lookup-create
+[ 84%] Built target llama-lookup-create
+[ 84%] Building CXX object examples/passkey/CMakeFiles/llama-passkey.dir/passkey.cpp.o
+[ 85%] Linking CXX executable ../../bin/llama-lookup-stats
+[ 85%] Built target llama-lookup-stats
+[ 85%] Building CXX object examples/retrieval/CMakeFiles/llama-retrieval.dir/retrieval.cpp.o
+[ 85%] Linking CXX executable ../../bin/llama-parallel
+[ 85%] Linking CXX executable ../../bin/llama-passkey
+[ 85%] Built target llama-parallel
+[ 85%] Building CXX object examples/save-load-state/CMakeFiles/llama-save-load-state.dir/save-load-state.cpp.o
+[ 85%] Built target llama-passkey
+[ 85%] Building CXX object examples/speculative/CMakeFiles/llama-speculative.dir/speculative.cpp.o
+[ 85%] Linking CXX executable ../../bin/llama-retrieval
+[ 86%] Linking CXX executable ../../bin/llama-save-load-state
+[ 86%] Built target llama-retrieval
+[ 86%] Building CXX object examples/speculative-simple/CMakeFiles/llama-speculative-simple.dir/speculative-simple.cpp.o
+[ 86%] Built target llama-save-load-state
+[ 87%] Building CXX object examples/gen-docs/CMakeFiles/llama-gen-docs.dir/gen-docs.cpp.o
+[ 87%] Linking CXX executable ../../bin/llama-speculative
+[ 87%] Built target llama-speculative
+[ 87%] Building CXX object examples/training/CMakeFiles/llama-finetune.dir/finetune.cpp.o
+[ 87%] Linking CXX executable ../../bin/llama-gen-docs
+[ 87%] Built target llama-gen-docs
+[ 87%] Building CXX object examples/diffusion/CMakeFiles/llama-diffusion-cli.dir/diffusion-cli.cpp.o
+[ 87%] Linking CXX executable ../bin/test-backend-ops
+[ 88%] Linking CXX executable ../../bin/llama-speculative-simple
+[ 88%] Built target test-backend-ops
+[ 89%] Building CXX object examples/convert-llama2c-to-ggml/CMakeFiles/llama-convert-llama2c-to-ggml.dir/convert-llama2c-to-ggml.cpp.o
+[ 89%] Built target llama-speculative-simple
+[ 89%] Building CXX object pocs/vdot/CMakeFiles/llama-vdot.dir/vdot.cpp.o
+[ 89%] Linking CXX executable ../../bin/llama-finetune
+[ 90%] Linking CXX executable ../../bin/llama-vdot
+[ 90%] Built target llama-finetune
+[ 90%] Building CXX object pocs/vdot/CMakeFiles/llama-q8dot.dir/q8dot.cpp.o
+[ 90%] Built target llama-vdot
+[ 90%] Building CXX object tools/batched-bench/CMakeFiles/llama-batched-bench.dir/batched-bench.cpp.o
+[ 90%] Linking CXX executable ../../bin/llama-q8dot
+[ 90%] Built target llama-q8dot
+[ 90%] Building CXX object tools/gguf-split/CMakeFiles/llama-gguf-split.dir/gguf-split.cpp.o
+[ 90%] Linking CXX executable ../../bin/llama-convert-llama2c-to-ggml
+[ 90%] Built target llama-convert-llama2c-to-ggml
+[ 90%] Building CXX object tools/imatrix/CMakeFiles/llama-imatrix.dir/imatrix.cpp.o
+[ 90%] Linking CXX executable ../../bin/llama-batched-bench
+[ 90%] Built target llama-batched-bench
+[ 90%] Building CXX object tools/llama-bench/CMakeFiles/llama-bench.dir/llama-bench.cpp.o
+[ 90%] Linking CXX executable ../../bin/llama-gguf-split
+[ 90%] Built target llama-gguf-split
+[ 90%] Building CXX object tools/completion/CMakeFiles/llama-completion.dir/completion.cpp.o
+[ 91%] Linking CXX executable ../../bin/llama-diffusion-cli
+[ 91%] Built target llama-diffusion-cli
+[ 92%] Building CXX object tools/perplexity/CMakeFiles/llama-perplexity.dir/perplexity.cpp.o
+[ 92%] Linking CXX executable ../../bin/llama-completion
+[ 92%] Built target llama-completion
+[ 93%] Building CXX object tools/quantize/CMakeFiles/llama-quantize.dir/quantize.cpp.o
+[ 93%] Linking CXX executable ../../bin/llama-perplexity
+[ 93%] Built target llama-perplexity
+[ 93%] Building CXX object tools/server/CMakeFiles/server-context.dir/server-task.cpp.o
+[ 93%] Linking CXX executable ../../bin/llama-imatrix
+[ 93%] Built target llama-imatrix
+[ 93%] Building CXX object tools/tokenize/CMakeFiles/llama-tokenize.dir/tokenize.cpp.o
+[ 93%] Linking CXX executable ../../bin/llama-quantize
+[ 93%] Built target llama-quantize
+[ 93%] Building CXX object tools/server/CMakeFiles/server-context.dir/server-queue.cpp.o
+[ 94%] Linking CXX executable ../../bin/llama-tokenize
+[ 94%] Built target llama-tokenize
+[ 94%] Building CXX object tools/server/CMakeFiles/server-context.dir/server-common.cpp.o
+[ 94%] Linking CXX executable ../../bin/llama-bench
+[ 94%] Built target llama-bench
+[ 95%] Building CXX object tools/server/CMakeFiles/server-context.dir/server-context.cpp.o
+[ 95%] Building CXX object tools/parser/CMakeFiles/llama-debug-template-parser.dir/debug-template-parser.cpp.o
+[ 95%] Linking CXX executable ../../bin/llama-debug-template-parser
+[ 95%] Built target llama-debug-template-parser
+[ 95%] Building CXX object tools/parser/CMakeFiles/llama-template-analysis.dir/template-analysis.cpp.o
+[ 95%] Building CXX object tools/tts/CMakeFiles/llama-tts.dir/tts.cpp.o
+[ 95%] Linking CXX executable ../../bin/llama-template-analysis
+[ 95%] Built target llama-template-analysis
+[ 95%] Building CXX object tools/mtmd/CMakeFiles/llama-mtmd-cli.dir/mtmd-cli.cpp.o
+[ 95%] Building CXX object tools/cvector-generator/CMakeFiles/llama-cvector-generator.dir/cvector-generator.cpp.o
+[ 95%] Linking CXX executable ../../bin/llama-cvector-generator
+[ 95%] Built target llama-cvector-generator
+[ 95%] Building CXX object tools/export-lora/CMakeFiles/llama-export-lora.dir/export-lora.cpp.o
+[ 95%] Linking CXX static library libserver-context.a
+[ 95%] Built target server-context
+[ 96%] Building CXX object tools/fit-params/CMakeFiles/llama-fit-params.dir/fit-params.cpp.o
+[ 96%] Linking CXX executable ../../bin/llama-tts
+[ 96%] Built target llama-tts
+[ 96%] Building CXX object tools/results/CMakeFiles/llama-results.dir/results.cpp.o
+[ 97%] Linking CXX executable ../../bin/llama-mtmd-cli
+[ 97%] Built target llama-mtmd-cli
+[ 97%] Building CXX object tests/CMakeFiles/test-gguf-model-data.dir/test-gguf-model-data.cpp.o
+[ 97%] Linking CXX executable ../bin/test-gguf-model-data
+[ 97%] Linking CXX executable ../../bin/llama-export-lora
+[ 97%] Linking CXX executable ../../bin/llama-fit-params
+[ 97%] Built target test-gguf-model-data
+[ 98%] Building CXX object tools/cli/CMakeFiles/llama-cli.dir/cli.cpp.o
+[ 98%] Built target llama-export-lora
+[ 98%] Generating loading.html.hpp
+[ 98%] Generating index.html.gz.hpp
+[ 98%] Built target llama-fit-params
+[ 99%] Linking CXX executable ../../bin/llama-results
+[ 99%] Built target llama-results
+[ 99%] Building CXX object tools/server/CMakeFiles/llama-server.dir/server.cpp.o
+[ 99%] Building CXX object tools/server/CMakeFiles/llama-server.dir/server-http.cpp.o
+[100%] Building CXX object tools/server/CMakeFiles/llama-server.dir/server-models.cpp.o
+[100%] Linking CXX executable ../../bin/llama-cli
+[100%] Built target llama-cli
+[100%] Linking CXX executable ../../bin/llama-server
+[100%] Built target llama-server
+4s
+Run python -m ftt.run --config ftt.yml
+  
+1s
+Run actions/upload-artifact@v4
+  
+With the provided path, there will be 7 files uploaded
+Artifact name is valid!
+Root directory input is valid!
+Beginning upload of artifact content to blob storage
+Uploaded bytes 1008126
+Finished uploading artifact content to blob storage!
+SHA256 digest of uploaded artifact zip is be92f6698b6775eece90aa5cfb4fc9c485e3311eb7cd902fcc82d90a485493f2
+Finalizing artifact upload
+Artifact ftt-output.zip successfully finalized. Artifact ID 5844621242
+Artifact ftt-output has been successfully uploaded! Final size is 1008126 bytes. Artifact ID is 5844621242
+Artifact download URL: https://github.com/Sekai0NI0itamio/FTT/actions/runs/22891522973/artifacts/5844621242
+0s
+Post job cleanup.
+Cache hit occurred on the primary key Linux-pip-b0f9995e6c935a985ae9a2ed8edbf54db720a010a81a2db5a75e9310ac2c283b, not saving cache.
+0s
+Post job cleanup.
+Cache hit occurred on the primary key Linux-ftt-models, not saving cache.
+0s
+Post job cleanup.
+0s
+Post job cleanup.
+/usr/bin/git version
+git version 2.53.0
+Temporarily overriding HOME='/home/runner/work/_temp/f78c2569-4828-4e5e-84ec-b8d4f1fdc0cb' before making global git config changes
+Adding repository directory to the temporary git global config as a safe directory
+/usr/bin/git config --global --add safe.directory /home/runner/work/FTT/FTT
+/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+http.https://github.com/.extraheader
+/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url

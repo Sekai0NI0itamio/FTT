@@ -62,6 +62,15 @@ class LocalLlamaCppBackend(VisionBackend):
                     return result.stdout.strip()
                 detail = (result.stderr.strip() or result.stdout.strip() or detail)
 
+        if "unknown projector type" in detail.lower() or "failed to load clip model" in detail.lower():
+            fallback = self._find_llava_cli(cli_path)
+            if fallback:
+                cli_path = fallback
+                result = self._run_cli(cli_path, image_path, prompt, max_tokens, include_sampling=True)
+                if result.returncode == 0:
+                    return result.stdout.strip()
+                detail = (result.stderr.strip() or result.stdout.strip() or detail)
+
         if "invalid argument: -n" in detail or "invalid argument: --temp" in detail:
             retry = self._run_cli(cli_path, image_path, prompt, max_tokens, include_sampling=False)
             if retry.returncode == 0:
@@ -113,4 +122,12 @@ class LocalLlamaCppBackend(VisionBackend):
         candidate = current.parent / "llama-mtmd-cli"
         if candidate.exists():
             return candidate
+        return None
+
+    @staticmethod
+    def _find_llava_cli(current: Path) -> Path | None:
+        for name in ("llama-llava-cli", "llava-cli"):
+            candidate = current.parent / name
+            if candidate.exists():
+                return candidate
         return None

@@ -14,6 +14,7 @@ class LocalLlamaCppBackend(VisionBackend):
         model_path: str,
         mmproj_path: str,
         lora_path: str,
+        chat_template: str,
         download: bool,
         model_url: str,
         mmproj_url: str,
@@ -22,6 +23,7 @@ class LocalLlamaCppBackend(VisionBackend):
         self.model_path = Path(model_path)
         self.mmproj_path = Path(mmproj_path)
         self.lora_path = Path(lora_path) if lora_path else None
+        self.chat_template = chat_template
         self.download = download
         self.model_url = model_url
         self.mmproj_url = mmproj_url
@@ -100,6 +102,8 @@ class LocalLlamaCppBackend(VisionBackend):
             "-p",
             prompt,
         ]
+        if self.chat_template:
+            cmd.extend(["--chat-template", self.chat_template])
         if include_sampling:
             cmd.extend(["-n", str(max_tokens), "--temp", "0"])
         return cmd

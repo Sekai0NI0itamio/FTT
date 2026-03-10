@@ -19,6 +19,10 @@ on:
         description: "Vision worker concurrency"
         required: false
         default: "1"
+      chat_template:
+        description: "Chat template for llama.cpp (e.g. vicuna)"
+        required: false
+        default: "vicuna"
       render_max_pages:
         description: "Max pages rendered per file"
         required: false
@@ -106,6 +110,7 @@ jobs:
           FTT_KEEP_VISUALS: ${{ inputs.keep_visuals }}
           FTT_VISION_MODEL_URL: ${{ inputs.model_url }}
           FTT_VISION_MMPROJ_URL: ${{ inputs.mmproj_url }}
+          FTT_VISION_CHAT_TEMPLATE: ${{ inputs.chat_template }}
         run: |
           python -m ftt.run --config ftt.yml
 

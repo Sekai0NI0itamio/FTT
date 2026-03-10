@@ -43,6 +43,7 @@ Primary configuration lives in `ftt.yml`. Common parameters:
 - `render.office`: `auto|true|false` for LibreOffice conversions (`auto` enables for PPTX/XLSX by default)
 - `concurrency.file_workers` and `concurrency.vision_workers`
 - `vision.backend`: `local_llama_cpp` by default
+- `vision.chat_template`: default `vicuna` for LLaVA v1.5 models
 
 Workflow inputs can override common parameters. Environment variables begin with `FTT_` (see `ftt/config.py`).
 

@@ -17,6 +17,7 @@ def build_backend(config: Dict) -> VisionBackend:
             model_path=config["vision"]["model_path"],
             mmproj_path=config["vision"]["mmproj_path"],
             lora_path=config["vision"]["lora_path"],
+            chat_template=config["vision"]["chat_template"],
             download=config["vision"]["download"],
             model_url=config["vision"]["model_url"],
             mmproj_url=config["vision"]["mmproj_url"],

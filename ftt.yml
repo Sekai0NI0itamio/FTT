@@ -8,6 +8,7 @@ vision:
   mmproj_path: ~/.cache/ftt/models/llava-7b-mmproj-q4.gguf
   lora_path: ""
   llama_cli_path: vendor/llama.cpp/build/bin/llama-mtmd-cli
+  chat_template: vicuna
   max_tokens: 512
   retries: 2
   download: true

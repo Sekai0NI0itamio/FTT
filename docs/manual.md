@@ -1,0 +1,60 @@
+# FTT Manual
+
+## Overview
+FTT (File To Text) runs entirely on GitHub Actions. Users commit files into `incoming/`, manually trigger a workflow, and receive transcripts, logs, and a summary as a downloadable artifact.
+
+## How It Works
+1. The workflow checks out the repo and installs dependencies.
+2. It discovers files in `incoming/`.
+3. Each file is processed:
+   - Text extraction from PDFs, DOCX, PPTX, XLSX.
+   - Visual extraction (embedded images and/or page rendering).
+   - Vision LLM transcription for images and charts.
+4. Outputs are written to `output/` and uploaded as an artifact even if some files fail.
+
+## Folder Structure
+- `incoming/`
+  - Commit your input files here.
+- `output/`
+  - Generated at runtime.
+- `ftt/`
+  - Python package implementing the pipeline.
+- `.github/workflows/`
+  - GitHub Actions workflows.
+
+## Triggering the Workflow
+1. Go to the **Actions** tab.
+2. Select **FTT Process Files**.
+3. Click **Run workflow** and optionally override inputs.
+
+## Output Artifact Layout
+- `output/all_transcripts.txt`
+- `output/summary.json`
+- `output/summary.md`
+- `output/files/<safe_name>/transcript.txt`
+- `output/files/<safe_name>/logs/steps.log`
+- `output/files/<safe_name>/visuals/` (when `logging.keep_visuals=true`)
+
+## Configuration
+Primary configuration lives in `ftt.yml`. Common parameters:
+- `visual.mode`: `embedded`, `hybrid`, `full`
+- `render.dpi`: DPI for rendered pages
+- `render.max_pages`: limit pages rendered per file
+- `render.office`: `auto|true|false` for LibreOffice conversions (`auto` enables for PPTX/XLSX by default)
+- `concurrency.file_workers` and `concurrency.vision_workers`
+- `vision.backend`: `local_llama_cpp` by default
+
+Workflow inputs can override common parameters. Environment variables begin with `FTT_` (see `ftt/config.py`).
+
+## Changing the LLM Backend
+The default backend uses `llama.cpp` with a LLaVA-family model. To switch:
+- Update `vision.backend` in `ftt.yml`.
+- For API providers, implement the stub modules in `ftt/vision/` and add secrets in GitHub.
+
+For the local backend, either pre-cache the model files or set `vision.model_url` and `vision.mmproj_url` so the workflow downloads them.
+
+## Troubleshooting
+- **LibreOffice conversion fails**: ensure `libreoffice` is installed in the workflow runner.
+- **Missing model files**: set `vision.model_url` and `vision.mmproj_url` to valid URLs or pre-cache the files.
+- **Out of memory / timeouts**: reduce `render.max_pages`, lower `visual.max_dim`, and keep `vision_workers=1`.
+- **Artifacts missing**: the workflow uploads artifacts even on partial failure; check the workflow logs for errors.

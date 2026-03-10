@@ -1,0 +1,99 @@
+name: FTT Process Files
+
+on:
+  workflow_dispatch:
+    inputs:
+      visual_mode:
+        description: "Visual mode: embedded|hybrid|full"
+        required: false
+        default: "hybrid"
+      vision_backend:
+        description: "Vision backend: local_llama_cpp|openai|anthropic|gemini"
+        required: false
+        default: "local_llama_cpp"
+      file_workers:
+        description: "File worker concurrency"
+        required: false
+        default: "2"
+      vision_workers:
+        description: "Vision worker concurrency"
+        required: false
+        default: "1"
+      render_max_pages:
+        description: "Max pages rendered per file"
+        required: false
+        default: "30"
+      keep_visuals:
+        description: "Keep rendered visuals in artifact"
+        required: false
+        default: "true"
+      model_url:
+        description: "Optional model download URL"
+        required: false
+        default: ""
+      mmproj_url:
+        description: "Optional mmproj download URL"
+        required: false
+        default: ""
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils libreoffice
+
+      - name: Cache models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ftt/models
+          key: ${{ runner.os }}-ftt-models
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build llama.cpp
+        run: |
+          rm -rf vendor/llama.cpp
+          git clone --depth 1 https://github.com/ggerganov/llama.cpp vendor/llama.cpp
+          make -C vendor/llama.cpp -j$(nproc) llava-cli
+
+      - name: Run FTT
+        env:
+          FTT_VISUAL_MODE: ${{ inputs.visual_mode }}
+          FTT_VISION_BACKEND: ${{ inputs.vision_backend }}
+          FTT_FILE_WORKERS: ${{ inputs.file_workers }}
+          FTT_VISION_WORKERS: ${{ inputs.vision_workers }}
+          FTT_RENDER_MAX_PAGES: ${{ inputs.render_max_pages }}
+          FTT_KEEP_VISUALS: ${{ inputs.keep_visuals }}
+          FTT_VISION_MODEL_URL: ${{ inputs.model_url }}
+          FTT_VISION_MMPROJ_URL: ${{ inputs.mmproj_url }}
+        run: |
+          python -m ftt.run --config ftt.yml
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ftt-output
+          path: output
+          if-no-files-found: warn

@@ -1,0 +1,43 @@
+inputs:
+  dir: incoming
+outputs:
+  dir: output
+vision:
+  backend: local_llama_cpp
+  model_path: ~/.cache/ftt/models/llava-7b-q4.gguf
+  mmproj_path: ~/.cache/ftt/models/llava-7b-mmproj-q4.gguf
+  lora_path: ""
+  llama_cli_path: vendor/llama.cpp/llava-cli
+  max_tokens: 512
+  retries: 2
+  download: true
+  model_url: "https://huggingface.co/mozilla-ai/llava-v1.5-7b-llamafile/resolve/main/llava-v1.5-7b-Q4_K.gguf"
+  mmproj_url: "https://huggingface.co/mozilla-ai/llava-v1.5-7b-llamafile/resolve/main/llava-v1.5-7b-mmproj-Q4_0.gguf"
+  prompt_template: |
+    You are a document transcription assistant.
+    Tasks:
+    1) Transcribe all visible text exactly.
+    2) Describe the image in detail.
+    3) If this is a chart/graph, extract a Markdown table of data values including axis labels, units, and series names.
+    Output with sections:
+    Text:
+    Description:
+    Chart Data (if any):
+visual:
+  mode: hybrid
+  max_dim: 1024
+  text_threshold: 200
+render:
+  dpi: 150
+  max_pages: 30
+  office: auto
+concurrency:
+  file_workers: 2
+  vision_workers: 1
+limits:
+  max_file_mb: 100
+  max_pages_per_file: 200
+  max_images_per_file: 100
+logging:
+  level: info
+  keep_visuals: true

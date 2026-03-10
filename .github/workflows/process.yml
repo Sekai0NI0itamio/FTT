@@ -75,7 +75,8 @@ jobs:
         run: |
           rm -rf vendor/llama.cpp
           git clone --depth 1 https://github.com/ggerganov/llama.cpp vendor/llama.cpp
-          make -C vendor/llama.cpp -j$(nproc) llava-cli
+          cmake -S vendor/llama.cpp -B vendor/llama.cpp/build -DGGML_NATIVE=OFF
+          cmake --build vendor/llama.cpp/build -j$(nproc)
 
       - name: Run FTT
         env:
@@ -88,6 +89,7 @@ jobs:
           FTT_VISION_MODEL_URL: ${{ inputs.model_url }}
           FTT_VISION_MMPROJ_URL: ${{ inputs.mmproj_url }}
         run: |
+          export FTT_VISION_LLAMA_CLI_PATH="vendor/llama.cpp/build/bin/llava-cli"
           python -m ftt.run --config ftt.yml
 
       - name: Upload artifact

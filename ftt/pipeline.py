@@ -171,7 +171,7 @@ def process_file(
             tasks = {}
             if enable_text:
                 if ocr_enabled:
-                    tasks["text"] = vision_pool.submit(ocr_extract, normalized, ocr_lang)
+                    tasks["text"] = vision_pool.submit(ocr_extract, image_ref.path, ocr_lang)
                 else:
                     tasks["text"] = vision_pool.submit(
                         _retry_transcribe, vision_backend, normalized, text_prompt, max_tokens, retries

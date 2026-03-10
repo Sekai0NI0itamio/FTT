@@ -45,7 +45,7 @@ on:
         default: ""
 
 jobs:
-  process:
+  setup:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:
@@ -101,16 +101,63 @@ jobs:
             cmake -S vendor/llama.cpp -B vendor/llama.cpp/build -DGGML_NATIVE=OFF
             cmake --build vendor/llama.cpp/build -j$(nproc)
           fi
+
+  processing:
+    runs-on: ubuntu-latest
+    needs: setup
+    timeout-minutes: 360
+    strategy:
+      matrix:
+        task: [text, description, deplot]
+    name: "Concurrent Processing - ${{ matrix.task }}"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ftt/models
+          key: ${{ runner.os }}-ftt-models
+
+      - name: Cache llama.cpp build
+        uses: actions/cache@v4
+        with:
+          path: vendor/llama.cpp
+          key: ${{ runner.os }}-llama-cmake-v1
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache Hugging Face models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Locate llama CLI
+        run: |
           LLAMA_CLI=$(find vendor/llama.cpp/build -type f \( -name 'llama-mtmd-cli' -o -name 'llama-llava-cli' -o -name 'llava-cli' \) | head -n 1)
           if [ -z "$LLAMA_CLI" ]; then
-            echo "llama CLI binary not found after build" >&2
-            find vendor/llama.cpp/build -maxdepth 3 -type f -name '*llava*' >&2 || true
-            find vendor/llama.cpp/build -maxdepth 3 -type f -name '*mtmd*' >&2 || true
+            echo "llama CLI binary not found" >&2
             exit 1
           fi
           echo "FTT_VISION_LLAMA_CLI_PATH=$LLAMA_CLI" >> $GITHUB_ENV
 
-      - name: Run FTT
+      - name: Concurrent Processing (Text + Description + DePlot)
         env:
           FTT_VISUAL_MODE: ${{ inputs.visual_mode }}
           FTT_VISION_BACKEND: ${{ inputs.vision_backend }}
@@ -123,7 +170,58 @@ jobs:
           FTT_VISION_MMPROJ_URL: ${{ inputs.mmproj_url }}
           FTT_VISION_CHAT_TEMPLATE: ${{ inputs.chat_template }}
         run: |
-          python -m ftt.run --config ftt.yml
+          python -m ftt.run --config ftt.yml --outputs output-${{ matrix.task }} --mode ${{ matrix.task }}
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ftt-output-${{ matrix.task }}
+          path: output-${{ matrix.task }}
+          if-no-files-found: warn
+
+  bundling:
+    runs-on: ubuntu-latest
+    needs: processing
+    timeout-minutes: 360
+    if: always()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Prepare artifact folders
+        run: |
+          mkdir -p _artifacts/text _artifacts/description _artifacts/deplot
+
+      - name: Download text output
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: ftt-output-text
+          path: _artifacts/text
+
+      - name: Download description output
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: ftt-output-description
+          path: _artifacts/description
+
+      - name: Download deplot output
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: ftt-output-deplot
+          path: _artifacts/deplot
+
+      - name: Bundling
+        run: |
+          python -m ftt.bundle --inputs _artifacts/text _artifacts/description _artifacts/deplot --output output
 
       - name: Upload artifact
         if: always()

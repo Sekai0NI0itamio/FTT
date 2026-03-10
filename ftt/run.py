@@ -18,6 +18,12 @@ def main() -> int:
     parser.add_argument("--config", default="ftt.yml", help="Path to config file")
     parser.add_argument("--inputs", default="", help="Override inputs directory")
     parser.add_argument("--outputs", default="", help="Override outputs directory")
+    parser.add_argument(
+        "--mode",
+        default="all",
+        choices=["all", "text", "description", "deplot"],
+        help="Extraction mode for visuals",
+    )
     args = parser.parse_args()
 
     config_path = Path(args.config)
@@ -27,6 +33,11 @@ def main() -> int:
         config["inputs"]["dir"] = args.inputs
     if args.outputs:
         config["outputs"]["dir"] = args.outputs
+
+    if args.mode != "all":
+        config["processing"]["enable_text"] = args.mode == "text"
+        config["processing"]["enable_description"] = args.mode == "description"
+        config["processing"]["enable_deplot"] = args.mode == "deplot"
 
     input_dir = Path(config["inputs"]["dir"])
     output_dir = Path(config["outputs"]["dir"])
@@ -48,7 +59,7 @@ def main() -> int:
     deplot_pool = ThreadPoolExecutor(max_workers=deplot_workers)
 
     deplot_extractor = None
-    if config["deplot"]["enabled"]:
+    if config["deplot"]["enabled"] and config["processing"]["enable_deplot"]:
         deplot_extractor = DeplotExtractor(
             model_name=config["deplot"]["model_name"],
             max_tokens=config["deplot"]["max_tokens"],

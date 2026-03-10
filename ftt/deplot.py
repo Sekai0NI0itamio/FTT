@@ -35,6 +35,7 @@ class DeplotExtractor:
             with Image.open(image_path) as img:
                 img = img.convert("RGB")
                 inputs = self._processor(images=img, text=self.prompt, return_tensors="pt")
+                inputs = {k: v.to(self._model.device) for k, v in inputs.items()}
             with self._no_grad():
                 output = self._model.generate(**inputs, max_new_tokens=self.max_tokens)
             text = self._processor.decode(output[0], skip_special_tokens=True)

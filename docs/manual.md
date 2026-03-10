@@ -4,9 +4,13 @@
 FTT (File To Text) runs entirely on GitHub Actions. Users commit files into `incoming/`, manually trigger a workflow, and receive transcripts, logs, and a summary as a downloadable artifact.
 
 ## How It Works
-1. The workflow checks out the repo and installs dependencies.
-2. It discovers files in `incoming/`.
-3. Each file is processed:
+1. **Setup** job installs dependencies, builds `llama.cpp`, and restores caches.
+2. **Concurrent Processing** runs three parallel jobs:
+   - `text` (vision text extraction)
+   - `description` (vision description)
+   - `deplot` (chart data extraction)
+3. **Bundling** merges outputs into a single artifact.
+4. Each file is processed:
    - Text extraction from PDFs, DOCX, PPTX, XLSX.
    - Visual extraction (embedded images and/or page rendering).
    - Vision LLM transcription for image text + description.
@@ -28,6 +32,15 @@ FTT (File To Text) runs entirely on GitHub Actions. Users commit files into `inc
 2. Select **FTT Process Files**.
 3. Click **Run workflow** and optionally override inputs.
 
+## Local CLI
+Run all tasks:
+`python -m ftt.run --config ftt.yml`
+
+Run a single mode:
+`python -m ftt.run --config ftt.yml --mode text`
+`python -m ftt.run --config ftt.yml --mode description`
+`python -m ftt.run --config ftt.yml --mode deplot`
+
 ## Output Artifact Layout
 - `output/all_transcripts.txt`
 - `output/summary.json`
@@ -48,6 +61,7 @@ Primary configuration lives in `ftt.yml`. Common parameters:
 - `vision.chat_template`: default `vicuna` for LLaVA v1.5 models
 - `vision.text_prompt` and `vision.description_prompt`
 - `deplot.enabled`, `deplot.model_name`, `deplot.prompt`
+- `processing.enable_text`, `processing.enable_description`, `processing.enable_deplot`
 
 ## Chart Extraction (DePlot)
 When `deplot.enabled=true`, each visual is sent to DePlot to extract chart data. The output is stored in the transcript as a chart table and a small Python script snippet for quick parsing.

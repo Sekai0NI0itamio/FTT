@@ -38,6 +38,10 @@ concurrency:
   file_workers: 2
   vision_workers: 1
   deplot_workers: 1
+processing:
+  enable_text: true
+  enable_description: true
+  enable_deplot: true
 limits:
   max_file_mb: 100
   max_pages_per_file: 200

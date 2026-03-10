@@ -129,6 +129,13 @@ def process_file(
     log_path = file_dir / "logs" / "steps.log"
     logger = FileLogger(log_path, config["logging"]["level"])
 
+    file_dir.mkdir(parents=True, exist_ok=True)
+    meta_path = file_dir / "meta.json"
+    if not meta_path.exists():
+        import json
+
+        meta_path.write_text(json.dumps({\"file\": path.name}), encoding=\"utf-8\")
+
     transcript_path = file_dir / "transcript.txt"
 
     try:
@@ -146,19 +153,24 @@ def process_file(
         retries = config["vision"].get("retries", 2)
         max_images = config["limits"]["max_images_per_file"]
         keep_visuals = config["logging"]["keep_visuals"]
-        deplot_enabled = bool(config["deplot"]["enabled"]) and deplot_extractor is not None
+        enable_text = bool(config["processing"]["enable_text"])
+        enable_description = bool(config["processing"]["enable_description"])
+        enable_deplot = bool(config["processing"]["enable_deplot"])
+        deplot_enabled = enable_deplot and bool(config["deplot"]["enabled"]) and deplot_extractor is not None
 
         visual_outputs: List[str] = []
         for index, image_ref in enumerate(content.images[:max_images], start=1):
             logger.info(f"Transcribing visual {index}/{min(len(content.images), max_images)}")
             normalized = normalize_image(image_ref.path, visuals_dir, config["visual"]["max_dim"])
             tasks = {}
-            tasks["text"] = vision_pool.submit(
-                _retry_transcribe, vision_backend, normalized, text_prompt, max_tokens, retries
-            )
-            tasks["description"] = vision_pool.submit(
-                _retry_transcribe, vision_backend, normalized, description_prompt, max_tokens, retries
-            )
+            if enable_text:
+                tasks["text"] = vision_pool.submit(
+                    _retry_transcribe, vision_backend, normalized, text_prompt, max_tokens, retries
+                )
+            if enable_description:
+                tasks["description"] = vision_pool.submit(
+                    _retry_transcribe, vision_backend, normalized, description_prompt, max_tokens, retries
+                )
             if deplot_enabled and deplot_pool is not None:
                 tasks["deplot"] = deplot_pool.submit(deplot_extractor.extract, normalized)
 
@@ -170,8 +182,10 @@ def process_file(
                     logger.error(f"{name} extraction failed: {exc}")
                     results[name] = f"ERROR: {exc}"
             sections = [f"[Visual {index} - {image_ref.label}]"]
-            sections.append("Text (Vision):\n" + results.get("text", ""))
-            sections.append("Description (Vision):\n" + results.get("description", ""))
+            if enable_text:
+                sections.append("Text (Vision):\n" + results.get("text", ""))
+            if enable_description:
+                sections.append("Description (Vision):\n" + results.get("description", ""))
             if "deplot" in results:
                 deplot_text = results["deplot"].strip()
                 if deplot_text and deplot_text.upper() != "NO_CHART":
@@ -185,7 +199,7 @@ def process_file(
             logger.warning("Max images per file reached; remaining images skipped")
 
         transcript_sections = []
-        if content.text_parts:
+        if content.text_parts and enable_text:
             transcript_sections.append("Text:\n" + "\n".join(content.text_parts))
         if visual_outputs:
             transcript_sections.append("Visuals:\n" + "\n\n".join(visual_outputs))

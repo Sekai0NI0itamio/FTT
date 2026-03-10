@@ -74,6 +74,11 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "vision_workers": 1,
         "deplot_workers": 1,
     },
+    "processing": {
+        "enable_text": True,
+        "enable_description": True,
+        "enable_deplot": True,
+    },
     "limits": {
         "max_file_mb": 100,
         "max_pages_per_file": 200,
@@ -120,6 +125,9 @@ _OVERRIDE_SPECS: Iterable[Tuple[str, Tuple[str, ...], str]] = [
     ("FTT_FILE_WORKERS", ("concurrency", "file_workers"), "int"),
     ("FTT_VISION_WORKERS", ("concurrency", "vision_workers"), "int"),
     ("FTT_DEPLOT_WORKERS", ("concurrency", "deplot_workers"), "int"),
+    ("FTT_ENABLE_TEXT", ("processing", "enable_text"), "bool"),
+    ("FTT_ENABLE_DESCRIPTION", ("processing", "enable_description"), "bool"),
+    ("FTT_ENABLE_DEPLOT", ("processing", "enable_deplot"), "bool"),
     ("FTT_LIMITS_MAX_FILE_MB", ("limits", "max_file_mb"), "int"),
     ("FTT_LIMITS_MAX_PAGES_PER_FILE", ("limits", "max_pages_per_file"), "int"),
     ("FTT_LIMITS_MAX_IMAGES_PER_FILE", ("limits", "max_images_per_file"), "int"),

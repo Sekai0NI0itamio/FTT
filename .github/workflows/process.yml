@@ -77,6 +77,13 @@ jobs:
           git clone --depth 1 https://github.com/ggerganov/llama.cpp vendor/llama.cpp
           cmake -S vendor/llama.cpp -B vendor/llama.cpp/build -DGGML_NATIVE=OFF
           cmake --build vendor/llama.cpp/build -j$(nproc)
+          LLAVA_CLI=$(find vendor/llama.cpp/build -type f \( -name 'llava-cli' -o -name 'llama-llava-cli' \) | head -n 1)
+          if [ -z "$LLAVA_CLI" ]; then
+            echo "llava-cli binary not found after build" >&2
+            find vendor/llama.cpp/build -maxdepth 3 -type f -name '*llava*' >&2 || true
+            exit 1
+          fi
+          echo "FTT_VISION_LLAMA_CLI_PATH=$LLAVA_CLI" >> $GITHUB_ENV
 
       - name: Run FTT
         env:
@@ -89,7 +96,6 @@ jobs:
           FTT_VISION_MODEL_URL: ${{ inputs.model_url }}
           FTT_VISION_MMPROJ_URL: ${{ inputs.mmproj_url }}
         run: |
-          export FTT_VISION_LLAMA_CLI_PATH="vendor/llama.cpp/build/bin/llava-cli"
           python -m ftt.run --config ftt.yml
 
       - name: Upload artifact

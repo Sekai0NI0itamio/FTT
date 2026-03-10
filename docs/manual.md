@@ -47,7 +47,8 @@ Primary configuration lives in `ftt.yml`. Common parameters:
 Workflow inputs can override common parameters. Environment variables begin with `FTT_` (see `ftt/config.py`).
 
 ## Changing the LLM Backend
-The default backend uses `llama.cpp` with a LLaVA-family model. To switch:
+The default backend uses `llama.cpp` with a LLaVA-family model. The workflow prefers `llama-mtmd-cli` (the replacement for `llama-llava-cli`) when available.
+To switch:
 - Update `vision.backend` in `ftt.yml`.
 - For API providers, implement the stub modules in `ftt/vision/` and add secrets in GitHub.
 

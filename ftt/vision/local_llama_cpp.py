@@ -39,14 +39,58 @@ class LocalLlamaCppBackend(VisionBackend):
 
     def transcribe(self, image_path: Path, prompt: str, max_tokens: int) -> str:
         if not self.llama_cli_path.exists():
-            raise FileNotFoundError(f"llava-cli not found at {self.llama_cli_path}")
+            raise FileNotFoundError(f"llama CLI not found at {self.llama_cli_path}")
         if not self.model_path.exists():
             raise FileNotFoundError(f"Model not found at {self.model_path}")
         if not self.mmproj_path.exists():
             raise FileNotFoundError(f"MMProj not found at {self.mmproj_path}")
 
+        cli_path = self.llama_cli_path
+        result = self._run_cli(cli_path, image_path, prompt, max_tokens, include_sampling=True)
+        if result.returncode == 0:
+            return result.stdout.strip()
+
+        detail = (result.stderr.strip() or result.stdout.strip() or "llama CLI failed")
+        if "deprecated" in detail.lower():
+            fallback = self._find_mtmd_cli(cli_path)
+            if fallback:
+                cli_path = fallback
+                result = self._run_cli(cli_path, image_path, prompt, max_tokens, include_sampling=True)
+                if result.returncode == 0:
+                    return result.stdout.strip()
+                detail = (result.stderr.strip() or result.stdout.strip() or detail)
+
+        if "invalid argument: -n" in detail or "invalid argument: --temp" in detail:
+            retry = self._run_cli(cli_path, image_path, prompt, max_tokens, include_sampling=False)
+            if retry.returncode == 0:
+                return retry.stdout.strip()
+            detail = retry.stderr.strip() or retry.stdout.strip() or detail
+
+        raise RuntimeError(detail)
+
+    def _run_cli(
+        self,
+        cli_path: Path,
+        image_path: Path,
+        prompt: str,
+        max_tokens: int,
+        include_sampling: bool,
+    ) -> subprocess.CompletedProcess[str]:
+        cmd = self._build_cmd(cli_path, image_path, prompt, max_tokens, include_sampling=include_sampling)
+        if self.lora_path:
+            cmd.extend(["--lora", str(self.lora_path)])
+        return subprocess.run(cmd, capture_output=True, text=True)
+
+    def _build_cmd(
+        self,
+        cli_path: Path,
+        image_path: Path,
+        prompt: str,
+        max_tokens: int,
+        include_sampling: bool,
+    ) -> list[str]:
         cmd = [
-            str(self.llama_cli_path),
+            str(cli_path),
             "-m",
             str(self.model_path),
             "--mmproj",
@@ -55,18 +99,14 @@ class LocalLlamaCppBackend(VisionBackend):
             str(image_path),
             "-p",
             prompt,
-            "-n",
-            str(max_tokens),
-            "--temp",
-            "0",
         ]
-        if self.lora_path:
-            cmd.extend(["--lora", str(self.lora_path)])
+        if include_sampling:
+            cmd.extend(["-n", str(max_tokens), "--temp", "0"])
+        return cmd
 
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        if result.returncode != 0:
-            stderr = result.stderr.strip()
-            stdout = result.stdout.strip()
-            detail = stderr or stdout or "llava-cli failed"
-            raise RuntimeError(detail)
-        return result.stdout.strip()
+    @staticmethod
+    def _find_mtmd_cli(current: Path) -> Path | None:
+        candidate = current.parent / "llama-mtmd-cli"
+        if candidate.exists():
+            return candidate
+        return None

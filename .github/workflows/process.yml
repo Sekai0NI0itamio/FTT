@@ -83,17 +83,18 @@ jobs:
             rm -rf vendor/llama.cpp
             git clone --depth 1 https://github.com/ggerganov/llama.cpp vendor/llama.cpp
           fi
-          if [ ! -f vendor/llama.cpp/build/bin/llama-llava-cli ] && [ ! -f vendor/llama.cpp/build/bin/llava-cli ]; then
+          if [ ! -f vendor/llama.cpp/build/bin/llama-mtmd-cli ] && [ ! -f vendor/llama.cpp/build/bin/llama-llava-cli ] && [ ! -f vendor/llama.cpp/build/bin/llava-cli ]; then
             cmake -S vendor/llama.cpp -B vendor/llama.cpp/build -DGGML_NATIVE=OFF
             cmake --build vendor/llama.cpp/build -j$(nproc)
           fi
-          LLAVA_CLI=$(find vendor/llama.cpp/build -type f \( -name 'llava-cli' -o -name 'llama-llava-cli' \) | head -n 1)
-          if [ -z "$LLAVA_CLI" ]; then
-            echo "llava-cli binary not found after build" >&2
+          LLAMA_CLI=$(find vendor/llama.cpp/build -type f \( -name 'llama-mtmd-cli' -o -name 'llama-llava-cli' -o -name 'llava-cli' \) | head -n 1)
+          if [ -z "$LLAMA_CLI" ]; then
+            echo "llama CLI binary not found after build" >&2
             find vendor/llama.cpp/build -maxdepth 3 -type f -name '*llava*' >&2 || true
+            find vendor/llama.cpp/build -maxdepth 3 -type f -name '*mtmd*' >&2 || true
             exit 1
           fi
-          echo "FTT_VISION_LLAMA_CLI_PATH=$LLAVA_CLI" >> $GITHUB_ENV
+          echo "FTT_VISION_LLAMA_CLI_PATH=$LLAMA_CLI" >> $GITHUB_ENV
 
       - name: Run FTT
         env:

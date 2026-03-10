@@ -31,7 +31,7 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "model_path": "~/.cache/ftt/models/llava-7b-q4.gguf",
         "mmproj_path": "~/.cache/ftt/models/llava-7b-mmproj-q4.gguf",
         "lora_path": "",
-        "llama_cli_path": "vendor/llama.cpp/llava-cli",
+        "llama_cli_path": "vendor/llama.cpp/build/bin/llama-mtmd-cli",
         "max_tokens": 512,
         "retries": 2,
         "download": True,

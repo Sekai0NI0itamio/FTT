@@ -67,19 +67,22 @@ def extract_xlsx(
                 has_charts = True
 
     if visual_mode != "embedded" and _office_enabled(render_office_mode):
-        if visual_mode == "full" or has_charts:
-            pdf_path = convert_office_to_pdf(path, work_dir, logger)
-            try:
-                import pdfplumber
-            except ImportError as exc:
-                raise RuntimeError("pdfplumber is required for XLSX rendering") from exc
-            with pdfplumber.open(str(pdf_path)) as pdf:
-                total_pages = len(pdf.pages)
-            pages = list(range(1, min(total_pages, render_max_pages) + 1))
-            logger.info(f"Rendering {len(pages)} XLSX pages for visuals")
-            image_paths = render_pdf_pages(pdf_path, visuals_dir, pages, render_dpi, logger)
-            for image_path in image_paths:
-                page_num = int(image_path.stem.split("_")[-1])
-                content.images.append(ImageRef(path=image_path, label=f"sheet page {page_num}", source="xlsx"))
+        try:
+            if visual_mode == "full" or has_charts:
+                pdf_path = convert_office_to_pdf(path, work_dir, logger)
+                try:
+                    import pdfplumber
+                except ImportError as exc:
+                    raise RuntimeError("pdfplumber is required for XLSX rendering") from exc
+                with pdfplumber.open(str(pdf_path)) as pdf:
+                    total_pages = len(pdf.pages)
+                pages = list(range(1, min(total_pages, render_max_pages) + 1))
+                logger.info(f"Rendering {len(pages)} XLSX pages for visuals")
+                image_paths = render_pdf_pages(pdf_path, visuals_dir, pages, render_dpi, logger)
+                for image_path in image_paths:
+                    page_num = int(image_path.stem.split("_")[-1])
+                    content.images.append(ImageRef(path=image_path, label=f"sheet page {page_num}", source="xlsx"))
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(f"XLSX visual rendering skipped: {exc}")
 
     return content

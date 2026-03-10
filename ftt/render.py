@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Iterable, List
 
 from pdf2image import convert_from_path
+from pdf2image.exceptions import PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError
 
 from ftt.logging_utils import FileLogger
 
@@ -44,12 +45,19 @@ def render_pdf_pages(
     image_paths: List[Path] = []
     for page_num in pages:
         logger.debug(f"Rendering page {page_num} from {pdf_path.name}")
-        images = convert_from_path(
-            str(pdf_path),
-            dpi=dpi,
-            first_page=page_num,
-            last_page=page_num,
-        )
+        try:
+            images = convert_from_path(
+                str(pdf_path),
+                dpi=dpi,
+                first_page=page_num,
+                last_page=page_num,
+            )
+        except (PDFInfoNotInstalledError, PDFPageCountError, PDFSyntaxError) as exc:
+            logger.warning(f"PDF render unavailable: {exc}")
+            return image_paths
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(f"PDF render failed: {exc}")
+            return image_paths
         if not images:
             continue
         image = images[0]

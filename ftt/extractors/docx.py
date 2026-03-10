@@ -45,18 +45,21 @@ def extract_docx(
             content.images.append(ImageRef(path=image_path, label=f"image {image_count}", source="docx"))
 
     if visual_mode != "embedded" and _office_enabled(render_office_mode):
-        pdf_path = convert_office_to_pdf(path, work_dir, logger)
         try:
-            import pdfplumber
-        except ImportError as exc:
-            raise RuntimeError("pdfplumber is required for DOCX rendering") from exc
-        with pdfplumber.open(str(pdf_path)) as pdf:
-            total_pages = len(pdf.pages)
-        pages = list(range(1, min(total_pages, render_max_pages) + 1))
-        logger.info(f"Rendering {len(pages)} DOCX pages for visuals")
-        image_paths = render_pdf_pages(pdf_path, visuals_dir, pages, render_dpi, logger)
-        for image_path in image_paths:
-            page_num = int(image_path.stem.split("_")[-1])
-            content.images.append(ImageRef(path=image_path, label=f"page {page_num}", source="docx"))
+            pdf_path = convert_office_to_pdf(path, work_dir, logger)
+            try:
+                import pdfplumber
+            except ImportError as exc:
+                raise RuntimeError("pdfplumber is required for DOCX rendering") from exc
+            with pdfplumber.open(str(pdf_path)) as pdf:
+                total_pages = len(pdf.pages)
+            pages = list(range(1, min(total_pages, render_max_pages) + 1))
+            logger.info(f"Rendering {len(pages)} DOCX pages for visuals")
+            image_paths = render_pdf_pages(pdf_path, visuals_dir, pages, render_dpi, logger)
+            for image_path in image_paths:
+                page_num = int(image_path.stem.split("_")[-1])
+                content.images.append(ImageRef(path=image_path, label=f"page {page_num}", source="docx"))
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(f"DOCX visual rendering skipped: {exc}")
 
     return content

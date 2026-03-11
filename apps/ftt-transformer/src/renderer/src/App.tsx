@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PdfViewer } from "@renderer/components/PdfViewer";
+import { applyStrokeMask, buildFilledMaskForBbox, clampBbox } from "@renderer/paint";
 import { useUndoRedo } from "@renderer/hooks/useUndoRedo";
 import type { ConversionResult, PenType, SourceFile, Stroke } from "@renderer/types";
 
@@ -107,7 +108,7 @@ export default function App() {
   }, [undo, redo]);
 
   useEffect(() => {
-    window.ftt?.onConvertProgress((_event, payload) => {
+    const handler = (_event: unknown, payload: unknown) => {
       const data = payload as { current: number; total: number; file: string; status: string };
       setProgress({
         current: data.current,
@@ -115,14 +116,14 @@ export default function App() {
         file: baseName(data.file),
         status: data.status,
       });
-    });
+    };
+    window.ftt?.onConvertProgress(handler);
+    return () => {
+      window.ftt?.offConvertProgress?.(handler);
+    };
   }, []);
 
   const activeFile = files.find((file) => file.id === activeFileId) || null;
-  const visibleStrokes = useMemo(
-    () => strokes.filter((stroke) => stroke.fileId === activeFile?.id),
-    [strokes, activeFile?.id],
-  );
 
   const handleAddFiles = (paths: string[]) => {
     if (!paths.length) return;
@@ -181,8 +182,10 @@ export default function App() {
       }),
     );
 
-    const first = selected[0];
-    setActiveFileId(first?.id || null);
+    const firstConverted = results.find((result) => result.converted)?.source;
+    const firstFile =
+      selected.find((file) => file.path === firstConverted) || selected[0];
+    setActiveFileId(firstFile?.id || null);
     setStep("workspace");
   };
 
@@ -247,17 +250,16 @@ export default function App() {
           dataUrl: "",
         };
       }
-      const x = Math.max(0, Math.floor(stroke.bbox.x));
-      const y = Math.max(0, Math.floor(stroke.bbox.y));
-      const width = Math.max(1, Math.floor(stroke.bbox.width));
-      const height = Math.max(1, Math.floor(stroke.bbox.height));
-      const imageData = ctx.getImageData(x, y, width, height);
-      const cropCanvas = document.createElement("canvas");
-      cropCanvas.width = width;
-      cropCanvas.height = height;
-      const cropCtx = cropCanvas.getContext("2d");
-      if (cropCtx) {
-        cropCtx.putImageData(imageData, 0, 0);
+      const safeBbox = clampBbox(stroke.bbox, canvas.width, canvas.height);
+      const cropImage = ctx.getImageData(safeBbox.x, safeBbox.y, safeBbox.width, safeBbox.height);
+      const mask = buildFilledMaskForBbox(stroke, safeBbox);
+      const cropCanvas = applyStrokeMask(cropImage, mask);
+      if (!cropCanvas) {
+        return {
+          pen: stroke.pen,
+          name: getStrokeFileName(files.find((file) => file.id === stroke.fileId), stroke),
+          dataUrl: "",
+        };
       }
       return {
         pen: stroke.pen,

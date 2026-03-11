@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import type { PenType, Stroke } from "@renderer/types";
+import { buildFilledMaskForBbox, clampBbox, paintMask } from "@renderer/paint";
 
 GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -10,7 +11,8 @@ GlobalWorkerOptions.workerSrc = new URL(
 
 const filePathToUrl = (filePath: string) => {
   if (filePath.startsWith("file://")) return filePath;
-  return `file://${filePath.replace(/\\/g, "/")}`;
+  const normalized = filePath.replace(/\\/g, "/");
+  return encodeURI(`file://${normalized}`);
 };
 
 const drawStroke = (
@@ -30,10 +32,10 @@ const drawStroke = (
     else ctx.lineTo(point.x, point.y);
   });
   ctx.stroke();
-  if (filled) {
-    ctx.fillStyle = `${color}22`;
-    ctx.fillRect(stroke.bbox.x, stroke.bbox.y, stroke.bbox.width, stroke.bbox.height);
-  }
+    if (filled) {
+      ctx.fillStyle = `${color}22`;
+      ctx.fillRect(stroke.bbox.x, stroke.bbox.y, stroke.bbox.width, stroke.bbox.height);
+    }
 };
 
 const getColor = (pen: PenType) => {
@@ -184,7 +186,12 @@ function PdfPage({
     if (!ctx) return;
     ctx.clearRect(0, 0, overlay.width, overlay.height);
     for (const stroke of strokes) {
-      drawStroke(ctx, stroke, getColor(stroke.pen), stroke.filled);
+      drawStroke(ctx, stroke, getColor(stroke.pen), false);
+      if (stroke.filled) {
+        const safeBbox = clampBbox(stroke.bbox, overlay.width, overlay.height);
+        const mask = buildFilledMaskForBbox(stroke, safeBbox);
+        paintMask(ctx, mask, safeBbox, getColor(stroke.pen), 0.2);
+      }
     }
     if (currentPoints.length > 1) {
       drawStroke(
@@ -236,11 +243,15 @@ function PdfPage({
     }
     const xs = currentPoints.map((p) => p.x);
     const ys = currentPoints.map((p) => p.y);
+    const minX = Math.min(...xs);
+    const minY = Math.min(...ys);
+    const maxX = Math.max(...xs);
+    const maxY = Math.max(...ys);
     const bbox = {
-      x: Math.min(...xs),
-      y: Math.min(...ys),
-      width: Math.max(...xs) - Math.min(...xs),
-      height: Math.max(...ys) - Math.min(...ys),
+      x: minX - radiusPx,
+      y: minY - radiusPx,
+      width: maxX - minX + radiusPx * 2,
+      height: maxY - minY + radiusPx * 2,
     };
     onAddStroke({
       id: crypto.randomUUID(),

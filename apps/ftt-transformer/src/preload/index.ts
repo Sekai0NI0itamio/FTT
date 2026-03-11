@@ -7,6 +7,8 @@ contextBridge.exposeInMainWorld("ftt", {
     ipcRenderer.invoke("ftt:convert-files", payload),
   onConvertProgress: (handler: (event: unknown, payload: unknown) => void) =>
     ipcRenderer.on("ftt:convert-progress", handler),
+  offConvertProgress: (handler: (event: unknown, payload: unknown) => void) =>
+    ipcRenderer.removeListener("ftt:convert-progress", handler),
   saveProject: (payload: { project: Record<string, unknown>; targetDir: string; includeUploads: boolean }) =>
     ipcRenderer.invoke("ftt:save-project", payload),
   exportProject: (payload: {

@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from "electron";
 contextBridge.exposeInMainWorld("ftt", {
   selectFiles: () => ipcRenderer.invoke("ftt:select-files"),
   selectFolder: () => ipcRenderer.invoke("ftt:select-folder"),
+  readFile: (filePath: string) => ipcRenderer.invoke("ftt:read-file", { filePath }),
   convertFiles: (payload: { requestId: string; files: string[] }) =>
     ipcRenderer.invoke("ftt:convert-files", payload),
   onConvertProgress: (handler: (event: unknown, payload: unknown) => void) =>

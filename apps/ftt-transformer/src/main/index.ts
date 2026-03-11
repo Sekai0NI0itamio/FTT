@@ -143,6 +143,12 @@ ipcMain.handle("ftt:select-folder", async () => {
   return result.canceled ? "" : result.filePaths[0];
 });
 
+ipcMain.handle("ftt:read-file", async (_event, payload) => {
+  const { filePath } = payload as { filePath: string };
+  const buffer = await fsp.readFile(filePath);
+  return buffer;
+});
+
 ipcMain.handle("ftt:convert-files", async (event, payload) => {
   const { requestId, files } = payload as { requestId: string; files: string[] };
   const workRoot = getWorkRoot();

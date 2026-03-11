@@ -15,6 +15,18 @@ const filePathToUrl = (filePath: string) => {
   return encodeURI(`file://${normalized}`);
 };
 
+const loadPdf = async (filePath: string) => {
+  if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
+    return getDocument({ url: filePath }).promise;
+  }
+  if (!window.ftt?.readFile) {
+    const url = filePathToUrl(filePath);
+    return getDocument({ url }).promise;
+  }
+  const buffer = await window.ftt.readFile(filePath);
+  return getDocument({ data: new Uint8Array(buffer) }).promise;
+};
+
 const drawStroke = (
   ctx: CanvasRenderingContext2D,
   stroke: Stroke,
@@ -81,9 +93,8 @@ export function PdfViewer({
     let canceled = false;
     setDoc(null);
     setPages([]);
-    const url = filePathToUrl(filePath);
-    getDocument({ url })
-      .promise.then((pdf) => {
+    loadPdf(filePath)
+      .then((pdf) => {
         if (canceled) return;
         setDoc(pdf);
         return Promise.all(

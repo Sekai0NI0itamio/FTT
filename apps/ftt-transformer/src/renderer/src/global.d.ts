@@ -5,6 +5,7 @@ declare global {
     ftt?: {
       selectFiles: () => Promise<string[]>;
       selectFolder: () => Promise<string>;
+      readFile: (filePath: string) => Promise<ArrayBuffer>;
       convertFiles: (payload: { requestId: string; files: string[] }) => Promise<unknown>;
       onConvertProgress: (handler: (event: unknown, payload: unknown) => void) => void;
       offConvertProgress?: (handler: (event: unknown, payload: unknown) => void) => void;

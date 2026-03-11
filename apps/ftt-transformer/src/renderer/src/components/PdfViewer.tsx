@@ -68,6 +68,7 @@ const findStrokeAt = (strokes: Stroke[], x: number, y: number) =>
 export function PdfViewer({
   fileId,
   filePath,
+  fileKind,
   strokes,
   activePen,
   radiusPx,
@@ -79,6 +80,7 @@ export function PdfViewer({
 }: {
   fileId: string;
   filePath: string;
+  fileKind: "pdf" | "image" | "other";
   strokes: Stroke[];
   activePen: PenType;
   radiusPx: number;
@@ -92,6 +94,7 @@ export function PdfViewer({
   const [pages, setPages] = useState<PDFPageProxy[]>([]);
 
   useEffect(() => {
+    if (fileKind === "image") return;
     let canceled = false;
     setDoc(null);
     setPages([]);
@@ -112,7 +115,7 @@ export function PdfViewer({
     return () => {
       canceled = true;
     };
-  }, [filePath]);
+  }, [filePath, fileKind]);
 
   const strokesByPage = useMemo(() => {
     const grouped = new Map<number, Stroke[]>();
@@ -124,6 +127,25 @@ export function PdfViewer({
     }
     return grouped;
   }, [strokes, fileId]);
+
+  if (fileKind === "image") {
+    return (
+      <div className="pdf-scroll">
+        <ImagePage
+          fileId={fileId}
+          filePath={filePath}
+          strokes={strokesByPage.get(0) || []}
+          containerWidth={containerWidth}
+          pen={activePen}
+          radiusPx={radiusPx}
+          unit={unit}
+          onAddStroke={onAddStroke}
+          onContextMenu={onContextMenu}
+          onPageCanvas={onPageCanvas}
+        />
+      </div>
+    );
+  }
 
   if (!doc) {
     return <div className="viewer-empty">Loading document...</div>;
@@ -276,6 +298,213 @@ function PdfPage({
       id: crypto.randomUUID(),
       fileId,
       pageIndex,
+      pen,
+      points: currentPoints,
+      radiusPx,
+      unit,
+      filled: false,
+      bbox,
+    });
+    setDrawing(false);
+    setCurrentPoints([]);
+  };
+
+  const handleContextMenu = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    event.preventDefault();
+    const point = pointFromEvent(event.clientX, event.clientY, event.currentTarget);
+    const hit = findStrokeAt(strokes, point.x, point.y);
+    if (hit) {
+      onContextMenu(hit.id, event.clientX, event.clientY);
+    }
+  };
+
+  return (
+    <div className="pdf-page">
+      <canvas ref={baseRef} className="pdf-canvas" />
+      <canvas
+        ref={overlayRef}
+        className="pdf-overlay"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+        onContextMenu={handleContextMenu}
+      />
+    </div>
+  );
+}
+
+/* ── Image Page ─────────────────────────────────────────── */
+
+function ImagePage({
+  fileId,
+  filePath,
+  strokes,
+  containerWidth,
+  pen,
+  radiusPx,
+  unit,
+  onAddStroke,
+  onContextMenu,
+  onPageCanvas,
+}: {
+  fileId: string;
+  filePath: string;
+  strokes: Stroke[];
+  containerWidth: number;
+  pen: PenType;
+  radiusPx: number;
+  unit: "px" | "cm" | "mm";
+  onAddStroke: (stroke: Stroke) => void;
+  onContextMenu: (strokeId: string, x: number, y: number) => void;
+  onPageCanvas?: (fileId: string, pageIndex: number, canvas: HTMLCanvasElement | null) => void;
+}) {
+  const baseRef = useRef<HTMLCanvasElement | null>(null);
+  const overlayRef = useRef<HTMLCanvasElement | null>(null);
+  const [drawing, setDrawing] = useState(false);
+  const [currentPoints, setCurrentPoints] = useState<{ x: number; y: number }[]>([]);
+  const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null);
+
+  useEffect(() => {
+    const canvas = baseRef.current;
+    if (!canvas) return;
+
+    let canceled = false;
+
+    const renderImage = (img: HTMLImageElement) => {
+      if (canceled) return;
+      const naturalW = img.naturalWidth;
+      const naturalH = img.naturalHeight;
+
+      const availableWidth = Math.max(200, containerWidth - 48);
+      const scale = Math.min(1, availableWidth / naturalW);
+      const displayW = Math.round(naturalW * scale);
+      const displayH = Math.round(naturalH * scale);
+
+      canvas.width = displayW;
+      canvas.height = displayH;
+
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, displayW, displayH);
+      }
+
+      setImgSize({ w: displayW, h: displayH });
+      onPageCanvas?.(fileId, 0, canvas);
+    };
+
+    const loadViaIpc = async () => {
+      if (!window.ftt?.readFile) return false;
+      try {
+        const buffer = await window.ftt.readFile(filePath);
+        const blob = new Blob([buffer]);
+        const url = URL.createObjectURL(blob);
+        const img = new Image();
+        img.onload = () => {
+          renderImage(img);
+          URL.revokeObjectURL(url);
+        };
+        img.onerror = () => URL.revokeObjectURL(url);
+        img.src = url;
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const loadViaUrl = () => {
+      const img = new Image();
+      img.onload = () => renderImage(img);
+      img.src = filePathToUrl(filePath);
+    };
+
+    loadViaIpc().then((ok) => {
+      if (!ok && !canceled) loadViaUrl();
+    });
+
+    return () => { canceled = true; };
+  }, [filePath, fileId, containerWidth, onPageCanvas]);
+
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    if (!overlay || !imgSize) return;
+    overlay.width = imgSize.w;
+    overlay.height = imgSize.h;
+    const ctx = overlay.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+    for (const stroke of strokes) {
+      drawStroke(ctx, stroke, getColor(stroke.pen), false);
+      if (stroke.filled) {
+        const safeBbox = clampBbox(stroke.bbox, overlay.width, overlay.height);
+        const mask = buildFilledMaskForBbox(stroke, safeBbox);
+        paintMask(ctx, mask, safeBbox, getColor(stroke.pen), 0.2);
+      }
+    }
+    if (currentPoints.length > 1) {
+      drawStroke(
+        ctx,
+        {
+          id: "current",
+          fileId: "",
+          pageIndex: 0,
+          pen,
+          points: currentPoints,
+          radiusPx,
+          unit,
+          filled: false,
+          bbox: { x: 0, y: 0, width: 0, height: 0 },
+        },
+        getColor(pen),
+        false,
+      );
+    }
+  }, [strokes, currentPoints, pen, radiusPx, unit, imgSize]);
+
+  const pointFromEvent = (
+    clientX: number,
+    clientY: number,
+    target: HTMLCanvasElement,
+  ) => {
+    const rect = target.getBoundingClientRect();
+    return { x: clientX - rect.left, y: clientY - rect.top };
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (event.button !== 0) return;
+    const point = pointFromEvent(event.clientX, event.clientY, event.currentTarget);
+    setDrawing(true);
+    setCurrentPoints([point]);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!drawing) return;
+    const point = pointFromEvent(event.clientX, event.clientY, event.currentTarget);
+    setCurrentPoints((prev) => [...prev, point]);
+  };
+
+  const handlePointerUp = () => {
+    if (!drawing || currentPoints.length < 2) {
+      setDrawing(false);
+      setCurrentPoints([]);
+      return;
+    }
+    const xs = currentPoints.map((p) => p.x);
+    const ys = currentPoints.map((p) => p.y);
+    const minX = Math.min(...xs);
+    const minY = Math.min(...ys);
+    const maxX = Math.max(...xs);
+    const maxY = Math.max(...ys);
+    const bbox = {
+      x: minX - radiusPx,
+      y: minY - radiusPx,
+      width: maxX - minX + radiusPx * 2,
+      height: maxY - minY + radiusPx * 2,
+    };
+    onAddStroke({
+      id: crypto.randomUUID(),
+      fileId,
+      pageIndex: 0,
       pen,
       points: currentPoints,
       radiusPx,

@@ -172,7 +172,8 @@ export default function App() {
       prev.map((f) => {
         const match = results.find((r) => r.source === f.path);
         if (!match) return f;
-        return { ...f, convertedPath: match.converted, convertedKind: match.kind === "pdf" ? "pdf" as const : "other" as const, error: match.error };
+        const ck = match.kind === "pdf" ? "pdf" as const : match.kind === "image" ? "image" as const : "other" as const;
+        return { ...f, convertedPath: match.converted, convertedKind: ck, error: match.error };
       }),
     );
 
@@ -332,6 +333,7 @@ export default function App() {
             <PdfViewer
               fileId={activeFile.id}
               filePath={activeFile.convertedPath}
+              fileKind={activeFile.convertedKind || "pdf"}
               strokes={strokes}
               activePen={activePen}
               radiusPx={penSettings[activePen].radiusPx}

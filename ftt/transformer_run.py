@@ -577,21 +577,41 @@ def cmd_bundle(inputs_dir: Path, output_dir: Path) -> int:
 
 
 def cmd_all(project_dir: Path, output_dir: Path, config: Dict) -> int:
-    """Run all extraction modes in one process (backward-compatible)."""
+    """Run all extraction modes in one process — models loaded once, shared."""
     uploads_dir = project_dir / "uploads"
     status_tags = _load_status_tags(project_dir)
 
     files = discover_files(uploads_dir) if uploads_dir.exists() else []
+    region_items = _discover_regions(project_dir)
+
+    graph_regions = [r for r in region_items if r.get("pen") == "graph"]
+    other_regions = [r for r in region_items if r.get("pen") != "graph"]
+
+    print(f"=== All Extraction ===")
+    print(f"  Files:         {len(files)}")
+    print(f"  Graph regions: {len(graph_regions)}")
+    print(f"  Other regions: {len(other_regions)}")
+
     vision_backend = build_backend(config)
 
     vision_workers = max(1, int(config["concurrency"]["vision_workers"]))
     file_workers = max(1, int(config["concurrency"]["file_workers"]))
     deplot_workers = max(1, int(config["concurrency"].get("deplot_workers", 1)))
 
+    # Single-model extractor for inline charts within documents
     deplot_extractor = None
     if config["deplot"]["enabled"]:
         deplot_extractor = DeplotExtractor(
             model_name=config["deplot"]["model_name"],
+            max_tokens=config["deplot"]["max_tokens"],
+            prompt=config["deplot"]["prompt"],
+            cache_dir=config["deplot"]["cache_dir"],
+        )
+
+    # Multi-model extractor for user-drawn graph regions
+    multi_extractor = None
+    if config["deplot"]["enabled"] and graph_regions:
+        multi_extractor = MultiModelExtractor(
             max_tokens=config["deplot"]["max_tokens"],
             prompt=config["deplot"]["prompt"],
             cache_dir=config["deplot"]["cache_dir"],
@@ -618,10 +638,19 @@ def cmd_all(project_dir: Path, output_dir: Path, config: Dict) -> int:
         )
         all_futures[future] = ("file", path)
 
-    region_items = _discover_regions(project_dir)
     region_output_dir = output_dir / "regions"
     region_pool = ThreadPoolExecutor(max_workers=max(2, vision_workers))
-    for region in region_items:
+
+    # Graph regions use multi-model extractor for best results
+    for region in graph_regions:
+        future = region_pool.submit(
+            _process_region, region, config, vision_backend, multi_extractor,
+            region_output_dir / region["pen"],
+        )
+        all_futures[future] = ("region", region)
+
+    # Other regions (tesseract, describe) use single extractor
+    for region in other_regions:
         future = region_pool.submit(
             _process_region, region, config, vision_backend, deplot_extractor,
             region_output_dir / region["pen"],
@@ -652,6 +681,8 @@ def cmd_all(project_dir: Path, output_dir: Path, config: Dict) -> int:
     write_summary_json(results, output_dir / "summary.json")
     write_summary_md(results, output_dir / "summary.md")
     write_combined_transcripts(results, output_dir / "all_transcripts.txt")
+
+    _write_step_summary("FTT Transformer Extraction", results)
     return 0
 
 

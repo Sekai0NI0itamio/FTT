@@ -12,7 +12,7 @@ export type SourceFile = {
   kind: FileKind;
   selected: boolean;
   convertedPath?: string;
-  convertedKind?: "pdf" | "other";
+  convertedKind?: "pdf" | "image" | "other";
   error?: string;
   fullExtraction: ExtractionFlags;
 };

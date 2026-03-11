@@ -87,9 +87,10 @@ const convertFile = async (filePath: string, outputDir: string) => {
     return { kind: "pdf", path: target };
   }
   if (kind === "image") {
-    const target = path.join(outputDir, `${baseName}.pdf`);
-    await convertImageToPdf(filePath, target);
-    return { kind: "pdf", path: target };
+    const ext = path.extname(filePath);
+    const target = path.join(outputDir, `${baseName}${ext}`);
+    await copyFile(filePath, target);
+    return { kind: "image", path: target };
   }
   if (["docx", "pptx", "xlsx"].includes(kind)) {
     const target = await convertOfficeToPdf(filePath, outputDir);

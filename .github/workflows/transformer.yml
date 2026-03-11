@@ -7,26 +7,10 @@ on:
         description: "Path to Transformer export (dir or zip)"
         required: false
         default: "incoming-transformer"
-      visual_mode:
-        description: "Visual mode: embedded|hybrid|full"
-        required: false
-        default: "hybrid"
       vision_backend:
         description: "Vision backend: local_llama_cpp|openai|anthropic|gemini"
         required: false
         default: "local_llama_cpp"
-      file_workers:
-        description: "File worker concurrency"
-        required: false
-        default: "2"
-      vision_workers:
-        description: "Vision worker concurrency"
-        required: false
-        default: "2"
-      deplot_workers:
-        description: "DePlot worker concurrency"
-        required: false
-        default: "1"
       chart_model:
         description: "Chart extraction model: unichart (best) | matcha (good) | deplot (lightweight)"
         required: false
@@ -35,21 +19,50 @@ on:
         #   unichart → https://huggingface.co/ahmed-masry/unichart-base-960
         #   matcha   → https://huggingface.co/google/matcha-chartqa
         #   deplot   → https://huggingface.co/google/deplot
+      file_workers:
+        description: "File worker concurrency"
+        required: false
+        default: "2"
+      vision_workers:
+        description: "Vision worker concurrency"
+        required: false
+        default: "2"
       force_setup:
         description: "Force reinstall deps/build/models (true|false)"
         required: false
         default: "false"
 
-jobs:
-  process:
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+# ─────────────────────────────────────────────────────────────────────────
+# Jobs layout (visible in GitHub Actions UI):
+#
+#   ⚙️ Setup
+#     ├── 📝 Tesseract Text Extraction
+#     ├── 🐍 Python3 Extraction
+#     ├── 📊 Graph Data Extraction
+#     ├── 🔍 Tesseract Region Extraction (Pixel Pen)
+#     ├── 🖼️ Image Description Extraction
+#     └── 📦 Bundle Results
+#
+# Each extraction job shows progress (X/Y items, percentage).
+# Jobs with 0 items are skipped automatically.
+# ─────────────────────────────────────────────────────────────────────────
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+jobs:
+  # ── Setup ──────────────────────────────────────────────────────────────
+  setup:
+    name: "⚙️ Setup"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      tesseract_file_count: ${{ steps.discover.outputs.tesseract_file_count }}
+      python_file_count: ${{ steps.discover.outputs.python_file_count }}
+      graph_region_count: ${{ steps.discover.outputs.graph_region_count }}
+      tesseract_region_count: ${{ steps.discover.outputs.tesseract_region_count }}
+      describe_region_count: ${{ steps.discover.outputs.describe_region_count }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -57,24 +70,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y poppler-utils libreoffice tesseract-ocr
-
-      - name: Cache models
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ftt/models
-          key: ${{ runner.os }}-ftt-models
-
-      - name: Cache HuggingFace chart models
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/huggingface
-          key: ${{ runner.os }}-hf-${{ inputs.chart_model }}
-
-      - name: Cache llama.cpp build
-        uses: actions/cache@v4
-        with:
-          path: vendor/llama.cpp
-          key: ${{ runner.os }}-llama-cmake-v1
 
       - name: Cache pip
         uses: actions/cache@v4
@@ -89,21 +84,163 @@ jobs:
           path: .venv
           key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
 
-      - name: Create venv
+      - name: Create venv & install dependencies
         if: steps.cache-venv.outputs.cache-hit != 'true' || inputs.force_setup == 'true'
         run: |
           python -m venv .venv
           .venv/bin/python -m pip install --upgrade pip
-
-      - name: Install Python dependencies
-        if: steps.cache-venv.outputs.cache-hit != 'true' || inputs.force_setup == 'true'
-        run: |
           .venv/bin/pip install -r requirements.txt
 
       - name: Use venv
         run: echo "$PWD/.venv/bin" >> $GITHUB_PATH
 
+      - name: Cache llama.cpp build
+        uses: actions/cache@v4
+        with:
+          path: vendor/llama.cpp
+          key: ${{ runner.os }}-llama-cmake-v1
+
       - name: Build llama.cpp
+        run: |
+          if [ ! -d vendor/llama.cpp/.git ]; then
+            rm -rf vendor/llama.cpp
+            git clone --depth 1 https://github.com/ggerganov/llama.cpp vendor/llama.cpp
+          fi
+          if [ ! -f vendor/llama.cpp/build/bin/llama-mtmd-cli ] && [ ! -f vendor/llama.cpp/build/bin/llama-llava-cli ] && [ ! -f vendor/llama.cpp/build/bin/llava-cli ]; then
+            cmake -S vendor/llama.cpp -B vendor/llama.cpp/build -DGGML_NATIVE=OFF
+            cmake --build vendor/llama.cpp/build -j$(nproc)
+          fi
+
+      - name: Cache HuggingFace chart models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-${{ inputs.chart_model }}
+
+      - name: Cache vision models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ftt/models
+          key: ${{ runner.os }}-ftt-models
+
+      - name: Discover project content
+        id: discover
+        env:
+          FTT_DEPLOT_MODEL: ${{ inputs.chart_model }}
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run --project "$PROJECT" --output setup-output --mode discover
+
+      - name: Upload project for extraction jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-source
+          path: |
+            ${{ inputs.project_path }}
+            ftt.yml
+          retention-days: 1
+
+  # ── Tesseract Text Extraction (files) ──────────────────────────────────
+  tesseract-extraction:
+    name: "📝 Tesseract Text Extraction"
+    needs: setup
+    if: needs.setup.outputs.tesseract_file_count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tesseract
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr poppler-utils libreoffice
+
+      - name: Restore venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Ensure venv
+        run: |
+          if [ ! -d .venv ]; then
+            python -m venv .venv
+            .venv/bin/pip install -r requirements.txt
+          fi
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: project-source
+          path: .
+
+      - name: "Run Tesseract Extraction (${{ needs.setup.outputs.tesseract_file_count }} files)"
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run \
+            --project "$PROJECT" --output results-tesseract-files --mode tesseract-files
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ftt-results-tesseract-files
+          path: results-tesseract-files
+          if-no-files-found: warn
+
+  # ── Python3 Extraction (files) ─────────────────────────────────────────
+  python3-extraction:
+    name: "🐍 Python3 Extraction"
+    needs: setup
+    if: needs.setup.outputs.python_file_count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils libreoffice
+
+      - name: Restore venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Ensure venv
+        run: |
+          if [ ! -d .venv ]; then
+            python -m venv .venv
+            .venv/bin/pip install -r requirements.txt
+          fi
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Restore llama.cpp
+        uses: actions/cache@v4
+        with:
+          path: vendor/llama.cpp
+          key: ${{ runner.os }}-llama-cmake-v1
+
+      - name: Build llama.cpp (if needed)
         run: |
           if [ ! -d vendor/llama.cpp/.git ]; then
             rm -rf vendor/llama.cpp
@@ -117,38 +254,297 @@ jobs:
       - name: Locate llama CLI
         run: |
           LLAMA_CLI=$(find vendor/llama.cpp/build -type f \( -name 'llama-mtmd-cli' -o -name 'llama-llava-cli' -o -name 'llava-cli' \) | head -n 1)
-          if [ -z "$LLAMA_CLI" ]; then
-            echo "llama CLI binary not found" >&2
-            exit 1
-          fi
+          if [ -z "$LLAMA_CLI" ]; then echo "llama CLI not found" >&2; exit 1; fi
           echo "FTT_VISION_LLAMA_CLI_PATH=$LLAMA_CLI" >> $GITHUB_ENV
 
-      - name: Run Transformer Extraction
+      - name: Restore vision models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ftt/models
+          key: ${{ runner.os }}-ftt-models
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: project-source
+          path: .
+
+      - name: "Run Python3 Extraction (${{ needs.setup.outputs.python_file_count }} files)"
         env:
-          FTT_VISUAL_MODE: ${{ inputs.visual_mode }}
           FTT_VISION_BACKEND: ${{ inputs.vision_backend }}
           FTT_FILE_WORKERS: ${{ inputs.file_workers }}
           FTT_VISION_WORKERS: ${{ inputs.vision_workers }}
-          FTT_DEPLOT_WORKERS: ${{ inputs.deplot_workers }}
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run \
+            --project "$PROJECT" --output results-python-files --mode python-files
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ftt-results-python-files
+          path: results-python-files
+          if-no-files-found: warn
+
+  # ── Graph Data Extraction (regions) ────────────────────────────────────
+  graph-extraction:
+    name: "📊 Graph Data Extraction"
+    needs: setup
+    if: needs.setup.outputs.graph_region_count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Restore venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Ensure venv
+        run: |
+          if [ ! -d .venv ]; then
+            python -m venv .venv
+            .venv/bin/pip install -r requirements.txt
+          fi
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Restore HuggingFace chart models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-${{ inputs.chart_model }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: project-source
+          path: .
+
+      - name: "Run Graph Extraction (${{ needs.setup.outputs.graph_region_count }} regions)"
+        env:
           FTT_DEPLOT_MODEL: ${{ inputs.chart_model }}
         run: |
           PROJECT_PATH="${{ inputs.project_path }}"
           if [ -d "$PROJECT_PATH" ]; then
-            ZIP_CANDIDATE=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
-            if [ -n "$ZIP_CANDIDATE" ]; then
-              PROJECT="$ZIP_CANDIDATE"
-            else
-              PROJECT="$PROJECT_PATH"
-            fi
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
           else
             PROJECT="$PROJECT_PATH"
           fi
-          .venv/bin/python -m ftt.transformer_run --project "$PROJECT" --output output-transformer
+          .venv/bin/python -m ftt.transformer_run \
+            --project "$PROJECT" --output results-graph-regions --mode graph-regions
 
-      - name: Upload artifact
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ftt-results-graph-regions
+          path: results-graph-regions
+          if-no-files-found: warn
+
+  # ── Tesseract Region Extraction (Pixel Pen) ────────────────────────────
+  tesseract-regions:
+    name: "🔍 Tesseract Region Extraction (Pixel Pen)"
+    needs: setup
+    if: needs.setup.outputs.tesseract_region_count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tesseract
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr
+
+      - name: Restore venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Ensure venv
+        run: |
+          if [ ! -d .venv ]; then
+            python -m venv .venv
+            .venv/bin/pip install -r requirements.txt
+          fi
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: project-source
+          path: .
+
+      - name: "Run Tesseract Region Extraction (${{ needs.setup.outputs.tesseract_region_count }} regions)"
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run \
+            --project "$PROJECT" --output results-tesseract-regions --mode tesseract-regions
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ftt-results-tesseract-regions
+          path: results-tesseract-regions
+          if-no-files-found: warn
+
+  # ── Image Description Extraction (regions) ─────────────────────────────
+  describe-extraction:
+    name: "🖼️ Image Description Extraction"
+    needs: setup
+    if: needs.setup.outputs.describe_region_count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
+      - name: Restore venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Ensure venv
+        run: |
+          if [ ! -d .venv ]; then
+            python -m venv .venv
+            .venv/bin/pip install -r requirements.txt
+          fi
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Restore llama.cpp
+        uses: actions/cache@v4
+        with:
+          path: vendor/llama.cpp
+          key: ${{ runner.os }}-llama-cmake-v1
+
+      - name: Build llama.cpp (if needed)
+        run: |
+          if [ ! -d vendor/llama.cpp/.git ]; then
+            rm -rf vendor/llama.cpp
+            git clone --depth 1 https://github.com/ggerganov/llama.cpp vendor/llama.cpp
+          fi
+          if [ ! -f vendor/llama.cpp/build/bin/llama-mtmd-cli ] && [ ! -f vendor/llama.cpp/build/bin/llama-llava-cli ] && [ ! -f vendor/llama.cpp/build/bin/llava-cli ]; then
+            cmake -S vendor/llama.cpp -B vendor/llama.cpp/build -DGGML_NATIVE=OFF
+            cmake --build vendor/llama.cpp/build -j$(nproc)
+          fi
+
+      - name: Locate llama CLI
+        run: |
+          LLAMA_CLI=$(find vendor/llama.cpp/build -type f \( -name 'llama-mtmd-cli' -o -name 'llama-llava-cli' -o -name 'llava-cli' \) | head -n 1)
+          if [ -z "$LLAMA_CLI" ]; then echo "llama CLI not found" >&2; exit 1; fi
+          echo "FTT_VISION_LLAMA_CLI_PATH=$LLAMA_CLI" >> $GITHUB_ENV
+
+      - name: Restore vision models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ftt/models
+          key: ${{ runner.os }}-ftt-models
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: project-source
+          path: .
+
+      - name: "Run Image Description Extraction (${{ needs.setup.outputs.describe_region_count }} regions)"
+        env:
+          FTT_VISION_BACKEND: ${{ inputs.vision_backend }}
+          FTT_VISION_WORKERS: ${{ inputs.vision_workers }}
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run \
+            --project "$PROJECT" --output results-describe-regions --mode describe-regions
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ftt-results-describe-regions
+          path: results-describe-regions
+          if-no-files-found: warn
+
+  # ── Bundle Results ─────────────────────────────────────────────────────
+  bundle:
+    name: "📦 Bundle Results"
+    needs:
+      - tesseract-extraction
+      - python3-extraction
+      - graph-extraction
+      - tesseract-regions
+      - describe-extraction
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Restore venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Ensure venv
+        run: |
+          if [ ! -d .venv ]; then
+            python -m venv .venv
+            .venv/bin/pip install -r requirements.txt
+          fi
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Download all extraction results
+        uses: actions/download-artifact@v4
+        with:
+          path: all-results
+          pattern: ftt-results-*
+
+      - name: List downloaded results
+        run: find all-results -type f | head -50 || echo "No results found"
+
+      - name: Bundle all results
+        run: |
+          .venv/bin/python -m ftt.transformer_run \
+            --project incoming-transformer --output ftt-transformer-output \
+            --mode bundle --inputs all-results
+
+      - name: Upload final output
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ftt-transformer-output
-          path: output-transformer
+          path: ftt-transformer-output
           if-no-files-found: warn

@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import tempfile
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from ftt.config import load_config
 from ftt.deplot import DeplotExtractor
@@ -47,6 +48,31 @@ def _discover_regions(project_dir: Path) -> List[Dict]:
                 continue
             items.append({"pen": pen, "path": path})
     return items
+
+
+def _load_status_tags(project_dir: Path) -> Dict[str, List[str]]:
+    """Parse status.tag to learn which extraction methods to use for each file."""
+    status_path = project_dir / "status.tag"
+    tags: Dict[str, List[str]] = {}
+    if not status_path.exists():
+        return tags
+    for line in status_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if ":" not in line:
+            continue
+        name, _, raw_tags = line.partition(":")
+        file_tags = [t.strip() for t in raw_tags.split(",") if t.strip() and t.strip() != "none"]
+        tags[name.strip()] = file_tags
+    return tags
+
+
+def _load_project_json(project_dir: Path) -> Optional[Dict]:
+    path = project_dir / "project.json"
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def _process_region(
@@ -126,9 +152,14 @@ def main() -> int:
     project_dir = _load_project_dir(Path(args.project))
     uploads_dir = project_dir / "uploads"
 
+    # Load project metadata for status tags
+    status_tags = _load_status_tags(project_dir)
+    project_json = _load_project_json(project_dir)
+
     files = discover_files(uploads_dir) if uploads_dir.exists() else []
     vision_backend = build_backend(config)
 
+    # Scale workers for maximum parallelism
     vision_workers = max(1, int(config["concurrency"]["vision_workers"]))
     file_workers = max(1, int(config["concurrency"]["file_workers"]))
     deplot_workers = max(1, int(config["concurrency"].get("deplot_workers", 1)))
@@ -144,46 +175,83 @@ def main() -> int:
 
     results: List[Dict] = []
 
+    # ── Phase 1: files + regions — all submitted concurrently ──
+    # Use shared pools so vision and deplot resources are shared
+    # across both file processing and region processing.
     vision_pool = ThreadPoolExecutor(max_workers=vision_workers)
     deplot_pool = ThreadPoolExecutor(max_workers=deplot_workers)
-    with ThreadPoolExecutor(max_workers=file_workers) as executor:
-        futures = {
-            executor.submit(
-                process_file,
-                path,
-                config,
-                vision_backend,
-                vision_pool,
-                output_dir,
-                deplot_pool,
-                deplot_extractor,
-            ): path
-            for path in files
-        }
-        for future in as_completed(futures):
+
+    all_futures: Dict = {}
+
+    # Submit file processing (each file runs extraction + vision internally)
+    file_pool = ThreadPoolExecutor(max_workers=file_workers)
+    for path in files:
+        file_tags = status_tags.get(path.name, [])
+        # Apply per-file overrides from status.tag if present
+        file_config = dict(config)
+        if file_tags:
+            processing = dict(config["processing"])
+            ocr_cfg = dict(config["ocr"])
+            # Enable/disable based on tags
+            processing["enable_text"] = "tesseract" in file_tags or "python" in file_tags
+            ocr_cfg["enabled"] = "tesseract" in file_tags
+            file_config = {**config, "processing": processing, "ocr": ocr_cfg}
+
+        future = file_pool.submit(
+            process_file,
+            path,
+            file_config,
+            vision_backend,
+            vision_pool,
+            output_dir,
+            deplot_pool,
+            deplot_extractor,
+        )
+        all_futures[future] = ("file", path)
+
+    # Submit region processing concurrently alongside file processing
+    region_items = _discover_regions(project_dir)
+    region_output_dir = output_dir / "regions"
+    region_pool = ThreadPoolExecutor(max_workers=max(2, vision_workers))
+
+    for region in region_items:
+        future = region_pool.submit(
+            _process_region,
+            region,
+            config,
+            vision_backend,
+            deplot_extractor,
+            region_output_dir / region["pen"],
+        )
+        all_futures[future] = ("region", region)
+
+    # ── Collect all results ──
+    for future in as_completed(all_futures):
+        kind, _item = all_futures[future]
+        try:
             result = future.result()
-            results.append(result.__dict__)
+            if kind == "file":
+                results.append(result.__dict__)
+            else:
+                results.append(result)
+        except Exception as exc:  # noqa: BLE001
+            name = _item.name if hasattr(_item, "name") else str(_item)
+            results.append({
+                "file": name,
+                "status": "error",
+                "size_bytes": 0,
+                "processing_time_sec": 0,
+                "transcript_path": None,
+                "error": str(exc),
+            })
+
+    # Shutdown all pools
+    file_pool.shutdown(wait=False)
+    region_pool.shutdown(wait=False)
     vision_pool.shutdown(wait=True)
     deplot_pool.shutdown(wait=True)
 
-    region_items = _discover_regions(project_dir)
-    region_output_dir = output_dir / "regions"
-    if region_items:
-        with ThreadPoolExecutor(max_workers=vision_workers) as executor:
-            region_futures = {
-                executor.submit(
-                    _process_region,
-                    region,
-                    config,
-                    vision_backend,
-                    deplot_extractor,
-                    region_output_dir / region["pen"],
-                ): region
-                for region in region_items
-            }
-            for future in as_completed(region_futures):
-                results.append(future.result())
-
+    # ── Write combined outputs ──
     write_summary_json(results, output_dir / "summary.json")
     write_summary_md(results, output_dir / "summary.md")
     write_combined_transcripts(results, output_dir / "all_transcripts.txt")

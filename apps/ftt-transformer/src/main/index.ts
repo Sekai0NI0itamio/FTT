@@ -217,10 +217,12 @@ ipcMain.handle("ftt:export-project", async (_event, payload) => {
   const exportDir = path.join(workRoot, `export-${Date.now()}`);
   await ensureDir(exportDir);
 
+  /* ── regions/ grouped by pen type ─────────────────────── */
   const regionsDir = path.join(exportDir, "regions");
   await ensureDir(regionsDir);
 
   for (const region of regions) {
+    if (!region.dataUrl) continue;
     const penDir = path.join(regionsDir, region.pen);
     await ensureDir(penDir);
     const base64 = region.dataUrl.split(",")[1] || "";
@@ -228,9 +230,41 @@ ipcMain.handle("ftt:export-project", async (_event, payload) => {
     await fsp.writeFile(path.join(penDir, region.name), buffer);
   }
 
+  /* ── uploads/ with converted PDFs and source files ────── */
+  const uploadsDir = path.join(exportDir, "uploads");
+  await ensureDir(uploadsDir);
+
+  const files = (project as { files?: Array<{ path: string; convertedPath: string; name: string }> }).files || [];
+  for (const file of files) {
+    if (file.convertedPath && fs.existsSync(file.convertedPath)) {
+      const dest = path.join(uploadsDir, path.basename(file.convertedPath));
+      await copyFile(file.convertedPath, dest);
+    }
+    if (file.path && fs.existsSync(file.path)) {
+      const dest = path.join(uploadsDir, path.basename(file.path));
+      if (!fs.existsSync(dest)) {
+        await copyFile(file.path, dest);
+      }
+    }
+  }
+
+  /* ── project.json ─────────────────────────────────────── */
   const projectPath = path.join(exportDir, "project.json");
   await fsp.writeFile(projectPath, JSON.stringify(project, null, 2));
 
+  /* ── status.tag — extraction tags per file ────────────── */
+  const statusLines: string[] = ["# FTT Transformer — Status Tags", ""];
+  const allFiles = (project as { files?: Array<{ name: string; fullExtraction?: { tesseract?: boolean; python?: boolean } }> }).files || [];
+  for (const file of allFiles) {
+    const tags: string[] = [];
+    if (file.fullExtraction?.tesseract) tags.push("tesseract");
+    if (file.fullExtraction?.python) tags.push("python");
+    statusLines.push(`${file.name}: ${tags.join(", ") || "none"}`);
+  }
+  statusLines.push("");
+  await fsp.writeFile(path.join(exportDir, "status.tag"), statusLines.join("\n"));
+
+  /* ── zip everything ───────────────────────────────────── */
   await new Promise<void>((resolve, reject) => {
     const output = fs.createWriteStream(targetZip);
     const archive = archiver("zip", { zlib: { level: 9 } });

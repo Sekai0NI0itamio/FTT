@@ -1,10 +1,19 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { PdfViewer } from "@renderer/components/PdfViewer";
+import { HomePage } from "@renderer/components/HomePage";
+import { SelectionPage } from "@renderer/components/SelectionPage";
+import { ConvertingPage } from "@renderer/components/ConvertingPage";
+import { FileSidebar } from "@renderer/components/FileSidebar";
+import { PenBar, type PenConfig } from "@renderer/components/PenBar";
+import { StrokeContextMenu } from "@renderer/components/StrokeContextMenu";
+import { SaveModal } from "@renderer/components/SaveModal";
 import { applyStrokeMask, buildFilledMaskForBbox, clampBbox } from "@renderer/paint";
 import { useUndoRedo } from "@renderer/hooks/useUndoRedo";
-import type { ConversionResult, PenType, SourceFile, Stroke } from "@renderer/types";
+import type { ConversionResult, ExtractionFlags, PenType, SourceFile, Stroke } from "@renderer/types";
 
-const DEFAULT_PENS: Record<PenType, { radiusPx: number; unit: "px" | "cm" | "mm" }> = {
+/* ── helpers ─────────────────────────────────────────────── */
+
+const DEFAULT_PENS: Record<PenType, PenConfig> = {
   tesseract: { radiusPx: 18, unit: "px" },
   describe: { radiusPx: 14, unit: "px" },
   graph: { radiusPx: 16, unit: "px" },
@@ -25,13 +34,7 @@ const baseName = (filePath: string) => {
   return parts[parts.length - 1] || filePath;
 };
 
-const formatPenLabel = (pen: PenType) => {
-  if (pen === "tesseract") return "Tesseract Image > Text";
-  if (pen === "describe") return "Image Describe";
-  return "Graph Data Extract";
-};
-
-const normalizeFiles = (paths: string[]) =>
+const normalizeFiles = (paths: string[]): SourceFile[] =>
   paths.map((filePath) => {
     const kind = inferKind(filePath);
     const selected = ["pdf", "image", "docx"].includes(kind);
@@ -41,34 +44,31 @@ const normalizeFiles = (paths: string[]) =>
       name: baseName(filePath),
       kind,
       selected,
-      fullExtraction: {
-        tesseract: selected,
-        python: !selected,
-      },
-    } satisfies SourceFile;
+      fullExtraction: { tesseract: selected, python: !selected },
+    };
   });
 
-const buildProjectPayload = (name: string, files: SourceFile[], strokes: Stroke[]) => {
-  return {
-    name,
-    createdAt: new Date().toISOString(),
-    uploads: files.map((file) => file.path),
-    files: files.map((file) => ({
-      id: file.id,
-      name: file.name,
-      path: file.path,
-      kind: file.kind,
-      convertedPath: file.convertedPath || "",
-      fullExtraction: file.fullExtraction,
-    })),
-    strokes,
-  };
-};
+const buildProjectPayload = (name: string, files: SourceFile[], strokes: Stroke[]) => ({
+  name,
+  createdAt: new Date().toISOString(),
+  uploads: files.map((f) => f.path),
+  files: files.map((f) => ({
+    id: f.id,
+    name: f.name,
+    path: f.path,
+    kind: f.kind,
+    convertedPath: f.convertedPath || "",
+    fullExtraction: f.fullExtraction,
+  })),
+  strokes,
+});
 
-const getStrokeFileName = (file: SourceFile | undefined, stroke: Stroke) => {
+const strokeFileName = (file: SourceFile | undefined, stroke: Stroke) => {
   const name = file?.name ? file.name.replace(/\.[^.]+$/, "") : "file";
   return `${name}_${stroke.id}.png`;
 };
+
+/* ── App ─────────────────────────────────────────────────── */
 
 export default function App() {
   const [step, setStep] = useState<"home" | "select" | "converting" | "workspace">("home");
@@ -76,377 +76,245 @@ export default function App() {
   const [activeFileId, setActiveFileId] = useState<string | null>(null);
   const [activePen, setActivePen] = useState<PenType>("tesseract");
   const [penSettings, setPenSettings] = useState(DEFAULT_PENS);
-  const [progress, setProgress] = useState({ current: 0, total: 0, file: "", status: "" });
-  const [contextMenu, setContextMenu] = useState<{ strokeId: string; x: number; y: number } | null>(
-    null,
-  );
+  const [progress, setProgress] = useState({ current: 0, total: 0, file: "" });
+  const [strokeCtx, setStrokeCtx] = useState<{ strokeId: string; x: number; y: number } | null>(null);
   const [showSave, setShowSave] = useState(false);
-  const [saveName, setSaveName] = useState("assignment");
-  const [saveFormat, setSaveFormat] = useState<"selections" | "full">("selections");
-  const [saveLocation, setSaveLocation] = useState<string>("");
+  const [saveName] = useState("assignment");
+
   const pageCanvases = useRef<Map<string, HTMLCanvasElement>>(new Map());
   const viewerBodyRef = useRef<HTMLDivElement | null>(null);
   const [viewerWidth, setViewerWidth] = useState(0);
 
-  const {
-    present: strokes,
-    set: setStrokes,
-    undo,
-    redo,
-    canUndo,
-    canRedo,
-  } = useUndoRedo<Stroke[]>([]);
+  const { present: strokes, set: setStrokes, undo, redo, canUndo, canRedo } =
+    useUndoRedo<Stroke[]>([]);
 
+  /* keyboard shortcuts */
   useEffect(() => {
-    const handler = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "z") {
-        event.preventDefault();
-        if (event.shiftKey) redo();
-        else undo();
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        e.shiftKey ? redo() : undo();
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [undo, redo]);
 
+  /* conversion progress */
   useEffect(() => {
-    const handler = (_event: unknown, payload: unknown) => {
-      const data = payload as { current: number; total: number; file: string; status: string };
-      setProgress({
-        current: data.current,
-        total: data.total,
-        file: baseName(data.file),
-        status: data.status,
-      });
+    const handler = (_: unknown, p: unknown) => {
+      const d = p as { current: number; total: number; file: string };
+      setProgress({ current: d.current, total: d.total, file: baseName(d.file) });
     };
     window.ftt?.onConvertProgress(handler);
-    return () => {
-      window.ftt?.offConvertProgress?.(handler);
-    };
+    return () => window.ftt?.offConvertProgress?.(handler);
   }, []);
 
+  /* viewer width tracking */
   useEffect(() => {
     const node = viewerBodyRef.current;
     if (!node) return;
-    const updateSize = () => setViewerWidth(node.clientWidth);
-    updateSize();
-    const observer = new ResizeObserver(() => updateSize());
-    observer.observe(node);
-    return () => observer.disconnect();
+    const update = () => setViewerWidth(node.clientWidth);
+    update();
+    const obs = new ResizeObserver(update);
+    obs.observe(node);
+    return () => obs.disconnect();
   }, [step]);
 
-  const activeFile = files.find((file) => file.id === activeFileId) || null;
+  const activeFile = files.find((f) => f.id === activeFileId) || null;
 
-  const handleAddFiles = (paths: string[]) => {
+  /* ── file management ──────────────────────────────────── */
+
+  const handleAddFiles = useCallback((paths: string[]) => {
     if (!paths.length) return;
     setFiles((prev) => [...prev, ...normalizeFiles(paths)]);
-  };
+  }, []);
 
-  const handleSelectFiles = async () => {
+  const handleSelectFiles = useCallback(async () => {
     const result = await window.ftt?.selectFiles();
     if (result) handleAddFiles(result);
-  };
+  }, [handleAddFiles]);
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const dropped = Array.from(event.dataTransfer.files).map((file) => file.path);
-    handleAddFiles(dropped);
-  };
-
-  const updateSelection = (id: string, selected: boolean) => {
+  const updateSelection = useCallback((id: string, selected: boolean) => {
     setFiles((prev) =>
-      prev.map((file) =>
-        file.id === id
-          ? {
-              ...file,
-              selected,
-              fullExtraction: {
-                tesseract: selected,
-                python: !selected,
-              },
-            }
-          : file,
+      prev.map((f) =>
+        f.id === id
+          ? { ...f, selected, fullExtraction: { tesseract: selected, python: !selected } }
+          : f,
       ),
     );
-  };
+  }, []);
 
-  const handleConfirmSelection = async () => {
-    const selected = files.filter((file) => file.selected);
-    if (selected.length === 0) return;
+  const updateExtractionFlags = useCallback((id: string, flags: Partial<ExtractionFlags>) => {
+    setFiles((prev) =>
+      prev.map((f) =>
+        f.id === id
+          ? { ...f, fullExtraction: { ...f.fullExtraction, ...flags } }
+          : f,
+      ),
+    );
+  }, []);
+
+  /* ── conversion ───────────────────────────────────────── */
+
+  const handleConfirmSelection = useCallback(async () => {
+    const selected = files.filter((f) => f.selected);
+    if (!selected.length) return;
     setStep("converting");
     const requestId = crypto.randomUUID();
     const results = (await window.ftt?.convertFiles({
       requestId,
-      files: selected.map((file) => file.path),
+      files: selected.map((f) => f.path),
     })) as ConversionResult[];
 
     setFiles((prev) =>
-      prev.map((file) => {
-        const match = results.find((result) => result.source === file.path);
-        if (!match) return file;
-        return {
-          ...file,
-          convertedPath: match.converted,
-          convertedKind: match.kind === "pdf" ? "pdf" : "other",
-          error: match.error,
-        };
+      prev.map((f) => {
+        const match = results.find((r) => r.source === f.path);
+        if (!match) return f;
+        return { ...f, convertedPath: match.converted, convertedKind: match.kind === "pdf" ? "pdf" as const : "other" as const, error: match.error };
       }),
     );
 
-    const firstConverted = results.find((result) => result.converted)?.source;
-    const firstFile =
-      selected.find((file) => file.path === firstConverted) || selected[0];
-    setActiveFileId(firstFile?.id || null);
+    const firstConverted = results.find((r) => r.converted)?.source;
+    const first = selected.find((f) => f.path === firstConverted) || selected[0];
+    setActiveFileId(first?.id || null);
     setStep("workspace");
-  };
+  }, [files]);
 
-  const handleAddStroke = (stroke: Stroke) => {
-    if (!activeFile) return;
-    const fullStroke = { ...stroke, fileId: activeFile.id };
-    setStrokes([...strokes, fullStroke]);
-  };
+  /* ── stroke management ────────────────────────────────── */
 
-  const handleContextMenu = (strokeId: string, x: number, y: number) => {
-    setContextMenu({ strokeId, x, y });
-  };
+  const handleAddStroke = useCallback(
+    (stroke: Stroke) => {
+      if (!activeFile) return;
+      setStrokes([...strokes, { ...stroke, fileId: activeFile.id }]);
+    },
+    [activeFile, strokes, setStrokes],
+  );
 
-  const applyStrokeUpdate = (strokeId: string, update: Partial<Stroke>) => {
-    setStrokes(
-      strokes.map((stroke) =>
-        stroke.id === strokeId ? { ...stroke, ...update } : stroke,
-      ),
-    );
-    setContextMenu(null);
-  };
+  const updateStroke = useCallback(
+    (strokeId: string, update: Partial<Stroke>) => {
+      setStrokes(strokes.map((s) => (s.id === strokeId ? { ...s, ...update } : s)));
+      setStrokeCtx(null);
+    },
+    [strokes, setStrokes],
+  );
 
-  const registerPageCanvas = (fileId: string, pageIndex: number, canvas: HTMLCanvasElement | null) => {
-    if (!canvas) return;
-    pageCanvases.current.set(`${fileId}:${pageIndex}`, canvas);
-  };
+  const deleteStroke = useCallback(
+    (strokeId: string) => {
+      setStrokes(strokes.filter((s) => s.id !== strokeId));
+      setStrokeCtx(null);
+    },
+    [strokes, setStrokes],
+  );
 
-  const handleSave = async () => {
-    if (!saveLocation) {
-      const folder = await window.ftt?.selectFolder();
-      if (folder) setSaveLocation(folder);
-      return;
-    }
-    const project = buildProjectPayload(saveName, files, strokes);
-    await window.ftt?.saveProject({
-      project,
-      targetDir: saveLocation,
-      includeUploads: saveFormat === "full",
-    });
-    setShowSave(false);
-  };
+  const registerPageCanvas = useCallback(
+    (fileId: string, pageIndex: number, canvas: HTMLCanvasElement | null) => {
+      if (canvas) pageCanvases.current.set(`${fileId}:${pageIndex}`, canvas);
+    },
+    [],
+  );
 
-  const handleExport = async () => {
+  /* ── pen settings ─────────────────────────────────────── */
+
+  const updatePenConfig = useCallback((pen: PenType, config: Partial<PenConfig>) => {
+    setPenSettings((prev) => ({ ...prev, [pen]: { ...prev[pen], ...config } }));
+  }, []);
+
+  /* ── save & export ────────────────────────────────────── */
+
+  const handleSave = useCallback(
+    async (opts: { name: string; format: "selections" | "full"; location: string }) => {
+      const project = buildProjectPayload(opts.name, files, strokes);
+      await window.ftt?.saveProject({
+        project,
+        targetDir: opts.location,
+        includeUploads: opts.format === "full",
+      });
+      setShowSave(false);
+    },
+    [files, strokes],
+  );
+
+  const handleExport = useCallback(async () => {
     const folder = await window.ftt?.selectFolder();
     if (!folder) return;
     const project = buildProjectPayload(saveName, files, strokes);
     const regions = strokes.map((stroke) => {
       const key = `${stroke.fileId}:${stroke.pageIndex}`;
       const canvas = pageCanvases.current.get(key);
-      if (!canvas) {
-        return {
-          pen: stroke.pen,
-          name: getStrokeFileName(files.find((file) => file.id === stroke.fileId), stroke),
-          dataUrl: "",
-        };
-      }
+      const name = strokeFileName(files.find((f) => f.id === stroke.fileId), stroke);
+      if (!canvas) return { pen: stroke.pen, name, dataUrl: "" };
       const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        return {
-          pen: stroke.pen,
-          name: getStrokeFileName(files.find((file) => file.id === stroke.fileId), stroke),
-          dataUrl: "",
-        };
-      }
+      if (!ctx) return { pen: stroke.pen, name, dataUrl: "" };
       const safeBbox = clampBbox(stroke.bbox, canvas.width, canvas.height);
       const cropImage = ctx.getImageData(safeBbox.x, safeBbox.y, safeBbox.width, safeBbox.height);
       const mask = buildFilledMaskForBbox(stroke, safeBbox);
       const cropCanvas = applyStrokeMask(cropImage, mask);
-      if (!cropCanvas) {
-        return {
-          pen: stroke.pen,
-          name: getStrokeFileName(files.find((file) => file.id === stroke.fileId), stroke),
-          dataUrl: "",
-        };
-      }
-      return {
-        pen: stroke.pen,
-        name: getStrokeFileName(files.find((file) => file.id === stroke.fileId), stroke),
-        dataUrl: cropCanvas.toDataURL("image/png"),
-      };
+      if (!cropCanvas) return { pen: stroke.pen, name, dataUrl: "" };
+      return { pen: stroke.pen, name, dataUrl: cropCanvas.toDataURL("image/png") };
     });
     const targetZip = `${folder}/${saveName || "ftt"}.zip`;
     await window.ftt?.exportProject({ project, regions, targetZip });
-  };
+  }, [files, strokes, saveName]);
 
-  const workspaceEmpty = !activeFile;
+  /* ── render ───────────────────────────────────────────── */
 
   if (step === "home") {
     return (
-      <div className="app">
-        <div className="home">
-          <div
-            className="drop-zone"
-            onDrop={handleDrop}
-            onDragOver={(event) => event.preventDefault()}
-            onClick={handleSelectFiles}
-          >
-            <h2>Paste files in here from clipboard or drop files in</h2>
-            <p>Click to open file selector</p>
-          </div>
-          {files.length > 0 && (
-            <div className="selection-inline">
-              <header>
-                <h3>Selected files</h3>
-                <span className="muted">{files.length} total</span>
-              </header>
-              <div className="selection-list">
-                {files.map((file) => (
-                  <label key={file.id} className="selection-item">
-                    <input
-                      type="checkbox"
-                      checked={file.selected}
-                      onChange={(event) => updateSelection(file.id, event.target.checked)}
-                    />
-                    <span>{file.name}</span>
-                    <span className="chip">{file.kind}</span>
-                  </label>
-                ))}
-              </div>
-              <button className="primary" onClick={() => setStep("select")}>
-                Confirm
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      <HomePage
+        files={files}
+        onAddFiles={handleAddFiles}
+        onSelectFiles={handleSelectFiles}
+        onUpdateSelection={updateSelection}
+        onConfirm={() => setStep("select")}
+      />
     );
   }
 
   if (step === "select") {
     return (
-      <div className="app">
-        <div className="selection">
-          <header>
-            <h2>Select files to convert for annotation</h2>
-            <p>Default: PDF, images, DOCX</p>
-          </header>
-          <div className="selection-list">
-            {files.map((file) => (
-              <label key={file.id} className="selection-item">
-                <input
-                  type="checkbox"
-                  checked={file.selected}
-                  onChange={(event) => updateSelection(file.id, event.target.checked)}
-                />
-                <span>{file.name}</span>
-                <span className="chip">{file.kind}</span>
-              </label>
-            ))}
-          </div>
-          <button className="primary" onClick={handleConfirmSelection}>
-            Confirm selection
-          </button>
-        </div>
-      </div>
+      <SelectionPage
+        files={files}
+        onUpdateSelection={updateSelection}
+        onConfirm={handleConfirmSelection}
+        onBack={() => setStep("home")}
+      />
     );
   }
 
   if (step === "converting") {
     return (
-      <div className="app">
-        <div className="loading">
-          <h2>Converting files</h2>
-          <p>
-            {progress.current} of {progress.total} — {progress.file}
-          </p>
-          <div className="progress">
-            <div
-              className="progress-bar"
-              style={{ width: `${(progress.current / Math.max(progress.total, 1)) * 100}%` }}
-            />
-          </div>
-        </div>
-      </div>
+      <ConvertingPage
+        current={progress.current}
+        total={progress.total}
+        fileName={progress.file}
+      />
     );
   }
 
+  const ctxStroke = strokeCtx ? strokes.find((s) => s.id === strokeCtx.strokeId) : null;
+
   return (
-    <div className="app workspace" onClick={() => setContextMenu(null)}>
-      <aside className="sidebar">
-        <h3>Files</h3>
-        <div className="file-list">
-          {files
-            .filter((file) => file.selected)
-            .map((file) => (
-              <div
-                key={file.id}
-                className={`file-card ${file.id === activeFileId ? "active" : ""}`}
-                onClick={() => setActiveFileId(file.id)}
-              >
-                <div className="file-title">{file.name}</div>
-                <div className="file-tags">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={file.fullExtraction.tesseract}
-                      onChange={(event) =>
-                        setFiles((prev) =>
-                          prev.map((item) =>
-                            item.id === file.id
-                              ? {
-                                  ...item,
-                                  fullExtraction: {
-                                    ...item.fullExtraction,
-                                    tesseract: event.target.checked,
-                                  },
-                                }
-                              : item,
-                          ),
-                        )
-                      }
-                    />
-                    Tesseract
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={file.fullExtraction.python}
-                      onChange={(event) =>
-                        setFiles((prev) =>
-                          prev.map((item) =>
-                            item.id === file.id
-                              ? {
-                                  ...item,
-                                  fullExtraction: {
-                                    ...item.fullExtraction,
-                                    python: event.target.checked,
-                                  },
-                                }
-                              : item,
-                          ),
-                        )
-                      }
-                    />
-                    Python
-                  </label>
-                </div>
-              </div>
-            ))}
-        </div>
-      </aside>
+    <div className="app workspace" onClick={() => setStrokeCtx(null)}>
+      <FileSidebar
+        files={files}
+        activeFileId={activeFileId}
+        onSelectFile={setActiveFileId}
+        onUpdateFlags={updateExtractionFlags}
+      />
 
       <main className="viewer">
         <div className="viewer-header">
-          <div>
+          <div className="viewer-header-left">
             <h2>{activeFile?.name || "Select a file"}</h2>
-            <span className="muted">Undo: {canUndo ? "Ready" : "—"} · Redo: {canRedo ? "Ready" : "—"}</span>
+            <span className="muted">
+              {canUndo ? "⌘Z undo" : ""} {canRedo ? "⇧⌘Z redo" : ""}
+            </span>
           </div>
           <div className="viewer-actions">
-            <button onClick={() => setShowSave(true)}>Save</button>
+            <button className="ghost" onClick={() => setShowSave(true)}>
+              Save
+            </button>
             <button className="primary" onClick={handleExport}>
               Export
             </button>
@@ -454,8 +322,8 @@ export default function App() {
         </div>
 
         <div className="viewer-body" ref={viewerBodyRef}>
-          {workspaceEmpty && <div className="viewer-empty">Select a file to annotate.</div>}
-          {!workspaceEmpty && activeFile?.convertedPath && (
+          {!activeFile && <div className="viewer-empty">Select a file to annotate.</div>}
+          {activeFile?.convertedPath && (
             <PdfViewer
               fileId={activeFile.id}
               filePath={activeFile.convertedPath}
@@ -465,82 +333,39 @@ export default function App() {
               unit={penSettings[activePen].unit}
               containerWidth={viewerWidth}
               onAddStroke={handleAddStroke}
-              onContextMenu={handleContextMenu}
+              onContextMenu={(id, x, y) => setStrokeCtx({ strokeId: id, x, y })}
               onPageCanvas={registerPageCanvas}
             />
           )}
         </div>
       </main>
 
-      <aside className="penbar">
-        <h3>Tools</h3>
-        {(["tesseract", "describe", "graph"] as PenType[]).map((pen) => (
-          <button
-            key={pen}
-            className={`pen-button ${activePen === pen ? "active" : ""}`}
-            onClick={() => setActivePen(pen)}
-          >
-            <span className={`pen-dot ${pen}`} />
-            {formatPenLabel(pen)}
-          </button>
-        ))}
-      </aside>
+      <PenBar
+        activePen={activePen}
+        penSettings={penSettings}
+        onSelectPen={setActivePen}
+        onUpdatePenConfig={updatePenConfig}
+      />
 
-      {contextMenu && (
-        <div
-          className="context-menu"
-          style={{ left: contextMenu.x, top: contextMenu.y }}
-        >
-          <div className="menu-title">Change Pen Type</div>
-          {(["tesseract", "describe", "graph"] as PenType[]).map((pen) => (
-            <button
-              key={pen}
-              onClick={() => applyStrokeUpdate(contextMenu.strokeId, { pen })}
-            >
-              {formatPenLabel(pen)}
-            </button>
-          ))}
-          <div className="menu-divider" />
-          <button
-            onClick={() =>
-              applyStrokeUpdate(contextMenu.strokeId, {
-                filled: !strokes.find((stroke) => stroke.id === contextMenu.strokeId)?.filled,
-              })
-            }
-          >
-            Fill Region Inside
-          </button>
-        </div>
+      {strokeCtx && ctxStroke && (
+        <StrokeContextMenu
+          stroke={ctxStroke}
+          x={strokeCtx.x}
+          y={strokeCtx.y}
+          onChangePen={(pen) => updateStroke(strokeCtx.strokeId, { pen })}
+          onToggleFill={() => updateStroke(strokeCtx.strokeId, { filled: !ctxStroke.filled })}
+          onDelete={() => deleteStroke(strokeCtx.strokeId)}
+          onClose={() => setStrokeCtx(null)}
+        />
       )}
 
       {showSave && (
-        <div className="modal-backdrop" onClick={() => setShowSave(false)}>
-          <div className="modal" onClick={(event) => event.stopPropagation()}>
-            <h3>Save Draft Project</h3>
-            <label>
-              Name
-              <input value={saveName} onChange={(event) => setSaveName(event.target.value)} />
-            </label>
-            <label>
-              Save Format
-              <select value={saveFormat} onChange={(event) => setSaveFormat(event.target.value as "selections" | "full")}>
-                <option value="selections">Selections only + file paths</option>
-                <option value="full">Full files + selections</option>
-              </select>
-            </label>
-            <label>
-              Location
-              <div className="row">
-                <input value={saveLocation} onChange={(event) => setSaveLocation(event.target.value)} />
-                <button onClick={async () => setSaveLocation((await window.ftt?.selectFolder()) || "")}>Choose</button>
-              </div>
-            </label>
-            <div className="modal-actions">
-              <button onClick={() => setShowSave(false)}>Cancel</button>
-              <button className="primary" onClick={handleSave}>Confirm</button>
-            </div>
-          </div>
-        </div>
+        <SaveModal
+          defaultName={saveName}
+          onSave={handleSave}
+          onClose={() => setShowSave(false)}
+          onSelectFolder={async () => (await window.ftt?.selectFolder()) || ""}
+        />
       )}
     </div>
   );

@@ -8,7 +8,7 @@ import archiver from "archiver";
 
 const WORK_DIR_NAME = "ftt-transformer";
 
-const isDev = !!process.env.VITE_DEV_SERVER_URL;
+const devServerUrl = process.env.VITE_DEV_SERVER_URL || "http://localhost:5173/";
 
 const ensureDir = async (dir: string) => {
   await fsp.mkdir(dir, { recursive: true });
@@ -111,8 +111,8 @@ const createWindow = () => {
     },
   });
 
-  if (isDev && process.env.VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+  if (!app.isPackaged) {
+    mainWindow.loadURL(devServerUrl);
   } else {
     mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
   }

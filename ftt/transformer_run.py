@@ -612,6 +612,7 @@ def cmd_all(project_dir: Path, output_dir: Path, config: Dict) -> int:
     multi_extractor = None
     if config["deplot"]["enabled"] and graph_regions:
         multi_extractor = MultiModelExtractor(
+            model_names=list(CHART_MODELS.keys()),
             max_tokens=config["deplot"]["max_tokens"],
             prompt=config["deplot"]["prompt"],
             cache_dir=config["deplot"]["cache_dir"],

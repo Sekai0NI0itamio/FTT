@@ -85,6 +85,8 @@ export default function App() {
   const [saveFormat, setSaveFormat] = useState<"selections" | "full">("selections");
   const [saveLocation, setSaveLocation] = useState<string>("");
   const pageCanvases = useRef<Map<string, HTMLCanvasElement>>(new Map());
+  const viewerBodyRef = useRef<HTMLDivElement | null>(null);
+  const [viewerWidth, setViewerWidth] = useState(0);
 
   const {
     present: strokes,
@@ -121,6 +123,16 @@ export default function App() {
     return () => {
       window.ftt?.offConvertProgress?.(handler);
     };
+  }, []);
+
+  useEffect(() => {
+    const node = viewerBodyRef.current;
+    if (!node) return;
+    const updateSize = () => setViewerWidth(node.clientWidth);
+    updateSize();
+    const observer = new ResizeObserver(() => updateSize());
+    observer.observe(node);
+    return () => observer.disconnect();
   }, []);
 
   const activeFile = files.find((file) => file.id === activeFileId) || null;
@@ -441,7 +453,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="viewer-body">
+        <div className="viewer-body" ref={viewerBodyRef}>
           {workspaceEmpty && <div className="viewer-empty">Select a file to annotate.</div>}
           {!workspaceEmpty && activeFile?.convertedPath && (
             <PdfViewer
@@ -451,6 +463,7 @@ export default function App() {
               activePen={activePen}
               radiusPx={penSettings[activePen].radiusPx}
               unit={penSettings[activePen].unit}
+              containerWidth={viewerWidth}
               onAddStroke={handleAddStroke}
               onContextMenu={handleContextMenu}
               onPageCanvas={registerPageCanvas}

@@ -181,6 +181,7 @@ select {
   flex: 1;
   overflow: auto;
   background: #fdfbf8;
+  min-width: 0;
 }
 
 .viewer-empty {
@@ -234,6 +235,7 @@ select {
   display: grid;
   gap: 24px;
   padding: 24px;
+  width: 100%;
 }
 
 .pdf-page {

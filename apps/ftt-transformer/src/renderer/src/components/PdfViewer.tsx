@@ -72,6 +72,7 @@ export function PdfViewer({
   activePen,
   radiusPx,
   unit,
+  containerWidth,
   onAddStroke,
   onContextMenu,
   onPageCanvas,
@@ -82,24 +83,13 @@ export function PdfViewer({
   activePen: PenType;
   radiusPx: number;
   unit: "px" | "cm" | "mm";
+  containerWidth: number;
   onAddStroke: (stroke: Stroke) => void;
   onContextMenu: (strokeId: string, x: number, y: number) => void;
   onPageCanvas?: (fileId: string, pageIndex: number, canvas: HTMLCanvasElement | null) => void;
 }) {
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
   const [pages, setPages] = useState<PDFPageProxy[]>([]);
-  const [containerWidth, setContainerWidth] = useState(0);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const node = containerRef.current;
-    if (!node) return;
-    const updateSize = () => setContainerWidth(node.clientWidth);
-    updateSize();
-    const observer = new ResizeObserver(() => updateSize());
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
     let canceled = false;
@@ -140,7 +130,7 @@ export function PdfViewer({
   }
 
   return (
-    <div className="pdf-scroll" ref={containerRef}>
+    <div className="pdf-scroll">
       {pages.map((page, idx) => (
         <PdfPage
           key={page.pageNumber}
@@ -196,7 +186,7 @@ function PdfPage({
     if (!canvas) return;
     const baseViewport = page.getViewport({ scale: 1 });
     const availableWidth = Math.max(200, containerWidth - 48);
-    const scale = containerWidth > 0 ? Math.min(1.2, availableWidth / baseViewport.width) : 1;
+    const scale = containerWidth > 0 ? Math.min(1, availableWidth / baseViewport.width) : 1;
     const viewport = page.getViewport({ scale });
     canvas.width = viewport.width;
     canvas.height = viewport.height;

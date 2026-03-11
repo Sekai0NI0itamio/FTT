@@ -27,14 +27,32 @@ const loadPdf = async (filePath: string) => {
   return getDocument({ data: new Uint8Array(buffer) }).promise;
 };
 
-const drawStroke = (
-  ctx: CanvasRenderingContext2D,
+const renderStroke = (
+  overlayCtx: CanvasRenderingContext2D,
   stroke: Stroke,
   color: string,
+  canvasWidth: number,
+  canvasHeight: number,
 ) => {
   if (stroke.points.length < 2) return;
-  const prevAlpha = ctx.globalAlpha;
-  ctx.globalAlpha = 0.45;
+
+  // Each stroke gets its own offscreen canvas for full isolation.
+  // This prevents putImageData (fill) from erasing other strokes
+  // and allows transparency to stack properly between strokes.
+  const tmp = document.createElement("canvas");
+  tmp.width = canvasWidth;
+  tmp.height = canvasHeight;
+  const ctx = tmp.getContext("2d");
+  if (!ctx) return;
+
+  // 1. Fill first — putImageData replaces pixels, so it must go before outline
+  if (stroke.filled) {
+    const safeBbox = clampBbox(stroke.bbox, canvasWidth, canvasHeight);
+    const mask = buildFilledMaskForBbox(stroke, safeBbox);
+    paintMask(ctx, mask, safeBbox, color, 0.4);
+  }
+
+  // 2. Outline stroke on top
   ctx.strokeStyle = color;
   ctx.lineWidth = stroke.radiusPx * 2;
   ctx.lineCap = "round";
@@ -45,7 +63,12 @@ const drawStroke = (
     else ctx.lineTo(point.x, point.y);
   });
   ctx.stroke();
-  ctx.globalAlpha = prevAlpha;
+
+  // 3. Composite isolated stroke onto main overlay with transparency
+  const prevAlpha = overlayCtx.globalAlpha;
+  overlayCtx.globalAlpha = 0.5;
+  overlayCtx.drawImage(tmp, 0, 0);
+  overlayCtx.globalAlpha = prevAlpha;
 };
 
 const getColor = (pen: PenType) => {
@@ -225,15 +248,10 @@ function PdfPage({
     if (!ctx) return;
     ctx.clearRect(0, 0, overlay.width, overlay.height);
     for (const stroke of strokes) {
-      drawStroke(ctx, stroke, getColor(stroke.pen));
-      if (stroke.filled) {
-        const safeBbox = clampBbox(stroke.bbox, overlay.width, overlay.height);
-        const mask = buildFilledMaskForBbox(stroke, safeBbox);
-        paintMask(ctx, mask, safeBbox, getColor(stroke.pen), 0.13);
-      }
+      renderStroke(ctx, stroke, getColor(stroke.pen), overlay.width, overlay.height);
     }
     if (currentPoints.length > 1) {
-      drawStroke(
+      renderStroke(
         ctx,
         {
           id: "current",
@@ -247,6 +265,8 @@ function PdfPage({
           bbox: { x: 0, y: 0, width: 0, height: 0 },
         },
         getColor(pen),
+        overlay.width,
+        overlay.height,
       );
     }
   }, [strokes, currentPoints, pen, radiusPx, unit, pageIndex]);
@@ -431,15 +451,10 @@ function ImagePage({
     if (!ctx) return;
     ctx.clearRect(0, 0, overlay.width, overlay.height);
     for (const stroke of strokes) {
-      drawStroke(ctx, stroke, getColor(stroke.pen));
-      if (stroke.filled) {
-        const safeBbox = clampBbox(stroke.bbox, overlay.width, overlay.height);
-        const mask = buildFilledMaskForBbox(stroke, safeBbox);
-        paintMask(ctx, mask, safeBbox, getColor(stroke.pen), 0.13);
-      }
+      renderStroke(ctx, stroke, getColor(stroke.pen), overlay.width, overlay.height);
     }
     if (currentPoints.length > 1) {
-      drawStroke(
+      renderStroke(
         ctx,
         {
           id: "current",
@@ -453,6 +468,8 @@ function ImagePage({
           bbox: { x: 0, y: 0, width: 0, height: 0 },
         },
         getColor(pen),
+        overlay.width,
+        overlay.height,
       );
     }
   }, [strokes, currentPoints, pen, radiusPx, unit, imgSize]);

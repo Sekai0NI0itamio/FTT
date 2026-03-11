@@ -286,9 +286,27 @@ export default function App() {
             <p>Click to open file selector</p>
           </div>
           {files.length > 0 && (
-            <div className="file-summary">
-              <p>{files.length} files ready</p>
-              <button onClick={() => setStep("select")}>Confirm</button>
+            <div className="selection-inline">
+              <header>
+                <h3>Selected files</h3>
+                <span className="muted">{files.length} total</span>
+              </header>
+              <div className="selection-list">
+                {files.map((file) => (
+                  <label key={file.id} className="selection-item">
+                    <input
+                      type="checkbox"
+                      checked={file.selected}
+                      onChange={(event) => updateSelection(file.id, event.target.checked)}
+                    />
+                    <span>{file.name}</span>
+                    <span className="chip">{file.kind}</span>
+                  </label>
+                ))}
+              </div>
+              <button className="primary" onClick={() => setStep("select")}>
+                Confirm
+              </button>
             </div>
           )}
         </div>

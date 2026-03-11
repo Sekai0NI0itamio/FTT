@@ -39,6 +39,16 @@ select {
   padding: 80px 24px;
 }
 
+.selection-inline {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+  background: var(--panel);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 16px;
+}
+
 .drop-zone {
   border: 2px dashed var(--border);
   background: var(--panel);

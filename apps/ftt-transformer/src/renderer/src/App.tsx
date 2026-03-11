@@ -133,7 +133,7 @@ export default function App() {
     const observer = new ResizeObserver(() => updateSize());
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [step]);
 
   const activeFile = files.find((file) => file.id === activeFileId) || null;
 

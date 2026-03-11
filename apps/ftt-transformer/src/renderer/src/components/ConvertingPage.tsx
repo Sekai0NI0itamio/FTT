@@ -12,7 +12,7 @@ export function ConvertingPage({
   return (
     <div className="app">
       <div className="loading">
-        <div className="loading-icon">⚙️</div>
+        <div className="loading-icon">Processing</div>
         <h2>Converting files…</h2>
         <p className="muted">
           {current} of {total} pages — <strong>{fileName}</strong>

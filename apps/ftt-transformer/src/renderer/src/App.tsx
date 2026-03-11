@@ -10,6 +10,7 @@ import { SaveModal } from "@renderer/components/SaveModal";
 import { applyStrokeMask, buildFilledMaskForBbox, clampBbox } from "@renderer/paint";
 import { useUndoRedo } from "@renderer/hooks/useUndoRedo";
 import type { ConversionResult, ExtractionFlags, PenType, SourceFile, Stroke } from "@renderer/types";
+import { CHART_MODELS } from "@renderer/types";
 
 /* ── helpers ─────────────────────────────────────────────── */
 
@@ -186,7 +187,11 @@ export default function App() {
   const handleAddStroke = useCallback(
     (stroke: Stroke) => {
       if (!activeFile) return;
-      setStrokes([...strokes, { ...stroke, fileId: activeFile.id }]);
+      const newStroke = { ...stroke, fileId: activeFile.id };
+      if (stroke.pen === "graph" && !stroke.graphModels) {
+        newStroke.graphModels = CHART_MODELS.map((m) => m.id);
+      }
+      setStrokes([...strokes, newStroke]);
     },
     [activeFile, strokes, setStrokes],
   );
@@ -243,15 +248,15 @@ export default function App() {
       const key = `${stroke.fileId}:${stroke.pageIndex}`;
       const canvas = pageCanvases.current.get(key);
       const name = strokeFileName(files.find((f) => f.id === stroke.fileId), stroke);
-      if (!canvas) return { pen: stroke.pen, name, dataUrl: "" };
+      if (!canvas) return { pen: stroke.pen, name, dataUrl: "", graphModels: stroke.graphModels };
       const ctx = canvas.getContext("2d");
-      if (!ctx) return { pen: stroke.pen, name, dataUrl: "" };
+      if (!ctx) return { pen: stroke.pen, name, dataUrl: "", graphModels: stroke.graphModels };
       const safeBbox = clampBbox(stroke.bbox, canvas.width, canvas.height);
       const cropImage = ctx.getImageData(safeBbox.x, safeBbox.y, safeBbox.width, safeBbox.height);
       const mask = buildFilledMaskForBbox(stroke, safeBbox);
       const cropCanvas = applyStrokeMask(cropImage, mask);
-      if (!cropCanvas) return { pen: stroke.pen, name, dataUrl: "" };
-      return { pen: stroke.pen, name, dataUrl: cropCanvas.toDataURL("image/png") };
+      if (!cropCanvas) return { pen: stroke.pen, name, dataUrl: "", graphModels: stroke.graphModels };
+      return { pen: stroke.pen, name, dataUrl: cropCanvas.toDataURL("image/png"), graphModels: stroke.graphModels };
     });
     const targetZip = `${folder}/${saveName || "ftt"}.zip`;
     await window.ftt?.exportProject({ project, regions, targetZip });
@@ -356,6 +361,7 @@ export default function App() {
           onToggleFill={() => updateStroke(strokeCtx.strokeId, { filled: !ctxStroke.filled })}
           onDelete={() => deleteStroke(strokeCtx.strokeId)}
           onClose={() => setStrokeCtx(null)}
+          onUpdateGraphModels={(models) => updateStroke(strokeCtx.strokeId, { graphModels: models })}
         />
       )}
 

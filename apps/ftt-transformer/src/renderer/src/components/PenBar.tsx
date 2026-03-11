@@ -13,7 +13,7 @@ const PEN_COLORS: Record<PenType, string> = {
 };
 
 const PEN_LABELS: Record<PenType, string> = {
-  tesseract: "Tesseract Image → Text",
+  tesseract: "OCR Text Extraction",
   describe: "Image Describe",
   graph: "Graph Data Extract",
 };
@@ -69,7 +69,7 @@ export function PenBar({
               onClick={() => toggleExpand(pen)}
               title="Configure pen radius"
             >
-              ⚙
+              Config
             </button>
             {isExpanded && (
               <div className="pen-config">

@@ -14,7 +14,7 @@ contextBridge.exposeInMainWorld("ftt", {
     ipcRenderer.invoke("ftt:save-project", payload),
   exportProject: (payload: {
     project: Record<string, unknown>;
-    regions: Array<{ pen: string; name: string; dataUrl: string }>;
+    regions: Array<{ pen: string; name: string; dataUrl: string; graphModels?: string[] }>;
     targetZip: string;
   }) => ipcRenderer.invoke("ftt:export-project", payload),
 });

@@ -209,7 +209,7 @@ ipcMain.handle("ftt:save-project", async (_event, payload) => {
 ipcMain.handle("ftt:export-project", async (_event, payload) => {
   const { project, regions, targetZip } = payload as {
     project: Record<string, unknown>;
-    regions: Array<{ pen: string; name: string; dataUrl: string }>;
+    regions: Array<{ pen: string; name: string; dataUrl: string; graphModels?: string[] }>;
     targetZip: string;
   };
 
@@ -228,6 +228,19 @@ ipcMain.handle("ftt:export-project", async (_event, payload) => {
     const base64 = region.dataUrl.split(",")[1] || "";
     const buffer = Buffer.from(base64, "base64");
     await fsp.writeFile(path.join(penDir, region.name), buffer);
+  }
+
+  /* ── models.json — per-graph-region model selections ──── */
+  const graphModelMap: Record<string, string[]> = {};
+  for (const region of regions) {
+    if (region.pen === "graph" && region.graphModels && region.graphModels.length > 0) {
+      graphModelMap[region.name] = region.graphModels;
+    }
+  }
+  if (Object.keys(graphModelMap).length > 0) {
+    const modelsPath = path.join(regionsDir, "graph", "models.json");
+    await ensureDir(path.join(regionsDir, "graph"));
+    await fsp.writeFile(modelsPath, JSON.stringify(graphModelMap, null, 2));
   }
 
   /* ── uploads/ with converted PDFs and source files ────── */

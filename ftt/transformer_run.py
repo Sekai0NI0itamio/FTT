@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ftt.config import load_config
-from ftt.deplot import DeplotExtractor
+from ftt.deplot import DeplotExtractor, MultiModelExtractor, CHART_MODELS
 from ftt.discovery import discover_files
 from ftt.logging_utils import FileLogger
 from ftt.merger import write_combined_transcripts
@@ -53,6 +53,16 @@ def _discover_regions(project_dir: Path) -> List[Dict]:
     regions_dir = project_dir / "regions"
     if not regions_dir.exists():
         return []
+
+    # Load per-region model selections if available
+    graph_models_map: Dict[str, List[str]] = {}
+    models_json = regions_dir / "graph" / "models.json"
+    if models_json.exists():
+        try:
+            graph_models_map = json.loads(models_json.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            pass
+
     items: List[Dict] = []
     for pen in ("tesseract", "describe", "graph"):
         pen_dir = regions_dir / pen
@@ -61,7 +71,10 @@ def _discover_regions(project_dir: Path) -> List[Dict]:
         for path in sorted(pen_dir.glob("*")):
             if path.suffix.lower() not in {".png", ".jpg", ".jpeg"}:
                 continue
-            items.append({"pen": pen, "path": path})
+            region: Dict[str, Any] = {"pen": pen, "path": path}
+            if pen == "graph" and path.name in graph_models_map:
+                region["models"] = graph_models_map[path.name]
+            items.append(region)
     return items
 
 
@@ -388,7 +401,7 @@ def cmd_python_files(project_dir: Path, output_dir: Path, config: Dict) -> int:
 
 
 def cmd_graph_regions(project_dir: Path, output_dir: Path, config: Dict) -> int:
-    """Chart/graph data extraction for graph pen regions."""
+    """Chart/graph data extraction for graph pen regions using multi-model concurrent extraction."""
     regions = [r for r in _discover_regions(project_dir) if r["pen"] == "graph"]
     total = len(regions)
     if total == 0:
@@ -398,26 +411,78 @@ def cmd_graph_regions(project_dir: Path, output_dir: Path, config: Dict) -> int:
 
     print(f"=== Graph Data Extraction: {total} regions ===")
 
-    deplot_extractor = None
-    if config["deplot"]["enabled"]:
-        deplot_extractor = DeplotExtractor(
-            model_name=config["deplot"]["model_name"],
-            max_tokens=config["deplot"]["max_tokens"],
-            prompt=config["deplot"]["prompt"],
-            cache_dir=config["deplot"]["cache_dir"],
-        )
+    all_model_keys = list(CHART_MODELS.keys())
+    default_models = all_model_keys
 
     # For graph regions that can't use deplot, fall back to vision
     vision_backend = None
-    if deplot_extractor is None:
+    if not config["deplot"]["enabled"]:
         vision_backend = build_backend(config)
 
     region_output = output_dir / "regions" / "graph"
+    region_output.mkdir(parents=True, exist_ok=True)
     results: List[Dict] = []
+
     for i, region in enumerate(regions, 1):
-        result = _process_region(region, config, vision_backend, deplot_extractor, region_output)
-        results.append(result)
-        _progress(i, total, region["path"].name)
+        path: Path = region["path"]
+        start = time.time()
+
+        if not config["deplot"]["enabled"]:
+            # Fall back to vision description when deplot is disabled
+            result = _process_region(region, config, vision_backend, None, region_output)
+            results.append(result)
+            _progress(i, total, path.name)
+            continue
+
+        # Determine which models to use for this region
+        region_models = region.get("models", default_models)
+        # Filter to only valid model keys
+        region_models = [m for m in region_models if m in all_model_keys]
+        if not region_models:
+            region_models = default_models
+
+        try:
+            multi = MultiModelExtractor(
+                model_names=region_models,
+                max_tokens=config["deplot"]["max_tokens"],
+                prompt=config["deplot"]["prompt"],
+                cache_dir=config["deplot"]["cache_dir"],
+            )
+            all_outputs = multi.extract_all(path)
+
+            # Write individual model outputs
+            for model_key, output_text in all_outputs.items():
+                model_file = region_output / f"{path.stem}_{model_key}.txt"
+                model_file.write_text(output_text.strip() + "\n", encoding="utf-8")
+
+            # Write best result as the primary transcript
+            best_output = multi.extract(path)
+            transcript_path = region_output / f"{path.stem}.txt"
+            transcript_path.write_text(best_output.strip() + "\n", encoding="utf-8")
+
+            results.append({
+                "file": f"region:graph:{path.name}",
+                "status": "success",
+                "size_bytes": path.stat().st_size,
+                "processing_time_sec": time.time() - start,
+                "transcript_path": str(transcript_path),
+                "models_used": region_models,
+                "error": None,
+            })
+        except Exception as exc:  # noqa: BLE001
+            transcript_path = region_output / f"{path.stem}.txt"
+            transcript_path.write_text(f"Error processing region: {exc}\n", encoding="utf-8")
+            results.append({
+                "file": f"region:graph:{path.name}",
+                "status": "error",
+                "size_bytes": path.stat().st_size,
+                "processing_time_sec": time.time() - start,
+                "transcript_path": str(transcript_path),
+                "models_used": region_models,
+                "error": str(exc),
+            })
+
+        _progress(i, total, path.name)
 
     _write_results(results, output_dir)
     _write_step_summary("Graph Data Extraction", results)

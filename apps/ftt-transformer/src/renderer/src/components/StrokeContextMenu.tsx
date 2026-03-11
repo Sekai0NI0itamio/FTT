@@ -1,7 +1,9 @@
 import type { PenType, Stroke } from "@renderer/types";
+import { CHART_MODELS } from "@renderer/types";
+import { useState } from "react";
 
 const PEN_LABELS: Record<PenType, string> = {
-  tesseract: "Tesseract Image → Text",
+  tesseract: "OCR Text Extraction",
   describe: "Image Describe",
   graph: "Graph Data Extract",
 };
@@ -14,6 +16,7 @@ export function StrokeContextMenu({
   onToggleFill,
   onDelete,
   onClose,
+  onUpdateGraphModels,
 }: {
   stroke: Stroke;
   x: number;
@@ -22,8 +25,21 @@ export function StrokeContextMenu({
   onToggleFill: () => void;
   onDelete: () => void;
   onClose: () => void;
+  onUpdateGraphModels?: (models: string[]) => void;
 }) {
   const pens: PenType[] = ["tesseract", "describe", "graph"];
+  const [expandedModel, setExpandedModel] = useState<string | null>(null);
+
+  const currentModels = stroke.graphModels ?? CHART_MODELS.map((m) => m.id);
+
+  const toggleModel = (modelId: string) => {
+    const updated = currentModels.includes(modelId)
+      ? currentModels.filter((m) => m !== modelId)
+      : [...currentModels, modelId];
+    // Ensure at least one model stays enabled
+    if (updated.length === 0) return;
+    onUpdateGraphModels?.(updated);
+  };
 
   return (
     <div className="context-menu" style={{ left: x, top: y }} onClick={(e) => e.stopPropagation()}>
@@ -43,6 +59,64 @@ export function StrokeContextMenu({
           {PEN_LABELS[pen]}
         </button>
       ))}
+
+      {stroke.pen === "graph" && (
+        <>
+          <div className="menu-divider" />
+          <div className="menu-title">Graph Extraction Models</div>
+          {CHART_MODELS.map((model) => {
+            const enabled = currentModels.includes(model.id);
+            const isExpanded = expandedModel === model.id;
+            return (
+              <div key={model.id} className="model-picker-item">
+                <label className="menu-check model-row">
+                  <input
+                    type="checkbox"
+                    checked={enabled}
+                    onChange={() => toggleModel(model.id)}
+                  />
+                  <span className="model-label">
+                    <strong>{model.label}</strong>
+                    <span className="muted model-desc">{model.description}</span>
+                  </span>
+                  <button
+                    className="model-info-toggle"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setExpandedModel(isExpanded ? null : model.id);
+                    }}
+                    title="Show strengths and weaknesses"
+                  >
+                    {isExpanded ? "Hide" : "Info"}
+                  </button>
+                </label>
+                {isExpanded && (
+                  <div className="model-details">
+                    <div className="model-section">
+                      <span className="model-section-label good">Good at:</span>
+                      <ul>
+                        {model.strengths.map((s, i) => (
+                          <li key={i}>{s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="model-section">
+                      <span className="model-section-label bad">Bad at:</span>
+                      <ul>
+                        {model.weaknesses.map((w, i) => (
+                          <li key={i}>{w}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </>
+      )}
+
       <div className="menu-divider" />
       <button
         onClick={() => {

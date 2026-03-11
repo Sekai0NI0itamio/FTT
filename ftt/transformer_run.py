@@ -163,6 +163,19 @@ def _resolve_project(project_arg: str) -> Path:
     return _load_project_dir(p)
 
 
+def _shard_items(items: list, index: int | None, shards: int | None) -> list:
+    """Filter items for the given shard index (round-robin)."""
+    if index is None or shards is None:
+        return items
+    return [item for i, item in enumerate(items) if i % shards == index]
+
+
+def _make_matrix(count: int, max_shards: int = 10) -> list:
+    """Build a matrix index array: [0, ..., min(count, max_shards)-1]."""
+    n = min(count, max_shards)
+    return list(range(n)) if n > 0 else []
+
+
 # ── Region processing ───────────────────────────────────────────────────
 
 
@@ -259,6 +272,13 @@ def cmd_discover(project_dir: Path, output_dir: Path, config: Dict) -> int:
         print(f"  {label}: {count}")
         _set_github_output(key, str(count))
 
+    # Output matrix arrays and shard counts for GitHub Actions matrix strategy
+    for key, count in counts.items():
+        type_name = key.replace("_count", "")
+        shards = min(count, 10)
+        _set_github_output(f"{type_name}_matrix", json.dumps(_make_matrix(count)))
+        _set_github_output(f"{type_name}_shards", str(shards if shards > 0 else 1))
+
     # Write step summary
     summary_file = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary_file:
@@ -289,12 +309,14 @@ def cmd_discover(project_dir: Path, output_dir: Path, config: Dict) -> int:
     return 0
 
 
-def cmd_tesseract_files(project_dir: Path, output_dir: Path, config: Dict) -> int:
+def cmd_tesseract_files(project_dir: Path, output_dir: Path, config: Dict,
+                        index: int | None = None, shards: int | None = None) -> int:
     """OCR extraction for files tagged with tesseract in status.tag."""
     uploads_dir = project_dir / "uploads"
     files = discover_files(uploads_dir) if uploads_dir.exists() else []
     status_tags = _load_status_tags(project_dir)
     targets = [f for f in files if "tesseract" in status_tags.get(f.name, [])]
+    targets = _shard_items(targets, index, shards)
 
     total = len(targets)
     if total == 0:
@@ -344,12 +366,14 @@ def cmd_tesseract_files(project_dir: Path, output_dir: Path, config: Dict) -> in
     return 0
 
 
-def cmd_python_files(project_dir: Path, output_dir: Path, config: Dict) -> int:
+def cmd_python_files(project_dir: Path, output_dir: Path, config: Dict,
+                     index: int | None = None, shards: int | None = None) -> int:
     """Vision-based extraction for files tagged with python in status.tag."""
     uploads_dir = project_dir / "uploads"
     files = discover_files(uploads_dir) if uploads_dir.exists() else []
     status_tags = _load_status_tags(project_dir)
     targets = [f for f in files if "python" in status_tags.get(f.name, [])]
+    targets = _shard_items(targets, index, shards)
 
     total = len(targets)
     if total == 0:
@@ -400,9 +424,11 @@ def cmd_python_files(project_dir: Path, output_dir: Path, config: Dict) -> int:
     return 0
 
 
-def cmd_graph_regions(project_dir: Path, output_dir: Path, config: Dict) -> int:
+def cmd_graph_regions(project_dir: Path, output_dir: Path, config: Dict,
+                      index: int | None = None, shards: int | None = None) -> int:
     """Chart/graph data extraction for graph pen regions using multi-model concurrent extraction."""
     regions = [r for r in _discover_regions(project_dir) if r["pen"] == "graph"]
+    regions = _shard_items(regions, index, shards)
     total = len(regions)
     if total == 0:
         print("No graph regions to process")
@@ -489,9 +515,11 @@ def cmd_graph_regions(project_dir: Path, output_dir: Path, config: Dict) -> int:
     return 0
 
 
-def cmd_tesseract_regions(project_dir: Path, output_dir: Path, config: Dict) -> int:
+def cmd_tesseract_regions(project_dir: Path, output_dir: Path, config: Dict,
+                          index: int | None = None, shards: int | None = None) -> int:
     """OCR extraction for tesseract pen (pixel pen) regions."""
     regions = [r for r in _discover_regions(project_dir) if r["pen"] == "tesseract"]
+    regions = _shard_items(regions, index, shards)
     total = len(regions)
     if total == 0:
         print("No tesseract pen regions to process")
@@ -512,9 +540,11 @@ def cmd_tesseract_regions(project_dir: Path, output_dir: Path, config: Dict) -> 
     return 0
 
 
-def cmd_describe_regions(project_dir: Path, output_dir: Path, config: Dict) -> int:
+def cmd_describe_regions(project_dir: Path, output_dir: Path, config: Dict,
+                         index: int | None = None, shards: int | None = None) -> int:
     """Vision description extraction for describe pen regions."""
     regions = [r for r in _discover_regions(project_dir) if r["pen"] == "describe"]
+    regions = _shard_items(regions, index, shards)
     total = len(regions)
     if total == 0:
         print("No describe regions to process")
@@ -703,6 +733,14 @@ def main() -> int:
         "--inputs", default="",
         help="Inputs directory for bundle mode (contains result artifacts).",
     )
+    parser.add_argument(
+        "--index", type=int, default=None,
+        help="Shard index for matrix parallelism (0-based).",
+    )
+    parser.add_argument(
+        "--shards", type=int, default=None,
+        help="Total number of shards for matrix parallelism.",
+    )
     args = parser.parse_args()
 
     config = load_config(Path(args.config))
@@ -716,14 +754,24 @@ def main() -> int:
 
     project_dir = _resolve_project(args.project)
 
-    dispatch = {
-        "all": cmd_all,
-        "discover": cmd_discover,
+    # Sharded extraction modes pass index/shards for matrix parallelism
+    sharded_modes = {
         "tesseract-files": cmd_tesseract_files,
         "python-files": cmd_python_files,
         "graph-regions": cmd_graph_regions,
         "tesseract-regions": cmd_tesseract_regions,
         "describe-regions": cmd_describe_regions,
+    }
+
+    if args.mode in sharded_modes:
+        return sharded_modes[args.mode](
+            project_dir, output_dir, config,
+            index=args.index, shards=args.shards,
+        )
+
+    dispatch = {
+        "all": cmd_all,
+        "discover": cmd_discover,
     }
 
     return dispatch[args.mode](project_dir, output_dir, config)

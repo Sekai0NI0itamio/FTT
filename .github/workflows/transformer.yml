@@ -15,10 +15,6 @@ on:
         description: "Chart extraction model: unichart (best) | matcha (good) | deplot (lightweight)"
         required: false
         default: "unichart"
-        # Model download URLs (auto-downloaded by HuggingFace transformers):
-        #   unichart → https://huggingface.co/ahmed-masry/unichart-base-960
-        #   matcha   → https://huggingface.co/google/matcha-chartqa
-        #   deplot   → https://huggingface.co/google/deplot
       file_workers:
         description: "File worker concurrency"
         required: false
@@ -32,22 +28,45 @@ on:
         required: false
         default: "false"
 
-# ─────────────────────────────────────────────────────────────────────────
-# Single-job architecture for speed:
+# ---------------------------------------------------------------------------
+# Matrix-parallel architecture:
 #
-#   1. Parallel init — apt-get, venv, llama.cpp build run concurrently
-#   2. All extractions run in one process via ThreadPoolExecutor
-#   3. Models loaded once, shared across all extraction types
+#   1. Discover  -- fast job that counts items and outputs matrix arrays
+#   2. 5 extraction job groups -- each scales to min(item_count, 10) parallel
+#      jobs via GitHub Actions matrix strategy. Every job runs full setup
+#      concurrently (apt-get, venv, llama.cpp all in parallel).
+#   3. Bundle    -- merges all shard artifacts into final output
 #
-# This avoids the overhead of separate jobs each re-installing deps
-# and re-downloading models (~30s+ per job, ~1.5min for chart models).
-# ─────────────────────────────────────────────────────────────────────────
+# Each extraction shard processes a round-robin slice of its item list
+# via --index / --shards so work is evenly distributed.
+# ---------------------------------------------------------------------------
 
 jobs:
-  extract:
-    name: "FTT Transformer Extraction"
+  # =====================================================================
+  # 1. DISCOVER -- count items, output matrix arrays
+  # =====================================================================
+  discover:
+    name: Discover Project Items
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 15
+    outputs:
+      tesseract_file_count:   ${{ steps.discover.outputs.tesseract_file_count }}
+      python_file_count:      ${{ steps.discover.outputs.python_file_count }}
+      graph_region_count:     ${{ steps.discover.outputs.graph_region_count }}
+      tesseract_region_count: ${{ steps.discover.outputs.tesseract_region_count }}
+      describe_region_count:  ${{ steps.discover.outputs.describe_region_count }}
+
+      tesseract_file_matrix:   ${{ steps.discover.outputs.tesseract_file_matrix }}
+      tesseract_file_shards:   ${{ steps.discover.outputs.tesseract_file_shards }}
+      python_file_matrix:      ${{ steps.discover.outputs.python_file_matrix }}
+      python_file_shards:      ${{ steps.discover.outputs.python_file_shards }}
+      graph_region_matrix:     ${{ steps.discover.outputs.graph_region_matrix }}
+      graph_region_shards:     ${{ steps.discover.outputs.graph_region_shards }}
+      tesseract_region_matrix: ${{ steps.discover.outputs.tesseract_region_matrix }}
+      tesseract_region_shards: ${{ steps.discover.outputs.tesseract_region_shards }}
+      describe_region_matrix:  ${{ steps.discover.outputs.describe_region_matrix }}
+      describe_region_shards:  ${{ steps.discover.outputs.describe_region_shards }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -55,7 +74,124 @@ jobs:
         with:
           python-version: "3.11"
 
-      # ── Restore all caches upfront ──────────────────────────────────────
+      - name: Cache venv
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip -q
+          .venv/bin/pip install -r requirements.txt -q
+
+      - name: Discover items
+        id: discover
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run \
+            --project "$PROJECT" --output discover-output --mode discover
+
+  # =====================================================================
+  # 2a. TESSERACT FILES -- OCR extraction (matrix: up to 10 shards)
+  # =====================================================================
+  tesseract-files:
+    name: "Tesseract File [${{ matrix.index }}]"
+    needs: discover
+    if: needs.discover.outputs.tesseract_file_count > 0
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        index: ${{ fromJson(needs.discover.outputs.tesseract_file_matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache venv
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Parallel initialization
+        env:
+          CACHE_VENV_HIT: ${{ steps.cache-venv.outputs.cache-hit }}
+          FORCE_SETUP: ${{ inputs.force_setup }}
+        run: |
+          PIDS=()
+          (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils libreoffice tesseract-ocr) &
+          PIDS+=($!)
+          if [ "$CACHE_VENV_HIT" != "true" ] || [ "$FORCE_SETUP" == "true" ]; then
+            (python -m venv .venv && .venv/bin/python -m pip install --upgrade pip -q && .venv/bin/pip install -r requirements.txt -q) &
+            PIDS+=($!)
+          fi
+          FAIL=0
+          for pid in "${PIDS[@]}"; do wait "$pid" || FAIL=1; done
+          [ "$FAIL" -eq 0 ] || exit 1
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Run tesseract-files shard ${{ matrix.index }}
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run \
+            --project "$PROJECT" --output shard-output --mode tesseract-files \
+            --index ${{ matrix.index }} --shards ${{ needs.discover.outputs.tesseract_file_shards }}
+
+      - name: Upload shard results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tesseract-files-${{ matrix.index }}
+          path: shard-output
+          if-no-files-found: warn
+
+  # =====================================================================
+  # 2b. PYTHON FILES -- Vision extraction (matrix: up to 10 shards)
+  # =====================================================================
+  python-files:
+    name: "Python File [${{ matrix.index }}]"
+    needs: discover
+    if: needs.discover.outputs.python_file_count > 0
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        index: ${{ fromJson(needs.discover.outputs.python_file_matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Cache pip
         uses: actions/cache@v4
         with:
@@ -75,37 +211,24 @@ jobs:
           path: vendor/llama.cpp
           key: ${{ runner.os }}-llama-cmake-v1
 
-      - name: Cache HuggingFace chart models
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/huggingface
-          key: ${{ runner.os }}-hf-${{ inputs.chart_model }}
-
       - name: Cache vision models
         uses: actions/cache@v4
         with:
           path: ~/.cache/ftt/models
           key: ${{ runner.os }}-ftt-models
 
-      # ── Parallel initialization ─────────────────────────────────────────
       - name: Parallel initialization
         env:
           CACHE_VENV_HIT: ${{ steps.cache-venv.outputs.cache-hit }}
           FORCE_SETUP: ${{ inputs.force_setup }}
         run: |
           PIDS=()
-
-          # 1. System dependencies (background)
-          (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils libreoffice tesseract-ocr) &
+          (sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils libreoffice) &
           PIDS+=($!)
-
-          # 2. Python venv + packages (background, skip if cache hit)
           if [ "$CACHE_VENV_HIT" != "true" ] || [ "$FORCE_SETUP" == "true" ]; then
             (python -m venv .venv && .venv/bin/python -m pip install --upgrade pip -q && .venv/bin/pip install -r requirements.txt -q) &
             PIDS+=($!)
           fi
-
-          # 3. llama.cpp build (background, skip if binary exists)
           NEED_LLAMA=true
           for bin in llama-mtmd-cli llama-llava-cli llava-cli; do
             [ -f "vendor/llama.cpp/build/bin/$bin" ] && NEED_LLAMA=false && break
@@ -121,17 +244,11 @@ jobs:
             ) &
             PIDS+=($!)
           fi
-
-          # Wait for all background tasks
           FAIL=0
-          for pid in "${PIDS[@]}"; do
-            wait "$pid" || FAIL=1
-          done
+          for pid in "${PIDS[@]}"; do wait "$pid" || FAIL=1; done
           [ "$FAIL" -eq 0 ] || exit 1
-
           echo "$PWD/.venv/bin" >> $GITHUB_PATH
 
-      # ── Configure paths ─────────────────────────────────────────────────
       - name: Configure llama.cpp path
         run: |
           LLAMA_CLI=$(find vendor/llama.cpp/build -type f \( -name 'llama-mtmd-cli' -o -name 'llama-llava-cli' -o -name 'llava-cli' \) 2>/dev/null | head -n 1)
@@ -140,10 +257,8 @@ jobs:
             echo "Found llama CLI: $LLAMA_CLI"
           fi
 
-      # ── Run all extractions ─────────────────────────────────────────────
-      - name: Run all extractions
+      - name: Run python-files shard ${{ matrix.index }}
         env:
-          FTT_DEPLOT_MODEL: ${{ inputs.chart_model }}
           FTT_VISION_BACKEND: ${{ inputs.vision_backend }}
           FTT_FILE_WORKERS: ${{ inputs.file_workers }}
           FTT_VISION_WORKERS: ${{ inputs.vision_workers }}
@@ -156,10 +271,324 @@ jobs:
             PROJECT="$PROJECT_PATH"
           fi
           .venv/bin/python -m ftt.transformer_run \
-            --project "$PROJECT" --output ftt-transformer-output --mode all
+            --project "$PROJECT" --output shard-output --mode python-files \
+            --index ${{ matrix.index }} --shards ${{ needs.discover.outputs.python_file_shards }}
 
-      # ── Upload results ──────────────────────────────────────────────────
-      - name: Upload results
+      - name: Upload shard results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-files-${{ matrix.index }}
+          path: shard-output
+          if-no-files-found: warn
+
+  # =====================================================================
+  # 2c. GRAPH REGIONS -- Chart data extraction (matrix: up to 10 shards)
+  # =====================================================================
+  graph-regions:
+    name: "Graph Region [${{ matrix.index }}]"
+    needs: discover
+    if: needs.discover.outputs.graph_region_count > 0
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        index: ${{ fromJson(needs.discover.outputs.graph_region_matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache venv
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache HuggingFace chart models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-${{ inputs.chart_model }}
+
+      - name: Parallel initialization
+        env:
+          CACHE_VENV_HIT: ${{ steps.cache-venv.outputs.cache-hit }}
+          FORCE_SETUP: ${{ inputs.force_setup }}
+        run: |
+          PIDS=()
+          if [ "$CACHE_VENV_HIT" != "true" ] || [ "$FORCE_SETUP" == "true" ]; then
+            (python -m venv .venv && .venv/bin/python -m pip install --upgrade pip -q && .venv/bin/pip install -r requirements.txt -q) &
+            PIDS+=($!)
+          fi
+          FAIL=0
+          for pid in "${PIDS[@]}"; do wait "$pid" || FAIL=1; done
+          [ "$FAIL" -eq 0 ] || exit 1
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Run graph-regions shard ${{ matrix.index }}
+        env:
+          FTT_DEPLOT_MODEL: ${{ inputs.chart_model }}
+          FTT_VISION_BACKEND: ${{ inputs.vision_backend }}
+          FTT_VISION_WORKERS: ${{ inputs.vision_workers }}
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run \
+            --project "$PROJECT" --output shard-output --mode graph-regions \
+            --index ${{ matrix.index }} --shards ${{ needs.discover.outputs.graph_region_shards }}
+
+      - name: Upload shard results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: graph-regions-${{ matrix.index }}
+          path: shard-output
+          if-no-files-found: warn
+
+  # =====================================================================
+  # 2d. TESSERACT REGIONS -- Pixel pen OCR (matrix: up to 10 shards)
+  # =====================================================================
+  tesseract-regions:
+    name: "Tesseract Region [${{ matrix.index }}]"
+    needs: discover
+    if: needs.discover.outputs.tesseract_region_count > 0
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        index: ${{ fromJson(needs.discover.outputs.tesseract_region_matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache venv
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Parallel initialization
+        env:
+          CACHE_VENV_HIT: ${{ steps.cache-venv.outputs.cache-hit }}
+          FORCE_SETUP: ${{ inputs.force_setup }}
+        run: |
+          PIDS=()
+          (sudo apt-get update -qq && sudo apt-get install -y -qq tesseract-ocr) &
+          PIDS+=($!)
+          if [ "$CACHE_VENV_HIT" != "true" ] || [ "$FORCE_SETUP" == "true" ]; then
+            (python -m venv .venv && .venv/bin/python -m pip install --upgrade pip -q && .venv/bin/pip install -r requirements.txt -q) &
+            PIDS+=($!)
+          fi
+          FAIL=0
+          for pid in "${PIDS[@]}"; do wait "$pid" || FAIL=1; done
+          [ "$FAIL" -eq 0 ] || exit 1
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Run tesseract-regions shard ${{ matrix.index }}
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run \
+            --project "$PROJECT" --output shard-output --mode tesseract-regions \
+            --index ${{ matrix.index }} --shards ${{ needs.discover.outputs.tesseract_region_shards }}
+
+      - name: Upload shard results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tesseract-regions-${{ matrix.index }}
+          path: shard-output
+          if-no-files-found: warn
+
+  # =====================================================================
+  # 2e. DESCRIBE REGIONS -- Vision description (matrix: up to 10 shards)
+  # =====================================================================
+  describe-regions:
+    name: "Describe Region [${{ matrix.index }}]"
+    needs: discover
+    if: needs.discover.outputs.describe_region_count > 0
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        index: ${{ fromJson(needs.discover.outputs.describe_region_matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache venv
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache llama.cpp
+        uses: actions/cache@v4
+        with:
+          path: vendor/llama.cpp
+          key: ${{ runner.os }}-llama-cmake-v1
+
+      - name: Cache vision models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ftt/models
+          key: ${{ runner.os }}-ftt-models
+
+      - name: Parallel initialization
+        env:
+          CACHE_VENV_HIT: ${{ steps.cache-venv.outputs.cache-hit }}
+          FORCE_SETUP: ${{ inputs.force_setup }}
+        run: |
+          PIDS=()
+          if [ "$CACHE_VENV_HIT" != "true" ] || [ "$FORCE_SETUP" == "true" ]; then
+            (python -m venv .venv && .venv/bin/python -m pip install --upgrade pip -q && .venv/bin/pip install -r requirements.txt -q) &
+            PIDS+=($!)
+          fi
+          NEED_LLAMA=true
+          for bin in llama-mtmd-cli llama-llava-cli llava-cli; do
+            [ -f "vendor/llama.cpp/build/bin/$bin" ] && NEED_LLAMA=false && break
+          done
+          if [ "$NEED_LLAMA" == "true" ]; then
+            (
+              if [ ! -d vendor/llama.cpp/.git ]; then
+                rm -rf vendor/llama.cpp
+                git clone --depth 1 https://github.com/ggerganov/llama.cpp vendor/llama.cpp
+              fi
+              cmake -S vendor/llama.cpp -B vendor/llama.cpp/build -DGGML_NATIVE=OFF 2>&1 | tail -3
+              cmake --build vendor/llama.cpp/build -j$(nproc) 2>&1 | tail -3
+            ) &
+            PIDS+=($!)
+          fi
+          FAIL=0
+          for pid in "${PIDS[@]}"; do wait "$pid" || FAIL=1; done
+          [ "$FAIL" -eq 0 ] || exit 1
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Configure llama.cpp path
+        run: |
+          LLAMA_CLI=$(find vendor/llama.cpp/build -type f \( -name 'llama-mtmd-cli' -o -name 'llama-llava-cli' -o -name 'llava-cli' \) 2>/dev/null | head -n 1)
+          if [ -n "$LLAMA_CLI" ]; then
+            echo "FTT_VISION_LLAMA_CLI_PATH=$LLAMA_CLI" >> $GITHUB_ENV
+            echo "Found llama CLI: $LLAMA_CLI"
+          fi
+
+      - name: Run describe-regions shard ${{ matrix.index }}
+        env:
+          FTT_VISION_BACKEND: ${{ inputs.vision_backend }}
+          FTT_VISION_WORKERS: ${{ inputs.vision_workers }}
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            [ -n "$ZIP" ] && PROJECT="$ZIP" || PROJECT="$PROJECT_PATH"
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run \
+            --project "$PROJECT" --output shard-output --mode describe-regions \
+            --index ${{ matrix.index }} --shards ${{ needs.discover.outputs.describe_region_shards }}
+
+      - name: Upload shard results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: describe-regions-${{ matrix.index }}
+          path: shard-output
+          if-no-files-found: warn
+
+  # =====================================================================
+  # 3. BUNDLE -- merge all shard artifacts into final output
+  # =====================================================================
+  bundle:
+    name: Bundle Results
+    needs: [discover, tesseract-files, python-files, graph-regions, tesseract-regions, describe-regions]
+    if: always() && needs.discover.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache venv
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip -q
+          .venv/bin/pip install -r requirements.txt -q
+          echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Add venv to PATH
+        if: steps.cache-venv.outputs.cache-hit == 'true'
+        run: echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Download all shard artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: shard-artifacts
+          pattern: "*-*"
+
+      - name: Bundle results
+        run: |
+          .venv/bin/python -m ftt.transformer_run \
+            --project "${{ inputs.project_path }}" \
+            --output ftt-transformer-output \
+            --mode bundle \
+            --inputs shard-artifacts
+
+      - name: Upload final output
         if: always()
         uses: actions/upload-artifact@v4
         with:

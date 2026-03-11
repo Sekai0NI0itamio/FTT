@@ -212,7 +212,7 @@ button:hover { background: #f5f3ef; }
 
 .workspace {
   display: grid;
-  grid-template-columns: 260px 1fr 220px;
+  grid-template-columns: 260px 1fr;
   gap: 12px;
   padding: 12px;
   width: 100vw;
@@ -222,7 +222,7 @@ button:hover { background: #f5f3ef; }
 
 /* ── Sidebar ────────────────────────────────────────────── */
 
-.sidebar, .penbar {
+.sidebar {
   background: var(--panel);
   border-radius: var(--radius-lg);
   padding: 16px;
@@ -233,7 +233,7 @@ button:hover { background: #f5f3ef; }
   flex-direction: column;
   min-width: 0;
 }
-.sidebar h3, .penbar h3 {
+.sidebar h3 {
   margin: 0 0 12px;
   font-size: 13px;
   text-transform: uppercase;
@@ -327,12 +327,30 @@ button:hover { background: #f5f3ef; }
 
 /* ── Pen Bar ────────────────────────────────────────────── */
 
-.penbar { gap: 8px; }
+.penbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.penbar h3 {
+  margin: 0;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  white-space: nowrap;
+}
 
 .pen-group {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  align-items: center;
   gap: 4px;
+  position: relative;
 }
 
 .pen-button {
@@ -370,25 +388,37 @@ button:hover { background: #f5f3ef; }
 .pen-desc { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .pen-config-toggle {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 500;
   border-radius: var(--radius-sm);
-  font-size: 14px;
-  align-self: center;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.pen-config-toggle:hover {
+  color: var(--ink);
+  background: #f5f3ef;
+  border-color: var(--accent);
 }
 
 .pen-config {
-  grid-column: 1 / -1;
-  background: #faf8f5;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  min-width: 200px;
+  margin-top: 4px;
+  background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 10px;
   display: grid;
   gap: 8px;
+  box-shadow: var(--shadow);
 }
 
 .pen-config-row {

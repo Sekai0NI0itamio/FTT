@@ -35,7 +35,6 @@ export function HomePage({
           onClick={onSelectFiles}
           tabIndex={0}
         >
-          <div className="drop-icon">📂</div>
           <h2>Paste files from clipboard or drop files here</h2>
           <p className="muted">Click to open file selector</p>
         </div>

@@ -326,7 +326,12 @@ export default function App() {
             </button>
           </div>
         </div>
-
+        <PenBar
+          activePen={activePen}
+          penSettings={penSettings}
+          onSelectPen={setActivePen}
+          onUpdatePenConfig={updatePenConfig}
+        />
         <div className="viewer-body" ref={viewerBodyRef}>
           {!activeFile && <div className="viewer-empty">Select a file to annotate.</div>}
           {activeFile?.convertedPath && (
@@ -346,13 +351,6 @@ export default function App() {
           )}
         </div>
       </main>
-
-      <PenBar
-        activePen={activePen}
-        penSettings={penSettings}
-        onSelectPen={setActivePen}
-        onUpdatePenConfig={updatePenConfig}
-      />
 
       {strokeCtx && ctxStroke && (
         <StrokeContextMenu

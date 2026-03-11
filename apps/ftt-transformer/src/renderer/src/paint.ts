@@ -145,7 +145,37 @@ export function floodFillFromStroke(
 export function buildFilledMask(stroke: Stroke, width: number, height: number) {
   const outline = strokeToMask(stroke, width, height);
   if (!stroke.filled) return outline;
-  return floodFillFromStroke(outline, width, height);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return outline;
+
+  const points = stroke.points;
+  if (points.length < 2) return outline;
+
+  ctx.lineWidth = stroke.radiusPx * 2;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.strokeStyle = "#fff";
+  ctx.fillStyle = "#fff";
+
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    if (i === 0) ctx.moveTo(p.x, p.y);
+    else ctx.lineTo(p.x, p.y);
+  });
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const filled = new Uint8ClampedArray(width * height);
+  for (let i = 0; i < filled.length; i += 1) {
+    if (imageData.data[i * 4 + 3] > 0) filled[i] = 1;
+  }
+  return filled;
 }
 
 export function buildFilledMaskForBbox(

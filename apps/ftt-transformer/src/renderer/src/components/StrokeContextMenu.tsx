@@ -1,6 +1,6 @@
 import type { PenType, Stroke } from "@renderer/types";
 import { CHART_MODELS } from "@renderer/types";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const PEN_LABELS: Record<PenType, string> = {
   tesseract: "OCR Text Extraction",
@@ -29,6 +29,21 @@ export function StrokeContextMenu({
 }) {
   const pens: PenType[] = ["tesseract", "describe", "graph"];
   const [expandedModel, setExpandedModel] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ left: x, top: y });
+
+  useEffect(() => {
+    const el = menuRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    let left = x;
+    let top = y;
+    if (left + rect.width > vw) left = Math.max(0, vw - rect.width - 8);
+    if (top + rect.height > vh) top = Math.max(0, vh - rect.height - 8);
+    setPos({ left, top });
+  }, [x, y]);
 
   const currentModels = stroke.graphModels ?? CHART_MODELS.map((m) => m.id);
 
@@ -42,7 +57,7 @@ export function StrokeContextMenu({
   };
 
   return (
-    <div className="context-menu" style={{ left: x, top: y }} onClick={(e) => e.stopPropagation()}>
+    <div ref={menuRef} className="context-menu" style={{ left: pos.left, top: pos.top }} onClick={(e) => e.stopPropagation()}>
       <div className="menu-title">
         Change Pen Type <span className="muted">(current: {PEN_LABELS[stroke.pen]})</span>
       </div>

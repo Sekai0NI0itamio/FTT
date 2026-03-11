@@ -31,9 +31,10 @@ const drawStroke = (
   ctx: CanvasRenderingContext2D,
   stroke: Stroke,
   color: string,
-  filled: boolean,
 ) => {
   if (stroke.points.length < 2) return;
+  const prevAlpha = ctx.globalAlpha;
+  ctx.globalAlpha = 0.45;
   ctx.strokeStyle = color;
   ctx.lineWidth = stroke.radiusPx * 2;
   ctx.lineCap = "round";
@@ -44,10 +45,7 @@ const drawStroke = (
     else ctx.lineTo(point.x, point.y);
   });
   ctx.stroke();
-    if (filled) {
-      ctx.fillStyle = `${color}22`;
-      ctx.fillRect(stroke.bbox.x, stroke.bbox.y, stroke.bbox.width, stroke.bbox.height);
-    }
+  ctx.globalAlpha = prevAlpha;
 };
 
 const getColor = (pen: PenType) => {
@@ -227,11 +225,11 @@ function PdfPage({
     if (!ctx) return;
     ctx.clearRect(0, 0, overlay.width, overlay.height);
     for (const stroke of strokes) {
-      drawStroke(ctx, stroke, getColor(stroke.pen), false);
+      drawStroke(ctx, stroke, getColor(stroke.pen));
       if (stroke.filled) {
         const safeBbox = clampBbox(stroke.bbox, overlay.width, overlay.height);
         const mask = buildFilledMaskForBbox(stroke, safeBbox);
-        paintMask(ctx, mask, safeBbox, getColor(stroke.pen), 0.2);
+        paintMask(ctx, mask, safeBbox, getColor(stroke.pen), 0.13);
       }
     }
     if (currentPoints.length > 1) {
@@ -249,7 +247,6 @@ function PdfPage({
           bbox: { x: 0, y: 0, width: 0, height: 0 },
         },
         getColor(pen),
-        false,
       );
     }
   }, [strokes, currentPoints, pen, radiusPx, unit, pageIndex]);
@@ -434,11 +431,11 @@ function ImagePage({
     if (!ctx) return;
     ctx.clearRect(0, 0, overlay.width, overlay.height);
     for (const stroke of strokes) {
-      drawStroke(ctx, stroke, getColor(stroke.pen), false);
+      drawStroke(ctx, stroke, getColor(stroke.pen));
       if (stroke.filled) {
         const safeBbox = clampBbox(stroke.bbox, overlay.width, overlay.height);
         const mask = buildFilledMaskForBbox(stroke, safeBbox);
-        paintMask(ctx, mask, safeBbox, getColor(stroke.pen), 0.2);
+        paintMask(ctx, mask, safeBbox, getColor(stroke.pen), 0.13);
       }
     }
     if (currentPoints.length > 1) {
@@ -456,7 +453,6 @@ function ImagePage({
           bbox: { x: 0, y: 0, width: 0, height: 0 },
         },
         getColor(pen),
-        false,
       );
     }
   }, [strokes, currentPoints, pen, radiusPx, unit, imgSize]);

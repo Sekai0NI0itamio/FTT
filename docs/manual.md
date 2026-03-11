@@ -33,6 +33,8 @@ FTT (File To Text) runs entirely on GitHub Actions. Users commit files into `inc
 3. Click **Run workflow** and optionally override inputs.
 4. Use `force_setup=true` to re-install dependencies and rebuild caches when needed (default skips when cached).
 
+For Transformer exports, run **FTT Transformer Based Project Extraction** and point it at `incoming-transformer/` or a zip file.
+
 ## Local CLI
 Run all tasks:
 `python -m ftt.run --config ftt.yml`

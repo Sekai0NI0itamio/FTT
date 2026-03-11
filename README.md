@@ -34,6 +34,11 @@ Text extraction from images uses Tesseract OCR by default.
 The workflow runs in three visible phases: **Setup**, **Concurrent Processing** (text/description/deplot in parallel), and **Bundling**.
 By default it reuses cached dependencies and models when available; set the workflow input `force_setup=true` to re-install and rebuild.
 
+## FTT Transformer App
+
+The Electron app lives under `apps/ftt-transformer/`. It lets users import files, convert to PDF, annotate regions with pens, and export a Transformer project bundle.
+The GitHub workflow `FTT Transformer Based Project Extraction` processes these bundles via `python -m ftt.transformer_run`.
+
 ## Documentation
 
 Full manual: `docs/manual.md`

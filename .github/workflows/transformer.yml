@@ -1,0 +1,139 @@
+name: FTT Transformer Based Project Extraction
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_path:
+        description: "Path to Transformer export (dir or zip)"
+        required: false
+        default: "incoming-transformer"
+      visual_mode:
+        description: "Visual mode: embedded|hybrid|full"
+        required: false
+        default: "hybrid"
+      vision_backend:
+        description: "Vision backend: local_llama_cpp|openai|anthropic|gemini"
+        required: false
+        default: "local_llama_cpp"
+      file_workers:
+        description: "File worker concurrency"
+        required: false
+        default: "2"
+      vision_workers:
+        description: "Vision worker concurrency"
+        required: false
+        default: "2"
+      deplot_workers:
+        description: "DePlot worker concurrency"
+        required: false
+        default: "1"
+      force_setup:
+        description: "Force reinstall deps/build/models (true|false)"
+        required: false
+        default: "false"
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils libreoffice tesseract-ocr
+
+      - name: Cache models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ftt/models
+          key: ${{ runner.os }}-ftt-models
+
+      - name: Cache llama.cpp build
+        uses: actions/cache@v4
+        with:
+          path: vendor/llama.cpp
+          key: ${{ runner.os }}-llama-cmake-v1
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Cache venv
+        id: cache-venv
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+
+      - name: Create venv
+        if: steps.cache-venv.outputs.cache-hit != 'true' || inputs.force_setup == 'true'
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+
+      - name: Install Python dependencies
+        if: steps.cache-venv.outputs.cache-hit != 'true' || inputs.force_setup == 'true'
+        run: |
+          .venv/bin/pip install -r requirements.txt
+
+      - name: Use venv
+        run: echo "$PWD/.venv/bin" >> $GITHUB_PATH
+
+      - name: Build llama.cpp
+        run: |
+          if [ ! -d vendor/llama.cpp/.git ]; then
+            rm -rf vendor/llama.cpp
+            git clone --depth 1 https://github.com/ggerganov/llama.cpp vendor/llama.cpp
+          fi
+          if [ ! -f vendor/llama.cpp/build/bin/llama-mtmd-cli ] && [ ! -f vendor/llama.cpp/build/bin/llama-llava-cli ] && [ ! -f vendor/llama.cpp/build/bin/llava-cli ]; then
+            cmake -S vendor/llama.cpp -B vendor/llama.cpp/build -DGGML_NATIVE=OFF
+            cmake --build vendor/llama.cpp/build -j$(nproc)
+          fi
+
+      - name: Locate llama CLI
+        run: |
+          LLAMA_CLI=$(find vendor/llama.cpp/build -type f \( -name 'llama-mtmd-cli' -o -name 'llama-llava-cli' -o -name 'llava-cli' \) | head -n 1)
+          if [ -z "$LLAMA_CLI" ]; then
+            echo "llama CLI binary not found" >&2
+            exit 1
+          fi
+          echo "FTT_VISION_LLAMA_CLI_PATH=$LLAMA_CLI" >> $GITHUB_ENV
+
+      - name: Run Transformer Extraction
+        env:
+          FTT_VISUAL_MODE: ${{ inputs.visual_mode }}
+          FTT_VISION_BACKEND: ${{ inputs.vision_backend }}
+          FTT_FILE_WORKERS: ${{ inputs.file_workers }}
+          FTT_VISION_WORKERS: ${{ inputs.vision_workers }}
+          FTT_DEPLOT_WORKERS: ${{ inputs.deplot_workers }}
+        run: |
+          PROJECT_PATH="${{ inputs.project_path }}"
+          if [ -d "$PROJECT_PATH" ]; then
+            ZIP_CANDIDATE=$(ls "$PROJECT_PATH"/*.zip 2>/dev/null | head -n 1)
+            if [ -n "$ZIP_CANDIDATE" ]; then
+              PROJECT="$ZIP_CANDIDATE"
+            else
+              PROJECT="$PROJECT_PATH"
+            fi
+          else
+            PROJECT="$PROJECT_PATH"
+          fi
+          .venv/bin/python -m ftt.transformer_run --project "$PROJECT" --output output-transformer
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ftt-transformer-output
+          path: output-transformer
+          if-no-files-found: warn

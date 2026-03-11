@@ -27,6 +27,14 @@ on:
         description: "DePlot worker concurrency"
         required: false
         default: "1"
+      chart_model:
+        description: "Chart extraction model: unichart (best) | matcha (good) | deplot (lightweight)"
+        required: false
+        default: "unichart"
+        # Model download URLs (auto-downloaded by HuggingFace transformers):
+        #   unichart → https://huggingface.co/ahmed-masry/unichart-base-960
+        #   matcha   → https://huggingface.co/google/matcha-chartqa
+        #   deplot   → https://huggingface.co/google/deplot
       force_setup:
         description: "Force reinstall deps/build/models (true|false)"
         required: false
@@ -55,6 +63,12 @@ jobs:
         with:
           path: ~/.cache/ftt/models
           key: ${{ runner.os }}-ftt-models
+
+      - name: Cache HuggingFace chart models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: ${{ runner.os }}-hf-${{ inputs.chart_model }}
 
       - name: Cache llama.cpp build
         uses: actions/cache@v4
@@ -116,6 +130,7 @@ jobs:
           FTT_FILE_WORKERS: ${{ inputs.file_workers }}
           FTT_VISION_WORKERS: ${{ inputs.vision_workers }}
           FTT_DEPLOT_WORKERS: ${{ inputs.deplot_workers }}
+          FTT_DEPLOT_MODEL: ${{ inputs.chart_model }}
         run: |
           PROJECT_PATH="${{ inputs.project_path }}"
           if [ -d "$PROJECT_PATH" ]; then

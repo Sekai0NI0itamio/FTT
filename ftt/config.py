@@ -94,13 +94,18 @@ DEFAULT_CONFIG: Dict[str, Any] = {
     },
     "deplot": {
         "enabled": True,
-        "model_name": "google/deplot",
+        # Model backend: "unichart" (best), "matcha" (good), "deplot" (lightweight)
+        # Or any HuggingFace model id (e.g. "ahmed-masry/unichart-base-960")
+        "model_name": "unichart",
         "max_tokens": 512,
-        "prompt": (
-            "Generate the underlying data table of the chart. "
-            "If the image is not a chart, output NO_CHART."
-        ),
+        "prompt": "<extract_data_table> <s_answer>",
         "cache_dir": "~/.cache/huggingface",
+        # Download URLs (for reference / CI)
+        "model_urls": {
+            "unichart": "https://huggingface.co/ahmed-masry/unichart-base-960",
+            "matcha": "https://huggingface.co/google/matcha-chartqa",
+            "deplot": "https://huggingface.co/google/deplot",
+        },
     },
 }
 

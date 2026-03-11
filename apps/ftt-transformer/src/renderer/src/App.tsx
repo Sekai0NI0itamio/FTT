@@ -128,7 +128,6 @@ export default function App() {
   const handleAddFiles = (paths: string[]) => {
     if (!paths.length) return;
     setFiles((prev) => [...prev, ...normalizeFiles(paths)]);
-    if (step === "home") setStep("select");
   };
 
   const handleSelectFiles = async () => {

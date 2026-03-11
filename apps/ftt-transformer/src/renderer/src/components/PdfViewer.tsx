@@ -88,6 +88,18 @@ export function PdfViewer({
 }) {
   const [doc, setDoc] = useState<PDFDocumentProxy | null>(null);
   const [pages, setPages] = useState<PDFPageProxy[]>([]);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+    const updateSize = () => setContainerWidth(node.clientWidth);
+    updateSize();
+    const observer = new ResizeObserver(() => updateSize());
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     let canceled = false;
@@ -128,7 +140,7 @@ export function PdfViewer({
   }
 
   return (
-    <div className="pdf-scroll">
+    <div className="pdf-scroll" ref={containerRef}>
       {pages.map((page, idx) => (
         <PdfPage
           key={page.pageNumber}
@@ -136,6 +148,7 @@ export function PdfViewer({
           pageIndex={idx}
           page={page}
           strokes={strokesByPage.get(idx) || []}
+          containerWidth={containerWidth}
           pen={activePen}
           radiusPx={radiusPx}
           unit={unit}
@@ -153,6 +166,7 @@ function PdfPage({
   page,
   pageIndex,
   strokes,
+  containerWidth,
   pen,
   radiusPx,
   unit,
@@ -164,6 +178,7 @@ function PdfPage({
   page: PDFPageProxy;
   pageIndex: number;
   strokes: Stroke[];
+  containerWidth: number;
   pen: PenType;
   radiusPx: number;
   unit: "px" | "cm" | "mm";
@@ -179,14 +194,17 @@ function PdfPage({
   useEffect(() => {
     const canvas = baseRef.current;
     if (!canvas) return;
-    const viewport = page.getViewport({ scale: 1.4 });
+    const baseViewport = page.getViewport({ scale: 1 });
+    const availableWidth = Math.max(200, containerWidth - 48);
+    const scale = containerWidth > 0 ? Math.min(1.2, availableWidth / baseViewport.width) : 1;
+    const viewport = page.getViewport({ scale });
     canvas.width = viewport.width;
     canvas.height = viewport.height;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     page.render({ canvasContext: ctx, viewport });
     onPageCanvas?.(fileId, pageIndex, canvas);
-  }, [page, fileId, pageIndex, onPageCanvas]);
+  }, [page, fileId, pageIndex, onPageCanvas, containerWidth]);
 
   useEffect(() => {
     const overlay = overlayRef.current;
